@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: chainfund-db
+    environment:
+      MONGO_INITDB_DATABASE: chainfund
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: chainfund_pass_change_me
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - chainfund-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: chainfund-backend
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      RPC_URL: ${RPC_URL:-http://127.0.0.1:8545}
+      SEPOLIA_RPC_URL: ${SEPOLIA_RPC_URL:-}
+      MONGODB_URI: mongodb://root:chainfund_pass_change_me@mongodb:27017/chainfund
+      JWT_SECRET: ${JWT_SECRET:-change_this_to_a_secure_random_string_32_chars_min}
+      ETH_INR_RATE: ${ETH_INR_RATE:-220000}
+    ports:
+      - "5000:5000"
+    networks:
+      - chainfund-network
+    volumes:
+      - ./backend/deployedAddresses.json:/app/backend/deployedAddresses.json:ro
+    restart: unless-stopped
+    healthcheck:
+      test: curl -f http://localhost:5000/api/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mongodb_data:
+
+networks:
+  chainfund-network:
+    driver: bridge

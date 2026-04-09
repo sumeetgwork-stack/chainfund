@@ -1,0 +1,24 @@
+{
+  "name": "chainfund",
+  "version": "1.0.0",
+  "description": "Blockchain fundraising SaaS — Ethereum + Node.js + MongoDB",
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install",
+    "node": "npx hardhat node",
+    "compile": "npx hardhat compile",
+    "deploy:local": "npx hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
+    "backend": "cd backend && npm run dev",
+    "start": "cd backend && npm start",
+    "test": "npx hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "dotenv": "^16.3.1",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "mongod": "^2.0.0",
+    "mongoose": "^9.3.2"
+  }
+}

@@ -1,0 +1,13 @@
+node_modules/
+backend/node_modules/
+.env
+cache/
+artifacts/
+backend/artifacts/
+backend/abis/
+backend/deployedAddresses.json
+*.log
+.DS_Store
+coverage/
+typechain/
+typechain-types/

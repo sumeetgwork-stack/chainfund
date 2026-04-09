@@ -1,0 +1,143 @@
+const { ethers } = require("ethers");
+const { Campaign, Transaction, SystemConfig } = require("../models");
+const { getFactoryContract, getCampaignContract, getProvider } = require("./blockchain");
+
+const ethToINR = () => parseFloat(process.env.ETH_INR_RATE || "220000");
+
+/**
+ * Syncs historical events for a specific campaign or the factory.
+ * This ensures no data is lost during server downtime.
+ */
+async function syncHistoricalEvents(io) {
+  const provider = getProvider();
+  if (!provider) return;
+
+  try {
+    const currentBlock = await provider.getBlockNumber();
+    const configKey = "last_synced_block";
+    
+    // 1. Get the last synced block from DB
+    let config = await SystemConfig.findOne({ key: configKey });
+    if (!config) {
+      // If first time, start from the factory deployment block or a reasonable recent point
+      // For Sepolia demo, we can start roughly from when we deployed (or current - 5000)
+      const startBlock = Math.max(0, currentBlock - 5000);
+      config = await SystemConfig.create({ key: configKey, value: startBlock });
+    }
+
+    const fromBlock = config.value + 1;
+    if (fromBlock > currentBlock) {
+      console.log("♾️  Database is already up to date with blockchain.");
+      return;
+    }
+
+    console.log(`📡 Syncing historical events from block ${fromBlock} to ${currentBlock}...`);
+
+    const CHUNK_SIZE = 9; // Limit to 10 blocks total range per request as per RPC provider
+    const factory = getFactoryContract();
+    const campaigns = await Campaign.find({});
+
+    for (let currentFrom = fromBlock; currentFrom <= currentBlock; currentFrom += CHUNK_SIZE + 1) {
+      const currentTo = Math.min(currentFrom + CHUNK_SIZE, currentBlock);
+      console.log(`🔎 Scanning chunk: ${currentFrom} to ${currentTo}...`);
+
+      // 2. Sync Factory Events (New Campaigns)
+      const campaignCreatedFilter = factory.filters.CampaignCreated();
+      const newCampaignLogs = await factory.queryFilter(campaignCreatedFilter, currentFrom, currentTo);
+      
+      for (const log of newCampaignLogs) {
+        const [addr, organiser, title, category, goal, deadline] = log.args;
+        console.log(`✨ Found missed campaign: ${title}`);
+        
+        await Campaign.findOneAndUpdate(
+          { contractAddress: addr.toLowerCase() },
+          {
+            contractAddress: addr.toLowerCase(),
+            organiserWallet: organiser.toLowerCase(),
+            title, category,
+            goalAmount: parseFloat(ethers.formatEther(goal)),
+            goalAmountINR: parseFloat(ethers.formatEther(goal)) * ethToINR(),
+            deadline: new Date(Number(deadline) * 1000),
+            blockNumber: log.blockNumber,
+            txHash: log.transactionHash
+          },
+          { upsert: true }
+        );
+      }
+
+      // 3. Sync Campaign Events
+      for (const campaign of campaigns) {
+        const contract = getCampaignContract(campaign.contractAddress);
+        const donationFilter = contract.filters.DonationReceived();
+        const logs = await contract.queryFilter(donationFilter, currentFrom, currentTo);
+        
+        for (const log of logs) {
+          const [donor, amount, timestamp] = log.args;
+          const amountETH = parseFloat(ethers.formatEther(amount));
+          
+          const txDoc = {
+            txHash: log.transactionHash,
+            blockNumber: log.blockNumber,
+            from: donor.toLowerCase(),
+            to: campaign.contractAddress.toLowerCase(),
+            valueETH: amountETH,
+            type: "donation",
+            campaignAddress: campaign.contractAddress.toLowerCase(),
+            description: "Donation received (Synced)",
+            timestamp: new Date(Number(timestamp) * 1000)
+          };
+
+          const existing = await Transaction.findOne({ txHash: log.transactionHash });
+          if (!existing) {
+            await Transaction.create(txDoc);
+            await Campaign.findOneAndUpdate(
+              { contractAddress: campaign.contractAddress.toLowerCase() },
+              { $inc: { totalRaised: amountETH, donorCount: 1 } }
+            );
+            console.log(`✅ Synced missed donation: ${amountETH} ETH for ${campaign.title}`);
+          }
+        }
+      }
+    }
+
+    // 4. Update the last synced block
+    await SystemConfig.findOneAndUpdate({ key: configKey }, { value: currentBlock, lastUpdatedAt: new Date() });
+    console.log(`🏁 Sync complete. Up to block: ${currentBlock}`);
+
+    // Trigger UI update if socket IO is provided
+    io?.emit("stats_update");
+
+  } catch (err) {
+    console.error("❌ Sync Service Error:", err.message);
+  }
+}
+
+/**
+ * Cross-references DB totals with actual On-Chain data to verify integrity.
+ */
+async function reconcileCampaignTotals() {
+  const campaigns = await Campaign.find({ active: true });
+  for (const c of campaigns) {
+    try {
+      const contract = getCampaignContract(c.contractAddress);
+      const onChainRaised = await contract.totalRaised();
+      const raisedETH = parseFloat(ethers.formatEther(onChainRaised));
+      
+      // 🛡️ ZERO-GUARD: Don't overwrite a healthy DB value with 0 from chain unless it's a fresh campaign (or very low).
+      // This protects against transient RPC errors returning 0.
+      if (raisedETH === 0 && c.totalRaised > 0) {
+        console.warn(`⚠️  [Zero-Guard] Blockchain returned 0 for ${c.title}, but DB says ${c.totalRaised}. Ignoring update to prevent reset-to-zero bug.`);
+        continue;
+      }
+      
+      if (Math.abs(c.totalRaised - raisedETH) > 0.000001) {
+        console.warn(`⚖️  Mismatch found for ${c.title}: DB=${c.totalRaised}, Chain=${raisedETH}. Reconciling...`);
+        await Campaign.findByIdAndUpdate(c._id, { totalRaised: raisedETH });
+      }
+    } catch (e) {
+      console.error(`❌ Reconciliation failed for ${c.title}:`, e.message);
+    }
+  }
+}
+
+module.exports = { syncHistoricalEvents, reconcileCampaignTotals };

@@ -43,11 +43,16 @@ app.use("/api/kyc",         kycRoutes);
 
 // Serve factory address to frontend
 app.get('/config', (_req, res) => {
+  const factoryAddress = process.env.FACTORY_ADDRESS;
+  if (factoryAddress) {
+    return res.json({ factory: factoryAddress });
+  }
+
   try {
     const data = require('./deployedAddresses.json');
     res.json(data);
   } catch (_) {
-    res.status(404).json({ error: 'Not deployed yet. Run: npx hardhat run scripts/deploy.js --network localhost' });
+    res.json({ factory: null, error: 'Factory address not configured. Set FACTORY_ADDRESS env var.' });
   }
 });
 

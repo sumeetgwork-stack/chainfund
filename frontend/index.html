@@ -647,14 +647,21 @@ let _modalRefreshTimer = null;
 
 // ── Init ──────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
-  try { 
-    const cr = await fetch(`${API.replace('/api','')}/config`);
-    if (cr.ok) {
-      const config = await cr.json();
-      FACTORY_ADDRESS = config.factory;
-      console.log('⛓️ Blockchain Config Loaded:', config);
-    }
-  } catch(e) { console.warn('Could not load blockchain config:', e.message); }
+  // Try to load config with retries
+  let attempts = 0;
+  while (attempts < 3 && !FACTORY_ADDRESS) {
+    try { 
+      const cr = await fetch(`${API.replace('/api','')}/config`);
+      if (cr.ok) {
+        const config = await cr.json();
+        FACTORY_ADDRESS = config.factory;
+        console.log('⛓️ Blockchain Config Loaded:', config);
+        if (config.factory) break;
+      }
+    } catch(e) { console.warn('Config fetch attempt failed:', e.message); }
+    attempts++;
+    if (!FACTORY_ADDRESS) await new Promise(r => setTimeout(r, 1000));
+  }
 
   token = localStorage.getItem('cf_token');
   if (token) {
@@ -1389,7 +1396,7 @@ async function donateToCampaign(contractAddress) {
     } catch(err) {
       console.error('Optimistic update failed:', err);
     }
-    apiFetch('/api/donations', { method: 'POST', body: JSON.stringify({ campaignAddress: contractAddress, amountETH: parseFloat(amount), txHash: receipt.hash, blockNumber: receipt.blockNumber }) }).catch(() => {});
+    apiFetch('/donations', { method: 'POST', body: JSON.stringify({ campaignAddress: contractAddress, amountETH: parseFloat(amount), txHash: receipt.hash, blockNumber: receipt.blockNumber }) }).catch(() => {});
     setTimeout(() => { loadCampaigns(); loadStats(); updateRightPanelWallet(); updateRightPanelFeed(); }, 300);
     // Refresh modal with confirmed data after blockchain catches up
     setTimeout(() => { 

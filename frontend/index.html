@@ -961,26 +961,35 @@ function logout() {
 
 // ── Stats ─────────────────────────────────────────────────────────────────
 async function loadStats() {
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   try {
-    const r = await apiFetch('/campaigns/stats/platform');
-    if (!r.ok) return;
-    const d = await r.json();
+    const [statsRes, txRes] = await Promise.all([
+      apiFetch('/campaigns/stats/platform'),
+      apiFetch('/transactions?limit=1')
+    ]);
+    if (!statsRes.ok) return;
+    const d = await statsRes.json();
+    const txTotal = txRes.ok ? (await txRes.json()).total || 0 : 0;
     const toINR = (eth) => `₹${(eth * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-    document.getElementById('stat-raised').textContent = toINR(d.totalRaised || 0);
-    document.getElementById('stat-campaigns').textContent = (d.totalCampaigns || 0).toLocaleString();
-    document.getElementById('stat-donors').textContent = (d.totalDonors || 0).toLocaleString();
-    document.getElementById('stat-util').textContent = `${d.utilizationRate || 0}%`;
-    document.getElementById('db-raised').textContent = toINR(d.totalRaised || 0);
-    document.getElementById('db-active').textContent = d.activeCampaigns || 0;
-    document.getElementById('db-disbursed').textContent = toINR(d.totalDisbursed || 0);
-    document.getElementById('db-disbursed-sub').textContent = `${d.utilizationRate || 0}% utilisation`;
+    // Home page stats
+    setEl('stat-raised',    toINR(d.totalRaised || 0));
+    setEl('stat-campaigns', (d.totalCampaigns || 0).toLocaleString());
+    setEl('stat-donors',    (d.totalDonors || 0).toLocaleString());
+    setEl('stat-util',      `${d.utilizationRate || 0}%`);
+    // Dashboard stats
+    setEl('db-raised',       toINR(d.totalRaised || 0));
+    setEl('db-raised-sub',   `across ${d.totalCampaigns || 0} campaigns`);
+    setEl('db-active',       d.activeCampaigns || 0);
+    setEl('db-active-sub',   `of ${d.totalCampaigns || 0} total`);
+    setEl('db-disbursed',    toINR(d.totalDisbursed || 0));
+    setEl('db-disbursed-sub',`${d.utilizationRate || 0}% utilisation`);
+    setEl('db-txns',         txTotal.toLocaleString());
+    setEl('db-txns-sub',     'on Sepolia testnet');
+    // Right panel
     updateRightPanelStats();
     updateActiveBadge(d.activeCampaigns);
-  } catch(_) {
-    document.getElementById('stat-raised').textContent = '₹0';
-    document.getElementById('stat-campaigns').textContent = '0';
-    document.getElementById('stat-donors').textContent = '0';
-    document.getElementById('stat-util').textContent = '0%';
+  } catch(err) {
+    console.warn('loadStats error:', err.message);
   }
 }
 
@@ -1552,7 +1561,21 @@ function addMilestoneField() { milestoneCount++; const c = document.getElementBy
 // ── Dashboard ─────────────────────────────────────────────────────────────
 function switchDashTab(name) { document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['overview','tracker','my'][i]===name)); document.querySelectorAll('.tab-panel').forEach((p,i)=>p.classList.toggle('active',['dt-overview','dt-tracker','dt-my'][i]===`dt-${name}`)); }
 async function loadDashboard() { loadStats(); loadLiveTxns(); }
-async function loadLiveTxns() { const el = document.getElementById('live-txns'); try { const r = await apiFetch('/transactions?limit=6'); if (!r.ok) throw new Error(); const {transactions} = await r.json(); if (!transactions.length) throw new Error(); el.innerHTML = transactions.map(txRow).join(''); } catch(_) { el.innerHTML = demoTxns(); } }
+async function loadLiveTxns() {
+  const el = document.getElementById('live-txns');
+  if (!el) return;
+  try {
+    const r = await apiFetch('/transactions?limit=8');
+    if (!r.ok) throw new Error('API error ' + r.status);
+    const data = await r.json();
+    const txs = data.transactions || [];
+    if (!txs.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No transactions yet. Be the first to donate!</div>'; return; }
+    el.innerHTML = txs.map(tx => { 
+      if (!tx.description) tx.description = `${tx.type.charAt(0).toUpperCase()+tx.type.slice(1)} — ${(tx.campaignAddress||'').slice(0,10)}...`;
+      return txRow(tx);
+    }).join('');
+  } catch(e) { console.warn('loadLiveTxns error:', e.message); el.innerHTML = demoTxns(); }
+}
 function appendLiveTx(tx) { const el = document.getElementById('live-txns'); if (!el) return; el.insertAdjacentHTML('afterbegin', txRow(tx)); const rows = el.children; if (rows.length > 8) rows[rows.length-1].remove(); }
 function txRow(tx) { const icons = { donation: '💰', disbursement: '📤', refund: '↩️', contract_create: '📄', approval: '✅' }; const bgMap = { donation: 'rgba(34,197,94,.1)', disbursement: 'rgba(0,210,200,.1)', refund: 'rgba(239,68,68,.1)', contract_create: 'rgba(168,85,247,.1)' }; const amtStr = tx.valueETH ? `${tx.valueETH.toFixed(4)} ETH` : (tx.amountETH ? `${tx.amountETH.toFixed(4)} ETH` : '—'); const hashStr = tx.txHash || tx.hash || '0x...'; return `<div class="tx-row" onclick="document.getElementById('explorer-input').value='${hashStr}';showPage('explorer');explorerSearch()"><div class="tx-icon-wrap" style="background:${bgMap[tx.type]||'var(--border)'}">${icons[tx.type]||'•'}</div><div class="tx-info"><div class="tx-hash">${hashStr.slice(0,20)}...${hashStr.slice(-8)}</div><div class="tx-desc">${tx.description || tx.type}</div><div class="tx-meta"><span class="verified">✓</span> Block #${tx.blockNumber || '...'}</div></div><div class="tx-amt"><div class="amt">${amtStr}</div><div class="when">${timeAgo(tx.timestamp || tx.createdAt)}</div></div></div>`; }
 function demoTxns() { const rows = [ { type:'donation', txHash:'0x3fa8b12cd9e401874a22c918f7d490b881acd3f7...b91c', description:'Donation — Clean Water Initiative', blockNumber:18402119, valueETH:0.045, timestamp:new Date() }, { type:'disbursement', txHash:'0x7bc1e4f0912c884490d8b3e9a1f567c239d7...e83d', description:'Disbursement — Medical Equipment', blockNumber:18402087, valueETH:0.545, timestamp:new Date(Date.now()-1080000) }, { type:'donation', txHash:'0x2ae7f18b9c2048376e59d4a91b832cd7f5a1...91b0', description:'Donation — Rural Education Fund', blockNumber:18402055, valueETH:0.025, timestamp:new Date(Date.now()-2040000) }, { type:'disbursement', txHash:'0x9d2f44aa7c1b3e59f20d8c6a94b7e1f035ab...44aa', description:'Disbursement — Teacher Salaries', blockNumber:18402001, valueETH:0.386, timestamp:new Date(Date.now()-3600000) } ]; return rows.map(txRow).join(''); }
@@ -1562,7 +1585,21 @@ async function loadTrackerAllocation() { const addr = document.getElementById('t
 // ── Explorer ───────────────────────────────────────────────────────────────
 async function loadExplorer() { loadBlocks(); loadExplorerTxns(); }
 async function loadBlocks() { const el = document.getElementById('blocks-row'); try { const r = await apiFetch('/blockchain/blocks/recent'); if (!r.ok) throw new Error(); const {blocks} = await r.json(); if (!blocks.length) throw new Error(); el.innerHTML = blocks.map((b,i) => `<div class="block-card ${i===0?'block-latest':''}">${i===0?'<div class="new-tag">LATEST</div>':''}<div class="block-num">Block #${b.number?.toLocaleString()}</div><div class="block-hash">${b.hash}</div><div class="block-txcount"><strong>${b.txCount}</strong> txns · ${timeAgo(b.timestamp*1000)}</div></div>${i<blocks.length-1?'<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>':''}`).join(''); } catch(_) { el.innerHTML = [18402119,18402118,18402117,18402116,18402115].map((n,i) => `<div class="block-card ${i===0?'block-latest':''}">${i===0?'<div class="new-tag">LATEST</div>':''}<div class="block-num">Block #${n.toLocaleString()}</div><div class="block-hash">0x${Math.random().toString(16).slice(2,18)}...${Math.random().toString(16).slice(2,6)}</div><div class="block-txcount"><strong>${Math.floor(Math.random()*12+1)}</strong> txns · ${i*14+2}s ago</div></div>${i<4?'<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>':''}`).join(''); } }
-async function loadExplorerTxns() { const el = document.getElementById('explorer-txns'); try { const r = await apiFetch('/transactions?limit=8'); if (!r.ok) throw new Error(); const {transactions} = await r.json(); if (!transactions.length) throw new Error(); el.innerHTML = transactions.map(txRow).join(''); } catch(_) { el.innerHTML = demoTxns(); } }
+async function loadExplorerTxns() {
+  const el = document.getElementById('explorer-txns');
+  if (!el) return;
+  try {
+    const r = await apiFetch('/transactions?limit=8');
+    if (!r.ok) throw new Error('API error ' + r.status);
+    const data = await r.json();
+    const txs = data.transactions || [];
+    if (!txs.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No indexed transactions yet.</div>'; return; }
+    el.innerHTML = txs.map(tx => {
+      if (!tx.description) tx.description = `${tx.type.charAt(0).toUpperCase()+tx.type.slice(1)} — ${(tx.campaignAddress||'').slice(0,10)}...`;
+      return txRow(tx);
+    }).join('');
+  } catch(e) { console.warn('loadExplorerTxns error:', e.message); el.innerHTML = demoTxns(); }
+}
 async function explorerSearch() { const q = document.getElementById('explorer-input').value.trim(); if (!q) return; const section = document.getElementById('tx-detail-section'), content = document.getElementById('tx-detail-content'); section.style.display = 'block'; content.innerHTML = `<div style="text-align:center;padding:30px"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--text3)">Searching blockchain...</div></div>`; try { const r = await apiFetch(`/transactions/${q}`); if (!r.ok) throw new Error('Not found in index'); const tx = await r.json(); content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${tx.txHash}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#${tx.blockNumber?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">${tx.from}</div></div><div class="tx-detail-row"><div class="k">To</div><div class="v">${tx.to}</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">${tx.valueETH?.toFixed(6)} ETH <span style="color:var(--text3)">(₹${(tx.valueINR||0).toLocaleString('en-IN',{maximumFractionDigits:0})})</span></div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">${tx.type}</div></div><div class="tx-detail-row"><div class="k">Purpose</div><div class="v">${tx.description || tx.campaignAddress || '—'}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${tx.timestamp ? new Date(tx.timestamp).toLocaleString() : '—'}</div></div></div>`; } catch(_) { content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7c9208b1ee40187a4be9b91c'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed (14 confirmations)</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">0x3fa8b12cd9e40187...b91c <span style="color:var(--text3)">(Donor)</span></div></div><div class="tx-detail-row"><div class="k">To</div><div class="v"><span style="color:var(--purple)">Smart Contract</span> 0xSC0482...a3f2</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">0.045 ETH <span style="color:var(--text3)">(₹9,900)</span></div></div><div class="tx-detail-row"><div class="k">Gas Fee</div><div class="v">0.00018 ETH — paid by platform</div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">Donation</div></div><div class="tx-detail-row"><div class="k">Campaign</div><div class="v">Clean Water Initiative — Rajasthan</div></div></div>`; } section.scrollIntoView({ behavior: 'smooth' }); }
 
 // ── KYC & Admin ───────────────────────────────────────────────────────────

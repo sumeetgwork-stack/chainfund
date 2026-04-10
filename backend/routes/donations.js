@@ -34,7 +34,7 @@ router.post("/", auth, async (req, res) => {
       value: (amountETH * 1e18).toString(), // approximate wei
       type: "donation",
       campaignAddress: campaignAddress.toLowerCase(),
-      description: "Donation received",
+      description: campaign ? `Donation — ${campaign.title}` : "Donation received",
       timestamp: blockTimestamp ? new Date(blockTimestamp * 1000) : new Date()
     };
     

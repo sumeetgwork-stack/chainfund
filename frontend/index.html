@@ -1033,8 +1033,8 @@ async function loadCampaigns() {
     }).join('');
     const sel = document.getElementById('tracker-select');
     sel.innerHTML = '<option>— Select a Campaign —</option>' + campaigns.map(c => `<option value="${c.contractAddress}">${c.title.slice(0,40)}</option>`).join('');
+  } catch(_) { grid.innerHTML = demoCampaigns(); }
 }
-
 function updateCardUI(address, raisedETH, goalETH) {
   const card = document.querySelector(`.camp-card[data-addr="${address}"]`);
   if (!card) return;

@@ -24,8 +24,33 @@ router.post("/", auth, async (req, res) => {
       status:          "confirmed"
     });
 
-    // Total Raised and Donor Count are handled directly by the Blockchain Listener
-    // to prevent double-counting of donated amounts.
+    const { Transaction } = require("../models");
+    const txDoc = {
+      txHash,
+      blockNumber,
+      from: req.user.walletAddress.toLowerCase(),
+      to: campaignAddress.toLowerCase(),
+      valueETH: amountETH,
+      value: (amountETH * 1e18).toString(), // approximate wei
+      type: "donation",
+      campaignAddress: campaignAddress.toLowerCase(),
+      description: "Donation received",
+      timestamp: blockTimestamp ? new Date(blockTimestamp * 1000) : new Date()
+    };
+    
+    // Create transaction if listener hasn't already
+    const existingTx = await Transaction.findOne({ txHash });
+    if (!existingTx) {
+      await Transaction.create(txDoc);
+      await Campaign.findOneAndUpdate(
+        { contractAddress: campaignAddress.toLowerCase() },
+        { $inc: { totalRaised: amountETH, donorCount: 1 } }
+      );
+      req.io?.emit("new_transaction", txDoc);
+      req.io?.emit("stats_update");
+    }
+
+    // Total Raised and Donor Count are handled directly by the Blockchain Listener or above fallback
 
     req.io?.to(`campaign:${campaignAddress}`).emit("new_donation", donation);
     res.status(201).json(donation);

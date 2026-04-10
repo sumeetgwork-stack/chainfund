@@ -33,7 +33,7 @@ async function syncHistoricalEvents(io) {
 
     console.log(`📡 Syncing historical events from block ${fromBlock} to ${currentBlock}...`);
 
-    const CHUNK_SIZE = 9; // Limit to 10 blocks total range per request as per RPC provider
+    const CHUNK_SIZE = 4999; // Larger chunk size to drastically speed up sync and avoid rate limits over small bursts
     const factory = getFactoryContract();
     const campaigns = await Campaign.find({});
 

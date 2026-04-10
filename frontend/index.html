@@ -1033,8 +1033,26 @@ async function loadCampaigns() {
     }).join('');
     const sel = document.getElementById('tracker-select');
     sel.innerHTML = '<option>— Select a Campaign —</option>' + campaigns.map(c => `<option value="${c.contractAddress}">${c.title.slice(0,40)}</option>`).join('');
-  } catch(_) { grid.innerHTML = demoCampaigns(); }
 }
+
+function updateCardUI(address, raisedETH, goalETH) {
+  const card = document.querySelector(`.camp-card[data-addr="${address}"]`);
+  if (!card) return;
+  const pctFill = goalETH > 0 ? Math.min(100, (raisedETH / goalETH) * 100).toFixed(3) : 0;
+  const visualPct = Object.is(raisedETH, 0) ? 0 : Math.max(3, pctFill);
+  const raisedINR = Math.round(raisedETH * ETH_INR).toLocaleString('en-IN', {maximumFractionDigits:0});
+  
+  const liquid = card.querySelector('.pot-liquid');
+  if (liquid) liquid.style.height = visualPct + '%';
+  
+  const raisedText = card.querySelector('.camp-raised');
+  if (raisedText) raisedText.textContent = `₹${raisedINR}`;
+  
+  // The first span in the flex container next to explorer link holds the percent text
+  const pctText = card.querySelector('.camp-meta > div:nth-child(2) > span:first-child');
+  if (pctText) pctText.textContent = `${pctFill}% full`;
+}
+
 function demoCampaigns() {
   // Load demo campaigns from localStorage
   initializeDemoCampaignStorage(); // Ensure storage is initialized
@@ -1241,6 +1259,7 @@ async function openCampaignDetail(address, forceRefresh = false) {
       </div>
     `;
     window._currentRaised = totalRaised; window._currentGoal = goal;
+    updateCardUI(address, totalRaised, goal);
   } catch(_) { openDemoCampaignDetail(); }
   if (!isDonating) {
     if (_modalRefreshTimer) clearInterval(_modalRefreshTimer);
@@ -1287,6 +1306,7 @@ async function refreshCampaignModal(silent = false) {
     if (potPctEl) potPctEl.textContent = pct + '% full';
     if (updatedSpan) updatedSpan.textContent = 'updated ' + new Date().toLocaleTimeString();
     window._currentRaised = totalRaised; window._currentGoal = goal;
+    updateCardUI(window._currentModalAddress, totalRaised, goal);
     if (!silent) toast('Campaign data refreshed', 'success');
   } catch(err) { if (!silent) toast('Refresh failed: ' + err.message, 'error'); openCampaignDetail(window._currentModalAddress, true); }
 }
@@ -1452,6 +1472,8 @@ async function donateToCampaign(contractAddress) {
       // Update global state
       window._currentRaised = optimisticRaised;
       window._currentGoal = window._currentGoal || 1;
+      
+      updateCardUI(contractAddress, optimisticRaised, window._currentGoal);
       
       toast(`🎉 Your donation of ${amount} ETH has been added!`, 'success');
       console.log('Optimistic update:', {optimisticRaised, optimisticPct});

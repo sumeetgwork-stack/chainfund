@@ -34,10 +34,12 @@ router.post("/", auth, async (req, res) => {
     const requestingUser = await User.findById(req.user.id);
     if (!requestingUser)
       return res.status(401).json({ error: "User not found" });
+    
+    // Organisers must be approved to submit even a proposal
     if (!requestingUser.approvedToCreate && requestingUser.role !== "admin")
       return res.status(403).json({
         error: "not_approved",
-        message: "You need admin approval before creating campaigns. Please complete the KYC application.",
+        message: "You need admin approval before starting campaigns. Please complete the KYC application.",
         kycStatus: requestingUser.kycApplication?.status || "not_submitted"
       });
     // ──────────────────────────────────────────────────────────────────────
@@ -45,17 +47,16 @@ router.post("/", auth, async (req, res) => {
     const {
       contractAddress, title, description, category,
       goalAmount, deadline, milestones, trustees,
-      requiredApprovals, txHash, blockNumber, imageUrl
+      requiredApprovals, txHash, blockNumber, imageUrl,
+      isProposal // New flag from frontend
     } = req.body;
 
-    if (!contractAddress || !title)
-      return res.status(400).json({ error: "contractAddress and title required" });
+    if (!title || !description || !goalAmount)
+      return res.status(400).json({ error: "Title, description and goal are required" });
 
-    // Compute INR estimate (rough: 1 ETH ≈ ₹2,20,000)
     const ethToINR = parseFloat(process.env.ETH_INR_RATE || "220000");
 
-    const campaign = await Campaign.create({
-      contractAddress: contractAddress.toLowerCase(),
+    const campaignData = {
       organiser:       req.user.id,
       organiserWallet: req.user.walletAddress,
       title, description, category, imageUrl,
@@ -64,13 +65,91 @@ router.post("/", auth, async (req, res) => {
       milestones: milestones || [],
       trustees: trustees || [],
       requiredApprovals: requiredApprovals || 1,
-      txHash, blockNumber
-    });
+      status: isProposal ? "proposal" : "active",
+      active: !isProposal // inactive if it's just a proposal
+    };
+
+    if (contractAddress) {
+      campaignData.contractAddress = contractAddress.toLowerCase();
+      campaignData.txHash = txHash;
+      campaignData.blockNumber = blockNumber;
+      campaignData.status = "active";
+      campaignData.active = true;
+    }
+
+    const campaign = await Campaign.create(campaignData);
 
     // Emit to websocket
     req.io?.emit("campaign_created", campaign);
 
     res.status(201).json(campaign);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Trustee Validation Routes ─────────────────────────────────────────────
+
+function requireTrustee(req, res, next) {
+  if (req.user.role !== "trustee" && req.user.role !== "admin")
+    return res.status(403).json({ error: "Trustee access required" });
+  next();
+}
+
+// List pending proposals
+router.get("/proposals/pending", auth, requireTrustee, async (req, res) => {
+  try {
+    const proposals = await Campaign.find({ status: "proposal" }).populate("organiser", "name email");
+    res.json(proposals);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Validate a proposal
+router.post("/proposals/:id/validate", auth, requireTrustee, async (req, res) => {
+  try {
+    const { status, remarks } = req.body; // 'approved' or 'rejected'
+    if (!["approved", "rejected"].includes(status))
+      return res.status(400).json({ error: "Invalid status" });
+
+    const campaign = await Campaign.findById(req.params.id);
+    if (!campaign) return res.status(404).json({ error: "Proposal not found" });
+
+    campaign.status = status;
+    if (remarks) campaign.description += `\n\n[Trustee Remarks: ${remarks}]`;
+    await campaign.save();
+
+    req.io?.emit("proposal_decision", { id: campaign._id, status });
+    res.json({ success: true, campaign });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Final Deployment (Organiser triggers after approval) ──────────────────
+router.put("/:id/deploy", auth, async (req, res) => {
+  try {
+    const { contractAddress, txHash, blockNumber } = req.body;
+    if (!contractAddress) return res.status(400).json({ error: "contractAddress required" });
+
+    const campaign = await Campaign.findById(req.params.id);
+    if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+
+    if (campaign.organiser.toString() !== req.user.id && req.user.role !== "admin")
+      return res.status(403).json({ error: "Not authorized" });
+
+    if (campaign.status !== "approved" && req.user.role !== "admin")
+      return res.status(400).json({ error: "Campaign must be approved by a trustee before deployment" });
+
+    campaign.contractAddress = contractAddress.toLowerCase();
+    campaign.txHash = txHash;
+    campaign.blockNumber = blockNumber;
+    campaign.status = "active";
+    campaign.active = true;
+    await campaign.save();
+
+    res.json({ success: true, campaign });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

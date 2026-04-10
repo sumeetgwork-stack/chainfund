@@ -139,6 +139,19 @@ router.post("/revoke/:userId", auth, requireAdmin, async (req, res) => {
   }
 });
 
+// ── ADMIN: Promote to Trustee ────────────────────────────────────────────────
+router.post("/make-trustee/:userId", auth, requireAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    user.role = "trustee";
+    await user.save();
+    res.json({ success: true, message: `${user.name} is now a Trustee` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── ADMIN: Stats ───────────────────────────────────────────────────────────
 router.get("/admin/stats", auth, requireAdmin, async (req, res) => {
   try {

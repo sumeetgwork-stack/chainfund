@@ -45,7 +45,8 @@ const milestoneSchema = new Schema({
 });
 
 const campaignSchema = new Schema({
-  contractAddress: { type: String, required: true, unique: true, lowercase: true },
+  contractAddress: { type: String, unique: true, lowercase: true }, // Not required initially for proposals
+  status:          { type: String, enum: ["proposal", "approved", "active", "rejected"], default: "proposal" },
   organiser:       { type: Schema.Types.ObjectId, ref: "User" },
   organiserWallet: { type: String, lowercase: true },
   title:           { type: String, required: true },
@@ -58,7 +59,7 @@ const campaignSchema = new Schema({
   totalRaised:     { type: Number, default: 0 },
   totalDisbursed:  { type: Number, default: 0 },
   donorCount:      { type: Number, default: 0 },
-  active:          { type: Boolean, default: true },
+  active:          { type: Boolean, default: false }, // Default to false until active status is set
   goalReached:     { type: Boolean, default: false },
   milestones:      [milestoneSchema],
   trustees:        [String],          // wallet addresses

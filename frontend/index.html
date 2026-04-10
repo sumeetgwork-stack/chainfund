@@ -1003,11 +1003,12 @@ async function loadCampaigns() {
     console.log(`📋 Rendering ${campaigns.length} campaigns:`, campaigns.map(c => ({title: c.title, addr: c.contractAddress})));
     grid.innerHTML = campaigns.map((c, cardIdx) => {
       const pctFill = Math.min(100, (c.totalRaised||0)/(c.goalAmount||1)*100).toFixed(3);
+      const visualPct = Object.is(c.totalRaised||0, 0) ? 0 : Math.max(3, pctFill);
       return `
       <div class="camp-card" onclick="openCampaignDetail('${c.contractAddress}')" data-addr="${c.contractAddress}">
         <div class="pot-container">
           <div class="pot-body">
-            <div class="pot-liquid" style="height:${pctFill}%"></div>
+            <div class="pot-liquid" style="height:${visualPct}%"></div>
           </div>
           <div class="pot-handle"></div>
           <div class="pot-rim">${catEmoji[c.category] || '📌'}</div>
@@ -1457,8 +1458,10 @@ async function donateToCampaign(contractAddress) {
     } catch(err) {
       console.error('Optimistic update failed:', err);
     }
-    apiFetch('/donations', { method: 'POST', body: JSON.stringify({ campaignAddress: contractAddress, amountETH: parseFloat(amount), txHash: receipt.hash, blockNumber: receipt.blockNumber }) }).catch(() => {});
-    setTimeout(() => { loadCampaigns(); loadStats(); updateRightPanelWallet(); updateRightPanelFeed(); }, 300);
+    try {
+      await apiFetch('/donations', { method: 'POST', body: JSON.stringify({ campaignAddress: contractAddress, amountETH: parseFloat(amount), txHash: receipt.hash, blockNumber: receipt.blockNumber }) });
+    } catch (_) {}
+    loadCampaigns(); loadStats(); updateRightPanelWallet(); updateRightPanelFeed();
     // Refresh modal with confirmed data after blockchain catches up
     setTimeout(() => { 
       if (document.getElementById('campaign-modal').style.display !== 'none' && window._currentModalAddress === contractAddress) { 

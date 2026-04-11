@@ -866,12 +866,18 @@ async function apiFetch(path, opts = {}) {
   return res;
 }
 
+let _lastToast = null, _lastToastTime = 0;
 function toast(msg, type = 'info') {
+  const now = Date.now();
+  // Deduplicate: Don't show the same message twice in a 3s window
+  if (msg === _lastToast && now - _lastToastTime < 3000) return;
+  _lastToast = msg; _lastToastTime = now;
+
   const el = document.createElement('div'); el.className = `toast ${type}`;
   const icons = { success: '✅', error: '❌', info: '⛓️' };
   el.innerHTML = `<span>${icons[type] || '•'}</span><span>${msg}</span>`;
   document.getElementById('toasts').appendChild(el);
-  setTimeout(() => el.remove(), 4000);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
 }
 
 // ── Wallet ────────────────────────────────────────────────────────────────
@@ -959,7 +965,11 @@ function logout() {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────
+let _statsFetchDebounce = 0;
 async function loadStats() {
+  const now = Date.now();
+  if (now - _statsFetchDebounce < 2000) return; // limit to once per 2s
+  _statsFetchDebounce = now;
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   try {
     const [statsRes, txRes] = await Promise.all([

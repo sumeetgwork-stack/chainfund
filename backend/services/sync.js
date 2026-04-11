@@ -38,7 +38,7 @@ async function syncHistoricalEvents(io) {
     const campaigns = await Campaign.find({});
 
     for (let currentFrom = fromBlock; currentFrom <= currentBlock; currentFrom += CHUNK_SIZE + 1) {
-      const currentTo = Math.min(currentFrom + CHUNK_SIZE, currentBlock);
+      const currentTo = Math.min(currentFrom + CHUNK_SIZE - 1, currentBlock);
       console.log(`🔎 Scanning chunk: ${currentFrom} to ${currentTo}...`);
 
       // 2. Sync Factory Events (New Campaigns)

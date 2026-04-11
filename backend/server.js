@@ -71,6 +71,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => console.log("Client disconnected:", socket.id));
 });
 
+const { Campaign } = require("./models");
+
 // ── Database & Start ───────────────────────────────────────────────────────
 const PORT    = process.env.PORT || 5000;
 const MONGO   = process.env.MONGODB_URI || "mongodb://localhost:27017/chainfund";
@@ -83,8 +85,26 @@ server.listen(PORT, () => {
 
 // 2. Connect to MongoDB in the background
 mongoose.connect(MONGO)
-  .then(() => {
+  .then(async () => {
     console.log("✅ MongoDB connected");
+
+    // ── Database Cleanup (Remove M.A.D and corrupted entries) ────────────────
+    try {
+      const deletedCorrupted = await Campaign.deleteMany({ 
+        $or: [
+          { title: /M\.A\.D/i },
+          { contractAddress: { $exists: false } },
+          { contractAddress: null },
+          { contractAddress: "" }
+        ] 
+      });
+      if (deletedCorrupted.deletedCount > 0) {
+        console.log(`🧹 Cleanup: Removed ${deletedCorrupted.deletedCount} corrupted/M.A.D campaigns`);
+      }
+    } catch (e) {
+      console.warn("⚠️ Cleanup failed:", e.message);
+    }
+
     // 3. Start blockchain event listener only after DB is ready
     startListener(io).catch(err => {
       console.error("⚠️  Blockchain listener failed to start:", err.message);

@@ -11,6 +11,11 @@ router.get("/", async (req, res) => {
     const filter = {};
     if (category) filter.category = category;
     if (active !== undefined) filter.active = active === "true";
+    if (req.query.status) {
+      filter.status = req.query.status;
+    } else {
+      filter.status = { $nin: ["proposal", "rejected"] };
+    }
 
     const campaigns = await Campaign
       .find(filter)
@@ -265,10 +270,12 @@ router.get("/:address/transactions", async (req, res) => {
 // ── Stats (platform-wide) ─────────────────────────────────────────────────
 router.get("/stats/platform", async (req, res) => {
   try {
+    const validFilter = { status: { $nin: ["proposal", "rejected"] } };
     const [totalCampaigns, activeCampaigns, stats, categoryBreakdown] = await Promise.all([
-      Campaign.countDocuments(),
-      Campaign.countDocuments({ active: true }),
+      Campaign.countDocuments(validFilter),
+      Campaign.countDocuments({ ...validFilter, active: true }),
       Campaign.aggregate([
+        { $match: validFilter },
         { $group: {
           _id: null,
           totalRaised:    { $sum: "$totalRaised" },
@@ -277,6 +284,7 @@ router.get("/stats/platform", async (req, res) => {
         }}
       ]),
       Campaign.aggregate([
+        { $match: validFilter },
         { $group: { _id: "$category", totalRaised: { $sum: "$totalRaised" }, count: { $sum: 1 } } }
       ])
     ]);

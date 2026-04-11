@@ -45,7 +45,7 @@ const milestoneSchema = new Schema({
 });
 
 const campaignSchema = new Schema({
-  contractAddress: { type: String, unique: true, lowercase: true }, // Not required initially for proposals
+  contractAddress: { type: String, unique: true, sparse: true, lowercase: true }, // Not required initially for proposals
   status:          { type: String, enum: ["proposal", "approved", "active", "rejected"], default: "proposal" },
   organiser:       { type: Schema.Types.ObjectId, ref: "User" },
   organiserWallet: { type: String, lowercase: true },

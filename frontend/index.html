@@ -1971,6 +1971,9 @@ async function validateProposal(id, status) {
     if (r.ok) {
       toast(`Project ${status}!`, 'success');
       loadTrusteeValidations();
+    } else {
+      const d = await r.json();
+      toast(d.error || 'Failed to validate proposal', 'error');
     }
   } catch (err) { toast(err.message, 'error'); }
 }

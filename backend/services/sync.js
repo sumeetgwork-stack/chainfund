@@ -20,8 +20,8 @@ async function syncHistoricalEvents(io) {
     // 1. Get the last synced block from DB
     let config = await SystemConfig.findOne({ key: configKey });
     if (!config) {
-      // Deep sync for fresh deployments: Scan the most recent 50k blocks (~1 week)
-      const startBlock = Math.max(0, currentBlock - 50000);
+      // Deep sync for fresh deployments: Scan the most recent 100k blocks (~2 weeks)
+      const startBlock = Math.max(0, currentBlock - 100000);
       config = await SystemConfig.create({ key: configKey, value: startBlock });
     }
 

@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => console.log("Client disconnected:", socket.id));
 });
 
-const { Campaign } = require("./models");
+const { Campaign, SystemConfig } = require("./models");
 
 // ── Database & Start ───────────────────────────────────────────────────────
 const PORT    = process.env.PORT || 5000;
@@ -87,6 +87,14 @@ server.listen(PORT, () => {
 mongoose.connect(MONGO)
   .then(async () => {
     console.log("✅ MongoDB connected");
+
+    // ── One-Time Sync Reset (Forces deep sync of 100k blocks) ────────────────
+    try {
+      await SystemConfig.deleteOne({ key: "last_synced_block" });
+      console.log("🔄 Sync Reset: Forcing a fresh deep-sync of blockchain history...");
+    } catch (e) {
+      console.warn("⚠️ Sync reset failed:", e.message);
+    }
 
     // ── Database Cleanup (Remove M.A.D and corrupted entries) ────────────────
     try {

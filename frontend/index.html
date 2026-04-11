@@ -1327,6 +1327,10 @@ async function openCampaignDetail(identifier, forceRefresh = false) {
       </div>
     `;
     window._currentRaised = totalRaised; window._currentGoal = goal;
+  } catch (err) {
+    document.getElementById('campaign-modal-content').innerHTML = '<div style="color:var(--red);text-align:center;padding:40px">Error loading campaign details.</div>';
+    console.error("openCampaignDetail error:", err);
+  }
 }
 async function refreshCampaignModal(silent = false) {
   if (!window._currentModalAddress) return;

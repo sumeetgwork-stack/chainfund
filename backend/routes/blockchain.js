@@ -1,8 +1,30 @@
 const router    = require("express").Router();
 const { ethers } = require("ethers");
 const { getProvider, getFactoryContract, getCampaignContract } = require("../services/blockchain");
-const { Transaction, Campaign, Donation } = require("../models");
+const { Transaction, Campaign, Donation, SystemConfig } = require("../models");
 const { syncHistoricalEvents, reconcileCampaignTotals } = require("../services/sync");
+
+/**
+ * Get the current sync status of the indexer
+ */
+router.get("/sync-status", async (req, res) => {
+  try {
+    const provider = getProvider();
+    const currentBlock = await provider.getBlockNumber();
+    const config = await SystemConfig.findOne({ key: "last_synced_block" });
+    const lastSyncedBlock = config ? config.value : 0;
+    
+    res.json({
+      currentBlock,
+      lastSyncedBlock,
+      isSyncing: lastSyncedBlock < currentBlock,
+      progress: currentBlock > 0 ? Math.min(100, (lastSyncedBlock / currentBlock * 100).toFixed(2)) : 0,
+      gap: currentBlock - lastSyncedBlock
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Live contract data
 // getCampaignInfo() returns tuple:

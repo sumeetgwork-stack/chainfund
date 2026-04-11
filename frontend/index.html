@@ -363,6 +363,10 @@ body.light-theme .badge-review { background:rgba(180,83,9,.1); color:#b45309; }
     <input type="text" placeholder="Search campaigns, transactions..." id="global-search" onkeydown="if(event.key==='Enter'){showPage('explorer');document.getElementById('explorer-input').value=this.value;explorerSearch()}"/>
   </div>
   <div class="topbar-right">
+    <div id="sync-pill" style="display:none;align-items:center;gap:6px;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);border-radius:999px;padding:5px 12px;font-size:11px;color:var(--green);font-weight:600;margin-right:8px" title="Indexer catching up with blockchain">
+      <span class="spinner" style="width:10px;height:10px;border-width:1.5px"></span>
+      <span id="sync-text">Syncing...</span>
+    </div>
     <div class="notif-btn" id="notif-btn" onclick="showPage('dashboard')">🔔<span class="notif-dot" id="notif-dot" style="display:none"></span></div>
     <div class="notif-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme" style="font-size:16px">🌙</div>
     <div id="topbar-user-area" style="display:flex;align-items:center;gap:8px">
@@ -441,7 +445,6 @@ body.light-theme .badge-review { background:rgba(180,83,9,.1); color:#b45309; }
             <p style="font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;max-width:480px;margin-bottom:28px">India's first blockchain fundraising SaaS. Donors verify, in real time, exactly where every rupee went. Smart contracts. Zero middlemen.</p>
             <div style="display:flex;gap:12px;flex-wrap:wrap">
               <button class="btn btn-primary" onclick="showPage('campaigns')" style="padding:12px 24px;font-size:14px">Browse Campaigns →</button>
-              <button class="btn btn-ghost" onclick="showPage('create')" style="padding:12px 24px;font-size:14px">Deploy a Campaign</button>
             </div>
           </div>
         </div>
@@ -965,41 +968,60 @@ function logout() {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────
-let _statsFetchDebounce = 0;
+async function loadSyncStatus() {
+  try {
+    const r = await fetch(`${API}/blockchain/sync-status`);
+    if (!r.ok) return;
+    const d = await r.json();
+    const pill = document.getElementById('sync-pill');
+    if (!pill) return;
+    if (d.isSyncing) {
+      pill.style.display = 'flex';
+      document.getElementById('sync-text').textContent = `Syncing ${d.progress}%`;
+    } else {
+      pill.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
 async function loadStats() {
   const now = Date.now();
-  if (now - _statsFetchDebounce < 2000) return; // limit to once per 2s
+  if (now - _statsFetchDebounce < 2000) return;
   _statsFetchDebounce = now;
+  loadSyncStatus(); // check sync progress too
+  
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  
+  // 1. Load Platform Stats
   try {
-    const [statsRes, txRes] = await Promise.all([
-      apiFetch('/campaigns/stats/platform'),
-      apiFetch('/transactions?limit=1')
-    ]);
-    if (!statsRes.ok) return;
-    const d = await statsRes.json();
-    const txTotal = txRes.ok ? (await txRes.json()).total || 0 : 0;
-    const toINR = (eth) => `₹${(eth * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-    // Home page stats
-    setEl('stat-raised',    toINR(d.totalRaised || 0));
-    setEl('stat-campaigns', (d.totalCampaigns || 0).toLocaleString());
-    setEl('stat-donors',    (d.totalDonors || 0).toLocaleString());
-    setEl('stat-util',      `${d.utilizationRate || 0}%`);
-    // Dashboard stats
-    setEl('db-raised',       toINR(d.totalRaised || 0));
-    setEl('db-raised-sub',   `across ${d.totalCampaigns || 0} campaigns`);
-    setEl('db-active',       d.activeCampaigns || 0);
-    setEl('db-active-sub',   `of ${d.totalCampaigns || 0} total`);
-    setEl('db-disbursed',    toINR(d.totalDisbursed || 0));
-    setEl('db-disbursed-sub',`${d.utilizationRate || 0}% utilisation`);
-    setEl('db-txns',         txTotal.toLocaleString());
-    setEl('db-txns-sub',     'on Sepolia testnet');
-    // Right panel
-    updateRightPanelStats();
-    updateActiveBadge(d.activeCampaigns);
-  } catch(err) {
-    console.warn('loadStats error:', err.message);
-  }
+    const res = await apiFetch('/campaigns/stats/platform');
+    if (res.ok) {
+      const d = await res.json();
+      const toINR = (eth) => `₹${(eth * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+      
+      setEl('stat-raised',    toINR(d.totalRaised || 0));
+      setEl('stat-campaigns', (d.totalCampaigns || 0).toLocaleString());
+      setEl('stat-donors',    (d.totalDonors || 0).toLocaleString());
+      setEl('stat-util',      `${d.utilizationRate || 0}%`);
+      
+      setEl('db-raised',       toINR(d.totalRaised || 0));
+      setEl('db-active',       d.activeCampaigns || 0);
+      setEl('db-disbursed',    toINR(d.totalDisbursed || 0));
+      
+      updateActiveBadge(d.activeCampaigns);
+    }
+  } catch(e) { console.warn('Platform stats error:', e.message); }
+
+  // 2. Load Transaction Count (Independent)
+  try {
+    const res = await apiFetch('/transactions?limit=1');
+    if (res.ok) {
+      const d = await res.json();
+      setEl('db-txns', (d.total || 0).toLocaleString());
+    }
+  } catch(e) {}
+
+  updateRightPanelStats();
 }
 
 // ── Campaigns ─────────────────────────────────────────────────────────────

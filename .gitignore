@@ -4,7 +4,7 @@ backend/node_modules/
 cache/
 artifacts/
 backend/artifacts/
-backend/abis/
+# backend/abis/ (Check in ABIs for production)
 backend/deployedAddresses.json
 *.log
 .DS_Store

@@ -25,13 +25,27 @@ function getFactoryContract() {
   const addrFile = path.join(__dirname, "../deployedAddresses.json");
   const abiFile  = path.join(__dirname, "../abis/Factory.json");
 
-  if (!fs.existsSync(addrFile)) throw new Error("deployedAddresses.json not found — run deploy first");
-  if (!fs.existsSync(abiFile))  throw new Error("Factory ABI not found — run deploy first");
+  // Prioritize environment variable, fallback to local file
+  let factoryAddress = process.env.FACTORY_ADDRESS;
+  
+  if (!factoryAddress) {
+    if (fs.existsSync(addrFile)) {
+      const data = JSON.parse(fs.readFileSync(addrFile));
+      factoryAddress = data.factory;
+    }
+  }
 
-  const { factory } = JSON.parse(fs.readFileSync(addrFile));
-  const abi          = JSON.parse(fs.readFileSync(abiFile));
+  if (!factoryAddress) {
+    throw new Error("Factory address not found — set FACTORY_ADDRESS environment variable or run deploy first");
+  }
 
-  if (!_factory) _factory = new ethers.Contract(factory, abi, provider);
+  if (!fs.existsSync(abiFile)) {
+    throw new Error("Factory ABI not found in backend/abis/Factory.json — run compile first");
+  }
+
+  const abi = JSON.parse(fs.readFileSync(abiFile));
+
+  if (!_factory) _factory = new ethers.Contract(factoryAddress, abi, provider);
   return _factory;
 }
 

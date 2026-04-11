@@ -26,8 +26,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Rate limiting
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
+// Rate limiting (relaxed to 500/15min to accommodate dashboard polling)
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 500 });
 app.use("/api/", limiter);
 
 // Attach io to req for use in routes

@@ -20,8 +20,8 @@ async function syncHistoricalEvents(io) {
     // 1. Get the last synced block from DB
     let config = await SystemConfig.findOne({ key: configKey });
     if (!config) {
-      // Optimized for startup: Scan the most recent 1000 blocks only on first initialization
-      const startBlock = Math.max(0, currentBlock - 1000);
+      // Deep sync for fresh deployments: Scan the most recent 50k blocks (~1 week)
+      const startBlock = Math.max(0, currentBlock - 50000);
       config = await SystemConfig.create({ key: configKey, value: startBlock });
     }
 
@@ -37,9 +37,12 @@ async function syncHistoricalEvents(io) {
     const factory = getFactoryContract();
     const campaigns = await Campaign.find({});
 
-    for (let currentFrom = fromBlock; currentFrom <= currentBlock; currentFrom += CHUNK_SIZE + 1) {
+    for (let currentFrom = fromBlock; currentFrom <= currentBlock; currentFrom += CHUNK_SIZE) {
       const currentTo = Math.min(currentFrom + CHUNK_SIZE - 1, currentBlock);
       console.log(`🔎 Scanning chunk: ${currentFrom} to ${currentTo}...`);
+      
+      // Throttle to respect Alchemy/Infura Free Tier rate limits (RPS)
+      await new Promise(r => setTimeout(r, 80));
 
       // 2. Sync Factory Events (New Campaigns)
       const campaignCreatedFilter = factory.filters.CampaignCreated();

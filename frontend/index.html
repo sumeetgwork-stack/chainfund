@@ -968,6 +968,7 @@ function logout() {
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────
+let _statsFetchDebounce = 0;
 async function loadSyncStatus() {
   try {
     const r = await fetch(`${API}/blockchain/sync-status`);

@@ -129,9 +129,11 @@ router.post("/proposals/:id/validate", auth, requireTrustee, async (req, res) =>
       return res.json({ success: true, message: "Proposal rejected", campaign });
     }
 
-    // Accumulate approvals
-    const wallet = req.user.walletAddress?.toLowerCase();
-    if (!wallet) return res.status(400).json({ error: "Your account must have a wallet address to validate proposals" });
+    // Fetch fresh user data to get the current linked wallet address
+    const { User } = require("../models");
+    const trusteeUser = await User.findById(req.user.id);
+    const wallet = trusteeUser?.walletAddress?.toLowerCase();
+    if (!wallet) return res.status(400).json({ error: "Your account must have a connected wallet address to validate proposals (Connect via MetaMask in the top right)." });
 
     if (!campaign.approvingTrustees) campaign.approvingTrustees = [];
     

@@ -75,21 +75,24 @@ io.on("connection", (socket) => {
 const PORT    = process.env.PORT || 5000;
 const MONGO   = process.env.MONGODB_URI || "mongodb://localhost:27017/chainfund";
 
+// 1. Immediately start the server to satisfy Render health checks
+server.listen(PORT, () => {
+  console.log(`🚀 ChainFund backend listening on port ${PORT}`);
+  console.log("⏳ Connecting to database in background...");
+});
+
+// 2. Connect to MongoDB in the background
 mongoose.connect(MONGO)
   .then(() => {
     console.log("✅ MongoDB connected");
-    server.listen(PORT, () => {
-      console.log(`🚀 ChainFund backend running on http://localhost:${PORT}`);
+    // 3. Start blockchain event listener only after DB is ready
+    startListener(io).catch(err => {
+      console.error("⚠️  Blockchain listener failed to start:", err.message);
     });
-    // Start blockchain event listener
-    startListener(io).catch(console.error);
   })
   .catch(err => {
     console.error("❌ MongoDB connection failed:", err.message);
-    console.log("Starting without DB (demo mode)...");
-    server.listen(PORT, () => {
-      console.log(`🚀 ChainFund backend running on http://localhost:${PORT} [No DB]`);
-    });
+    console.log("⚠️  Platform running in limited 'No-DB' mode.");
   });
 
 module.exports = { app, io };

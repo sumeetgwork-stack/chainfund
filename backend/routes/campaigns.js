@@ -224,7 +224,10 @@ router.get("/:identifier", async (req, res) => {
       campaign.set('goalReached',    info._goalReached || info[8], { strict: false });
       
       console.log(`📡 [Campaign Route] Live check for ${req.params.address}: Raised=${totalRaised}`);
-    } catch (e) { console.warn(`Blockchain fetch failed for ${req.params.address}:`, e.message); }
+      } catch (e) {
+        console.warn(`Blockchain fetch failed for ${req.params.address}:`, e.message);
+      }
+    }
 
     res.json(campaign);
   } catch (err) {

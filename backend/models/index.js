@@ -62,7 +62,8 @@ const campaignSchema = new Schema({
   active:          { type: Boolean, default: false }, // Default to false until active status is set
   goalReached:     { type: Boolean, default: false },
   milestones:      [milestoneSchema],
-  trustees:        [String],          // wallet addresses
+  trustees:        [String],          // original trustees (obsolete post-update but preserving)
+  approvingTrustees: [String],        // wallet addresses of trustees who approved
   requiredApprovals: Number,
   txHash:          String,            // creation tx hash
   blockNumber:     Number,

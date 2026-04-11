@@ -106,7 +106,7 @@ router.get("/proposals/pending", auth, requireTrustee, async (req, res) => {
   }
 });
 
-// Validate a proposal
+// Validate a proposal (Trustee approval/rejection)
 router.post("/proposals/:id/validate", auth, requireTrustee, async (req, res) => {
   try {
     const { status, remarks } = req.body; // 'approved' or 'rejected'
@@ -116,12 +116,46 @@ router.post("/proposals/:id/validate", auth, requireTrustee, async (req, res) =>
     const campaign = await Campaign.findById(req.params.id);
     if (!campaign) return res.status(404).json({ error: "Proposal not found" });
 
-    campaign.status = status;
-    if (remarks) campaign.description += `\n\n[Trustee Remarks: ${remarks}]`;
-    await campaign.save();
+    if (status === "rejected") {
+      campaign.status = "rejected";
+      if (remarks) campaign.description += `\n\n[Rejection Remarks: ${remarks}]`;
+      await campaign.save();
+      req.io?.emit("proposal_decision", { id: campaign._id, status: "rejected" });
+      return res.json({ success: true, message: "Proposal rejected", campaign });
+    }
 
-    req.io?.emit("proposal_decision", { id: campaign._id, status });
-    res.json({ success: true, campaign });
+    // Accumulate approvals
+    const wallet = req.user.walletAddress?.toLowerCase();
+    if (!wallet) return res.status(400).json({ error: "Your account must have a wallet address to validate proposals" });
+
+    if (!campaign.approvingTrustees) campaign.approvingTrustees = [];
+    
+    if (campaign.approvingTrustees.includes(wallet)) {
+      return res.status(400).json({ error: "You have already approved this proposal" });
+    }
+
+    campaign.approvingTrustees.push(wallet);
+    
+    // Check if enough approvals reached
+    const required = campaign.requiredApprovals || 1;
+    let message = `Approval recorded (${campaign.approvingTrustees.length}/${required})`;
+    
+    if (campaign.approvingTrustees.length >= required) {
+      campaign.status = "approved";
+      message = "Proposal fully approved and ready for deployment!";
+    }
+
+    if (remarks) campaign.description += `\n\n[Trustee Approval: ${remarks}]`;
+    
+    await campaign.save();
+    req.io?.emit("proposal_decision", { 
+      id: campaign._id, 
+      status: campaign.status, 
+      approvals: campaign.approvingTrustees.length,
+      required 
+    });
+    
+    res.json({ success: true, message, campaign });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -156,17 +190,29 @@ router.put("/:id/deploy", auth, async (req, res) => {
 });
 
 // ── Get single campaign ────────────────────────────────────────────────────
-router.get("/:address", async (req, res) => {
+router.get("/:identifier", async (req, res) => {
   try {
-    const campaign = await Campaign
-      .findOne({ contractAddress: req.params.address.toLowerCase() })
-      .populate("organiser", "name email");
+    const id = req.params.identifier;
+    let campaign;
+    
+    // Check if it's a valid MongoDB ID first
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      campaign = await Campaign.findById(id).populate("organiser", "name email");
+    }
+    
+    // If not found by ID or not an ID, search by contract address
+    if (!campaign) {
+      campaign = await Campaign
+        .findOne({ contractAddress: id.toLowerCase() })
+        .populate("organiser", "name email");
+    }
 
     if (!campaign) return res.status(404).json({ error: "Campaign not found" });
 
-    // Fetch live on-chain data
-    try {
-      const contract = getCampaignContract(req.params.address);
+    // Fetch live on-chain data if address is available
+    if (campaign.contractAddress) {
+      try {
+        const contract = getCampaignContract(campaign.contractAddress);
       const info = await contract.getCampaignInfo();
       // Using named properties or indices for ethers v6 Result object compatibility
       const totalRaised    = parseFloat(ethers.formatEther(info._totalRaised    || info[4]));

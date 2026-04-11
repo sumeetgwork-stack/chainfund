@@ -134,19 +134,32 @@ async function startListener(io) {
           description = await campaignContract.description();
         } catch (_) {}
 
+        // Attempt to find existing campaign by address OR by (title + organiser) if it was a proposal
+        let campaign = await Campaign.findOne({ contractAddress: campaignAddress.toLowerCase() });
+        if (!campaign) {
+          campaign = await Campaign.findOne({
+            title: { $regex: new RegExp("^" + title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "$", "i") },
+            organiserWallet: organiser.toLowerCase(),
+            status: 'approved'
+          });
+          if (campaign) console.log(`🔗 Linking on-chain deployment to approved proposal: ${title}`);
+        }
+
         // Save to DB with description
         await Campaign.findOneAndUpdate(
-          { contractAddress: campaignAddress.toLowerCase() },
+          { _id: campaign ? campaign._id : new mongoose.Types.ObjectId() },
           {
             contractAddress: campaignAddress.toLowerCase(),
             organiserWallet: organiser.toLowerCase(),
             title, category,
-            description: description || 'No description provided.',
+            description: description || (campaign ? campaign.description : 'No description provided.'),
             goalAmount:    parseFloat(ethers.formatEther(goalAmount)),
             goalAmountINR: parseFloat(ethers.formatEther(goalAmount)) * ethToINR(),
             deadline:      new Date(Number(deadline) * 1000),
             blockNumber:   (event.log || event).blockNumber,
-            txHash:        (event.log || event).transactionHash
+            txHash:        (event.log || event).transactionHash,
+            active:        true,
+            status:        'active'
           },
           { upsert: true, new: true }
         );

@@ -49,8 +49,19 @@ async function syncHistoricalEvents(io) {
         const [addr, organiser, title, category, goal, deadline] = log.args;
         console.log(`✨ Found missed campaign: ${title}`);
         
+        // Attempt to find existing campaign by address OR by (title + organiser) if it was a proposal
+        let campaign = await Campaign.findOne({ contractAddress: addr.toLowerCase() });
+        if (!campaign) {
+          campaign = await Campaign.findOne({
+            title: { $regex: new RegExp("^" + title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "$", "i") },
+            organiserWallet: organiser.toLowerCase(),
+            status: 'approved'
+          });
+          if (campaign) console.log(`🔗 Linking historical deployment to approved proposal: ${title}`);
+        }
+
         await Campaign.findOneAndUpdate(
-          { contractAddress: addr.toLowerCase() },
+          { _id: campaign ? campaign._id : new mongoose.Types.ObjectId() },
           {
             contractAddress: addr.toLowerCase(),
             organiserWallet: organiser.toLowerCase(),
@@ -59,7 +70,9 @@ async function syncHistoricalEvents(io) {
             goalAmountINR: parseFloat(ethers.formatEther(goal)) * ethToINR(),
             deadline: new Date(Number(deadline) * 1000),
             blockNumber: log.blockNumber,
-            txHash: log.transactionHash
+            txHash: log.transactionHash,
+            active: true,
+            status: 'active'
           },
           { upsert: true }
         );

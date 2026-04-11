@@ -1490,8 +1490,21 @@ async function donateToCampaign(contractAddress) {
       console.error('Optimistic update failed:', err);
     }
     try {
-      await apiFetch('/donations', { method: 'POST', body: JSON.stringify({ campaignAddress: contractAddress, amountETH: parseFloat(amount), txHash: receipt.hash, blockNumber: receipt.blockNumber }) });
-    } catch (_) {}
+      const donationRes = await apiFetch('/donations', {
+        method: 'POST',
+        body: JSON.stringify({
+          campaignAddress: contractAddress,
+          amountETH: parseFloat(amount),
+          txHash: receipt.hash,
+          blockNumber: receipt.blockNumber,
+          donorWallet: walletAddress || null
+        })
+      });
+      if (!donationRes.ok) {
+        const err = await donationRes.json().catch(() => ({}));
+        console.warn('Donation POST failed:', donationRes.status, err);
+      }
+    } catch (e) { console.warn('Donation POST error:', e.message); }
     loadCampaigns(); loadStats(); updateRightPanelWallet(); updateRightPanelFeed();
     // Refresh modal with confirmed data after blockchain catches up
     setTimeout(() => { 

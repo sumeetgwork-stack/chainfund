@@ -33,7 +33,7 @@ async function syncHistoricalEvents(io) {
 
     console.log(`📡 Syncing historical events from block ${fromBlock} to ${currentBlock}...`);
 
-    const CHUNK_SIZE = 1000; // Increased significantly for performance
+    const CHUNK_SIZE = 10; // Reduced for Free Tier RPC (Alchemy limit is 10)
     const factory = getFactoryContract();
     const campaigns = await Campaign.find({});
 

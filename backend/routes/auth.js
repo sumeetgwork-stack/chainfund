@@ -69,6 +69,22 @@ router.put("/wallet", require("../middleware/auth"), async (req, res) => {
       { walletAddress: walletAddress.toLowerCase() },
       { new: true }
     ).select("-password");
+
+    // If the user was already approved as an organiser, ensure their new wallet is whitelisted on-chain
+    if (user.approvedToCreate && user.walletAddress) {
+      try {
+        const { getFactoryContract, getAdminSigner } = require("../services/blockchain");
+        const factory = getFactoryContract();
+        const signer  = getAdminSigner();
+        // Fire and forget (don't block the endpoint)
+        factory.connect(signer).setOrganiserAuthorization(user.walletAddress, true)
+          .then(tx => console.log(`🔗 Wallet sync whitelist: ${user.walletAddress} | TX: ${tx.hash}`))
+          .catch(e => console.error("❌ Auto wallet sync failed:", e.message));
+      } catch (err) {
+        console.error("❌ Could not connect to blockchain for wallet sync", err.message);
+      }
+    }
+
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });

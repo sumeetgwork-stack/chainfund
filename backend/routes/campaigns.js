@@ -1,5 +1,5 @@
 const router    = require("express").Router();
-const { Campaign, Donation, Transaction } = require("../models");
+const { Campaign, Donation, Transaction, User } = require("../models");
 const auth      = require("../middleware/auth");
 const { getProvider, getFactoryContract, getCampaignContract } = require("../services/blockchain");
 const { ethers } = require("ethers");
@@ -272,7 +272,7 @@ router.get("/:address/transactions", async (req, res) => {
 // ── Stats (platform-wide) ─────────────────────────────────────────────────
 router.get("/stats/platform", async (req, res) => {
   try {
-    const validFilter = { status: { $nin: ["proposal", "rejected"] } };
+    const validFilter = { status: { $ne: "rejected" } };
     const [totalCampaigns, activeCampaigns, stats, categoryBreakdown, uniqueDonors] = await Promise.all([
       Campaign.countDocuments(validFilter),
       Campaign.countDocuments({ ...validFilter, active: true }),
@@ -288,16 +288,20 @@ router.get("/stats/platform", async (req, res) => {
         { $match: validFilter },
         { $group: { _id: "$category", totalRaised: { $sum: "$totalRaised" }, count: { $sum: 1 } } }
       ]),
-      Transaction.distinct("from", { type: "donation" })
+      User.countDocuments({ role: "donor" })
     ]);
 
     const s = stats[0] || { totalRaised: 0, totalDisbursed: 0 };
+
+    // Log for diagnostics
+    console.log(`📊 [Stats] totalCampaigns: ${totalCampaigns}, activeCampaigns: ${activeCampaigns}, totalDonors: ${uniqueDonors}`);
+
     res.json({
       totalCampaigns,
       activeCampaigns,
       totalRaised:    s.totalRaised,
       totalDisbursed: s.totalDisbursed,
-      totalDonors:    uniqueDonors.length,
+      totalDonors:    uniqueDonors,
       utilizationRate: s.totalRaised > 0 ? (s.totalDisbursed / s.totalRaised * 100).toFixed(1) : 0,
       categoryBreakdown
     });

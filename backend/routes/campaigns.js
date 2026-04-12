@@ -273,7 +273,7 @@ router.get("/:address/transactions", async (req, res) => {
 router.get("/stats/platform", async (req, res) => {
   try {
     const validFilter = { status: { $nin: ["proposal", "rejected"] } };
-    const [totalCampaigns, activeCampaigns, stats, categoryBreakdown] = await Promise.all([
+    const [totalCampaigns, activeCampaigns, stats, categoryBreakdown, uniqueDonors] = await Promise.all([
       Campaign.countDocuments(validFilter),
       Campaign.countDocuments({ ...validFilter, active: true }),
       Campaign.aggregate([
@@ -281,23 +281,23 @@ router.get("/stats/platform", async (req, res) => {
         { $group: {
           _id: null,
           totalRaised:    { $sum: "$totalRaised" },
-          totalDisbursed: { $sum: "$totalDisbursed" },
-          totalDonors:    { $sum: "$donorCount" }
+          totalDisbursed: { $sum: "$totalDisbursed" }
         }}
       ]),
       Campaign.aggregate([
         { $match: validFilter },
         { $group: { _id: "$category", totalRaised: { $sum: "$totalRaised" }, count: { $sum: 1 } } }
-      ])
+      ]),
+      Transaction.distinct("from", { type: "donation" })
     ]);
 
-    const s = stats[0] || { totalRaised: 0, totalDisbursed: 0, totalDonors: 0 };
+    const s = stats[0] || { totalRaised: 0, totalDisbursed: 0 };
     res.json({
       totalCampaigns,
       activeCampaigns,
       totalRaised:    s.totalRaised,
       totalDisbursed: s.totalDisbursed,
-      totalDonors:    s.totalDonors,
+      totalDonors:    uniqueDonors.length,
       utilizationRate: s.totalRaised > 0 ? (s.totalDisbursed / s.totalRaised * 100).toFixed(1) : 0,
       categoryBreakdown
     });

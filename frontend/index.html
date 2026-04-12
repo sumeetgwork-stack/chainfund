@@ -208,6 +208,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .tab-btn:hover:not(.active){color:var(--text)}
 .tab-panel{display:none}.tab-panel.active{display:block}
 
+.tab-sc{display:inline-flex;background:var(--card2);padding:4px;border-radius:10px;border:1px solid var(--border);margin-bottom:0}
+.tab-sc .tab-item{padding:6px 16px;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;border-radius:7px;transition:all .2s;display:flex;align-items:center;gap:6px}
+.tab-sc .tab-item.active{background:var(--card);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tab-sc .tab-item:hover:not(.active){color:var(--text)}
+
 .tx-row{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;transition:border-color .2s;cursor:pointer}
 .tx-row:hover{border-color:var(--accent)}
 .tx-icon-w{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
@@ -480,8 +485,12 @@ body.light-theme .badge-review { background:rgba(180,83,9,.1); color:#b45309; }
     <div class="page" id="page-campaigns">
       <div class="page-header">
         <div><div class="page-title">Browse Campaigns</div><div class="page-sub">All on-chain verified fundraising campaigns</div></div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <select class="form-select" id="cat-filter" onchange="loadCampaigns()" style="width:160px"><option value="">All Categories</option><option>Healthcare</option><option>Education</option><option>Infrastructure</option><option>Relief</option><option>Environment</option><option>Other</option></select>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <div class="tab-sc">
+            <div class="tab-item active" onclick="setBrowseFilter(true, this)">🟢 Active</div>
+            <div class="tab-item" onclick="setBrowseFilter(false, this)">⚫ Ended</div>
+          </div>
+          <select class="form-select" id="cat-filter" onchange="loadCampaigns()" style="width:160px;margin-bottom:0"><option value="">All Categories</option><option>Healthcare</option><option>Education</option><option>Infrastructure</option><option>Relief</option><option>Environment</option><option>Other</option></select>
         </div>
       </div>
       <div class="grid3" id="campaigns-grid"><div style="grid-column:span 3;text-align:center;padding:60px;color:var(--text3)"><div class="spinner"></div><div style="margin-top:14px;font-size:13px">Loading campaigns...</div></div></div>
@@ -694,6 +703,7 @@ let FACTORY_ADDRESS = null;
 let socket;
 let isDonating = false;
 let _modalRefreshTimer = null;
+let currentBrowseActive = true;
 
 // ── Init ──────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
@@ -1026,12 +1036,19 @@ async function loadStats() {
 }
 
 // ── Campaigns ─────────────────────────────────────────────────────────────
+function setBrowseFilter(active, el) {
+  currentBrowseActive = active;
+  document.querySelectorAll('.tab-sc .tab-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  loadCampaigns();
+}
+
 async function loadCampaigns() {
   const grid = document.getElementById('campaigns-grid');
   const cat = document.getElementById('cat-filter')?.value?.trim() || '';
   grid.innerHTML = `<div style="grid-column:span 3;text-align:center;padding:60px;color:var(--text3)"><div class="spinner"></div><div style="margin-top:12px">Loading campaigns...</div></div>`;
   try {
-    const r = await apiFetch(`/campaigns?${cat ? `category=${encodeURIComponent(cat)}` : ''}&limit=50`);
+    const r = await apiFetch(`/campaigns?active=${currentBrowseActive}${cat ? `&category=${encodeURIComponent(cat)}` : ''}&limit=50`);
     if (!r.ok) throw new Error();
     let { campaigns } = await r.json();
     // Client-side filter to ensure only selected category is shown

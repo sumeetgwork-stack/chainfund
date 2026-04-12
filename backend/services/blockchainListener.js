@@ -33,9 +33,20 @@ async function indexCampaignEvents(contractAddress, io) {
 
         await Transaction.create(txDoc);
 
+        // Only increment donorCount if this is the first time this wallet is donating to this campaign
+        const prevTx = await Transaction.findOne({
+          from: donor.toLowerCase(),
+          campaignAddress: contractAddress.toLowerCase(),
+          type: "donation",
+          txHash: { $ne: tx.transactionHash }
+        });
+
         await Campaign.findOneAndUpdate(
           { contractAddress: contractAddress.toLowerCase() },
-          { $inc: { totalRaised: amountETH, donorCount: 1 } }
+          { 
+            $inc: { totalRaised: amountETH },
+            ...(prevTx ? {} : { $inc: { donorCount: 1 } })
+          }
         );
 
         io?.emit("new_transaction", txDoc);
@@ -112,6 +123,49 @@ async function indexCampaignEvents(contractAddress, io) {
   }
 }
 
+async function syncCampaignFromChain(address, io) {
+  try {
+    const contract = getCampaignContract(address);
+    const info = await contract.getCampaignInfo();
+    
+    // info indices based on FundraisingCampaign.sol:
+    // 0:_organiser, 1:_title, 2:_category, 3:_goalAmount, 4:_totalRaised, 5:_totalDisbursed, 6:_deadline, 7:_active, 8:_goalReached, 9:_balance
+    const [organiser, title, category, goalWei, totalRaisedWei, totalDisbursedWei, deadlineSec, active, goalReached] = info;
+
+    const goalETH = parseFloat(ethers.formatEther(goalWei));
+    const raisedETH = parseFloat(ethers.formatEther(totalRaisedWei));
+    const disbursedETH = parseFloat(ethers.formatEther(totalDisbursedWei));
+    const deadline = new Date(Number(deadlineSec) * 1000);
+
+    // If deadline passed, it's effectively inactive even if the boolean is true
+    const isActuallyActive = active && (deadline > new Date());
+
+    await Campaign.findOneAndUpdate(
+      { contractAddress: address.toLowerCase() },
+      {
+        contractAddress: address.toLowerCase(),
+        organiserWallet: organiser.toLowerCase(),
+        title, 
+        category,
+        goalAmount:    goalETH,
+        goalAmountINR: goalETH * ethToINR(),
+        totalRaised:   raisedETH,
+        totalDisbursed: disbursedETH,
+        deadline:      deadline,
+        active:        isActuallyActive,
+        status:        'active'
+      },
+      { upsert: true, new: true }
+    );
+    
+    console.log(`📡 Deep Sync: Restored/Updated ${title} (${address})`);
+    return true;
+  } catch (err) {
+    console.error(`❌ Failed to deep sync ${address}:`, err.message);
+    return false;
+  }
+}
+
 async function startListener(io) {
   const provider = getProvider();
   if (!provider) {
@@ -126,83 +180,34 @@ async function startListener(io) {
     factory.on("CampaignCreated", async (campaignAddress, organiser, title, category, goalAmount, deadline, timestamp, event) => {
       try {
         console.log(`🆕 New campaign: ${title} at ${campaignAddress}`);
-
-        // Fetch full description from the contract itself
-        let description = '';
-        try {
-          const campaignContract = getCampaignContract(campaignAddress);
-          description = await campaignContract.description();
-        } catch (_) {}
-
-        // Attempt to find existing campaign by address OR by (title + organiser) if it was a proposal
-        let campaign = await Campaign.findOne({ contractAddress: campaignAddress.toLowerCase() });
-        if (!campaign) {
-          campaign = await Campaign.findOne({
-            title: { $regex: new RegExp("^" + title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "$", "i") },
-            organiserWallet: organiser.toLowerCase(),
-            status: 'approved'
-          });
-          if (campaign) console.log(`🔗 Linking on-chain deployment to approved proposal: ${title}`);
-        }
-
-        // Save to DB with description
-        await Campaign.findOneAndUpdate(
-          { _id: campaign ? campaign._id : new mongoose.Types.ObjectId() },
-          {
-            contractAddress: campaignAddress.toLowerCase(),
-            organiserWallet: organiser.toLowerCase(),
-            title, category,
-            description: description || (campaign ? campaign.description : 'No description provided.'),
-            goalAmount:    parseFloat(ethers.formatEther(goalAmount)),
-            goalAmountINR: parseFloat(ethers.formatEther(goalAmount)) * ethToINR(),
-            deadline:      new Date(Number(deadline) * 1000),
-            blockNumber:   (event.log || event).blockNumber,
-            txHash:        (event.log || event).transactionHash,
-            active:        true,
-            status:        'active'
-          },
-          { upsert: true, new: true }
-        );
-
-        // Start indexing this campaign's events
+        await syncCampaignFromChain(campaignAddress, io);
         await indexCampaignEvents(campaignAddress, io);
         io?.emit("campaign_created", { address: campaignAddress, title });
       } catch (e) { console.error("Campaign created event error:", e.message); }
     });
 
-    // Index all existing campaigns + backfill missing descriptions
-    const existing = await Campaign.find({}, "contractAddress description");
-    for (const c of existing) {
-      // Backfill description if missing
-      if (!c.description || c.description === 'undefined') {
-        try {
-          const cc = getCampaignContract(c.contractAddress);
-          const desc = await cc.description();
-          if (desc) await Campaign.findByIdAndUpdate(c._id, { description: desc });
-          console.log(`📝 Backfilled description for ${c.contractAddress}`);
-        } catch (_) {}
-      }
-      await indexCampaignEvents(c.contractAddress, io);
-    }
-
-    // Also fetch from factory
+    // 1. Fetch all campaigns from factory
+    let allOnChain = [];
     try {
-      const addrs = await factory.getAllCampaigns();
-      for (const addr of addrs) {
-        const known = existing.find(c => c.contractAddress === addr.toLowerCase());
-        if (!known) await indexCampaignEvents(addr, io);
-      }
-    } catch (_) {}
+      allOnChain = await factory.getAllCampaigns();
+      console.log(`🏢 Factory has ${allOnChain.length} campaigns on-chain.`);
+    } catch (e) { console.warn("Could not fetch campaign list from factory:", e.message); }
+
+    // 2. Deep Sync each campaign
+    for (const addr of allOnChain) {
+      await syncCampaignFromChain(addr, io);
+      await indexCampaignEvents(addr.toLowerCase(), io);
+    }
 
     // ── Run Auto-Sync ──
     console.log("🔄 Starting historical blockchain sync...");
     await syncHistoricalEvents(io);
     await reconcileCampaignTotals();
 
-    console.log("✅ Blockchain listener started");
+    console.log("✅ Blockchain listener started with Deep Sync enabled");
   } catch (err) {
     console.warn("⚠️  Blockchain listener failed:", err.message);
   }
 }
 
-module.exports = { startListener, indexCampaignEvents };
+module.exports = { startListener, indexCampaignEvents, syncCampaignFromChain };

@@ -10,12 +10,21 @@ router.get("/", async (req, res) => {
     const { category, active, page = 1, limit = 20 } = req.query;
     const filter = {};
     if (category) filter.category = category;
-    if (active !== undefined) filter.active = active === "true";
+    if (active !== undefined) {
+      filter.active = active === "true";
+      // If we're looking for active=true, we ONLY want status=active
+      if (filter.active) filter.status = "active";
+    }
+    
     if (req.query.status) {
       filter.status = req.query.status;
-    } else {
-      filter.status = { $nin: ["proposal", "rejected"] };
+    } else if (!filter.status) {
+      // Default: exclude proposals and rejected, but also exclude 'approved' from the main browse list
+      // unless specifically requested. Usually 'approved' campaigns are only shown on the organiser's dashboard.
+      filter.status = "active"; 
     }
+
+    console.log("🔍 [Campaigns API] Query:", req.query, "Filter applied:", filter);
 
     const campaigns = await Campaign
       .find(filter)

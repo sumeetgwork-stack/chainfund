@@ -981,19 +981,21 @@
 
     .pot-rim {
       position: absolute;
-      top: -10px;
+      top: 35px; /* Aligned with top of pot body (container 140px - body 100px - small overlap) */
       left: 50%;
       transform: translateX(-50%);
-      width: 115px;
-      height: 16px;
+      width: 104px; /* Slightly wider than the pot body (100px) */
+      height: 20px;
       background: linear-gradient(180deg, #ffb366 0%, #ff8c42 50%, #d4512a 100%);
-      border: 2px solid #d4512a;
-      border-radius: 50%;
+      border: 3px solid #d4512a;
+      border-radius: 50% / 40%; /* More elliptical opening for 3D effect */
       box-shadow: inset 0 -3px 6px rgba(0, 0, 0, .3), 0 6px 14px rgba(0, 0, 0, .3), inset 1px 1px 4px rgba(255, 255, 255, .1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px
+      z-index: 5;
+      line-height: 1;
+      font-size: 20px
     }
 
     .camp-info {
@@ -2975,6 +2977,8 @@
       ? 'http://localhost:5000/api'
       : '/api';
     const ETH_INR = 220000;
+    const toINR = (eth) => `₹${(parseFloat(eth || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+
 
     const FACTORY_ABI = [
       "function createCampaign(string,string,string,uint256,uint256,address[],uint256) returns (address)",
@@ -3310,7 +3314,7 @@
         const res = await apiFetch('/campaigns/stats/platform');
         if (res.ok) {
           const d = await res.json();
-          const toINR = (eth) => `₹${(eth * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+
 
           setEl('stat-raised', toINR(d.totalRaised || 0));
           setEl('stat-campaigns', (d.activeCampaigns || 0).toLocaleString());
@@ -3383,15 +3387,16 @@
           <div class="camp-title">${c.title}</div>
           <div class="camp-desc">${c.description && c.description !== 'undefined' ? c.description : 'A blockchain-verified fundraising campaign.'}</div>
           <div class="camp-meta">
-            <div class="camp-stats">
+            <div class="camp-stats" style="margin-bottom:8px">
               <span class="camp-raised">₹${((c.totalRaised || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-              <span style="color:var(--text3)">of ₹${((c.goalAmount || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+              <span style="color:var(--text3);font-size:10px">/ ₹${((c.goalAmount || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:10px">
               <span style="color:var(--cyan);font-weight:600">${pctFill}% full</span>
-              ${c.contractAddress ? `<a href="https://sepolia.etherscan.io/address/${c.contractAddress}" target="_blank" style="font-size:11px;color:var(--text3);text-decoration:underline" onclick="event.stopPropagation()">Explorer ↗</a>` : '<span style="font-size:10px;color:var(--text3)">Syncing on-chain...</span>'}
-              <span class="badge-tag ${c.active ? 'badge-active' : (c.status === 'approved' ? 'badge-pending' : 'badge-ended')}">
-                ${c.active ? '🟢 Active' : (c.status === 'approved' ? '🟢 Approved' : '⚫ Ended')}
+              <span style="color:var(--text3)">•</span>
+              ${c.contractAddress ? `<a href="https://sepolia.etherscan.io/address/${c.contractAddress}" target="_blank" style="color:var(--text3);text-decoration:underline" onclick="event.stopPropagation()">Explorer ↗</a>` : '<span style="color:var(--text3)">Syncing...</span>'}
+              <span class="badge-tag ${c.active ? 'badge-active' : (c.status === 'approved' ? 'badge-pending' : 'badge-ended')}" style="margin-left:auto">
+                ${c.active ? 'Active' : (c.status === 'approved' ? 'Approved' : 'Ended')}
               </span>
             </div>
           </div>
@@ -3584,7 +3589,7 @@
 
         const pct = goal > 0 ? Math.min(100, (totalRaised / goal) * 100).toFixed(3) : 0;
         const visualPct = totalRaised === 0 ? 0 : Math.max(3, pct);
-        const toINR = (eth) => `₹${(eth * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+
         const catEmoji = { Healthcare: '💧', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
 
         document.getElementById('campaign-modal-content').innerHTML = `
@@ -3976,7 +3981,8 @@
     function txRow(tx) { const icons = { donation: '💰', disbursement: '📤', refund: '↩️', contract_create: '📄', approval: '✅' }; const bgMap = { donation: 'rgba(34,197,94,.1)', disbursement: 'rgba(0,210,200,.1)', refund: 'rgba(239,68,68,.1)', contract_create: 'rgba(168,85,247,.1)' }; const amtStr = tx.valueETH ? `${tx.valueETH.toFixed(4)} ETH` : (tx.amountETH ? `${tx.amountETH.toFixed(4)} ETH` : '—'); const hashStr = tx.txHash || tx.hash || '0x...'; return `<div class="tx-row" onclick="document.getElementById('explorer-input').value='${hashStr}';showPage('explorer');explorerSearch()"><div class="tx-icon-wrap" style="background:${bgMap[tx.type] || 'var(--border)'}">${icons[tx.type] || '•'}</div><div class="tx-info"><div class="tx-hash">${hashStr.slice(0, 20)}...${hashStr.slice(-8)}</div><div class="tx-desc">${tx.description || tx.type}</div><div class="tx-meta"><span class="verified">✓</span> Block #${tx.blockNumber || '...'}</div></div><div class="tx-amt"><div class="amt">${amtStr}</div><div class="when">${timeAgo(tx.timestamp || tx.createdAt)}</div></div></div>`; }
     function demoTxns() { const rows = [{ type: 'donation', txHash: '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7...b91c', description: 'Donation — Clean Water Initiative', blockNumber: 18402119, valueETH: 0.045, timestamp: new Date() }, { type: 'disbursement', txHash: '0x7bc1e4f0912c884490d8b3e9a1f567c239d7...e83d', description: 'Disbursement — Medical Equipment', blockNumber: 18402087, valueETH: 0.545, timestamp: new Date(Date.now() - 1080000) }, { type: 'donation', txHash: '0x2ae7f18b9c2048376e59d4a91b832cd7f5a1...91b0', description: 'Donation — Rural Education Fund', blockNumber: 18402055, valueETH: 0.025, timestamp: new Date(Date.now() - 2040000) }, { type: 'disbursement', txHash: '0x9d2f44aa7c1b3e59f20d8c6a94b7e1f035ab...44aa', description: 'Disbursement — Teacher Salaries', blockNumber: 18402001, valueETH: 0.386, timestamp: new Date(Date.now() - 3600000) }]; return rows.map(txRow).join(''); }
     function timeAgo(ts) { if (!ts) return '—'; const d = Math.floor((Date.now() - new Date(ts)) / 1000); if (d < 60) return `${d}s ago`; if (d < 3600) return `${Math.floor(d / 60)}m ago`; return `${Math.floor(d / 3600)}h ago`; }
-    async function loadTrackerAllocation() { const addr = document.getElementById('tracker-select').value, el = document.getElementById('tracker-alloc'); if (!addr || addr.startsWith('—')) return; try { const r = await apiFetch(`/blockchain/campaign/${addr}`); if (!r.ok) throw new Error(); const d = await r.json(); const toINR = (eth) => `₹${(eth * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`; const pct = d.goalAmount > 0 ? Math.min(100, d.totalRaised / d.goalAmount * 100).toFixed(3) : 0; el.innerHTML = `<div style="margin-bottom:16px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:var(--mono)">Total locked: ${toINR(parseFloat(d.balance))}</div><div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${parseFloat(pct)}%"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px"><span>${toINR(d.totalDisbursed)} disbursed</span><span>${pct}%</span></div></div><div class="alloc-row"><div class="alloc-label">🎯 Goal</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:100%;background:#00d2c8"></div></div><div class="alloc-pct">100%</div><div class="alloc-amt">${toINR(parseFloat(d.goalAmount))}</div></div><div class="alloc-row"><div class="alloc-label">📊 Raised</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${parseFloat(pct)}%;background:#3b82f6"></div></div><div class="alloc-pct">${pct}%</div><div class="alloc-amt">${toINR(d.totalRaised)}</div></div><div class="alloc-row"><div class="alloc-label">📤 Disbursed</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%;background:#22c55e"></div></div><div class="alloc-pct">${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%</div><div class="alloc-amt">${toINR(d.totalDisbursed)}</div></div>`; document.getElementById('flow-balance').textContent = `${parseFloat(d.balance).toFixed(4)} ETH locked`; } catch (_) { el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Connect to blockchain to see live allocation data</div>`; } }
+    async function loadTrackerAllocation() { const addr = document.getElementById('tracker-select').value, el = document.getElementById('tracker-alloc'); if (!addr || addr.startsWith('—')) return; try { const r = await apiFetch(`/blockchain/campaign/${addr}`); if (!r.ok) throw new Error(); const d = await r.json(); const pct = d.goalAmount > 0 ? Math.min(100, d.totalRaised / d.goalAmount * 100).toFixed(3) : 0; 
+        el.innerHTML = `<div style="margin-bottom:16px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:var(--mono)">Total locked: ${toINR(parseFloat(d.balance))}</div><div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${parseFloat(pct)}%"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px"><span>${toINR(d.totalDisbursed)} disbursed</span><span>${pct}%</span></div></div><div class="alloc-row"><div class="alloc-label">🎯 Goal</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:100%;background:#00d2c8"></div></div><div class="alloc-pct">100%</div><div class="alloc-amt">${toINR(parseFloat(d.goalAmount))}</div></div><div class="alloc-row"><div class="alloc-label">📊 Raised</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${parseFloat(pct)}%;background:#3b82f6"></div></div><div class="alloc-pct">${pct}%</div><div class="alloc-amt">${toINR(d.totalRaised)}</div></div><div class="alloc-row"><div class="alloc-label">📤 Disbursed</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%;background:#22c55e"></div></div><div class="alloc-pct">${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%</div><div class="alloc-amt">${toINR(d.totalDisbursed)}</div></div>`; document.getElementById('flow-balance').textContent = `${parseFloat(d.balance).toFixed(4)} ETH locked`; } catch (_) { el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Connect to blockchain to see live allocation data</div>`; } }
 
     // ── Explorer ───────────────────────────────────────────────────────────────
     async function loadExplorer() { loadBlocks(); loadExplorerTxns(); }

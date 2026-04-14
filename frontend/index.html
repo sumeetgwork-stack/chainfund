@@ -981,14 +981,17 @@
 
     .pot-rim {
       position: absolute;
-      top: 35px; /* Aligned with top of pot body (container 140px - body 100px - small overlap) */
+      top: 35px;
+      /* Aligned with top of pot body (container 140px - body 100px - small overlap) */
       left: 50%;
       transform: translateX(-50%);
-      width: 104px; /* Slightly wider than the pot body (100px) */
+      width: 104px;
+      /* Slightly wider than the pot body (100px) */
       height: 20px;
       background: linear-gradient(180deg, #ffb366 0%, #ff8c42 50%, #d4512a 100%);
       border: 3px solid #d4512a;
-      border-radius: 50% / 40%; /* More elliptical opening for 3D effect */
+      border-radius: 50% / 40%;
+      /* More elliptical opening for 3D effect */
       box-shadow: inset 0 -3px 6px rgba(0, 0, 0, .3), 0 6px 14px rgba(0, 0, 0, .3), inset 1px 1px 4px rgba(255, 255, 255, .1);
       display: flex;
       align-items: center;
@@ -2042,14 +2045,296 @@
       height: 2px;
       background: var(--accent)
     }
+
+    .tilt-fx {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Holographic Glare Overlay ──────────────────────────── */
+    .tilt-fx .glare-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: radial-gradient(circle at 50% 50%,
+          rgba(255, 255, 255, 0.25) 0%,
+          rgba(108, 99, 255, 0.08) 30%,
+          rgba(0, 229, 160, 0.04) 60%,
+          transparent 80%);
+      mix-blend-mode: soft-light;
+    }
+
+    .tilt-fx:hover .glare-layer {
+      opacity: 1;
+    }
+
+    /* ── Global Cursor Glow ─────────────────────────────────── */
+    * {
+      cursor: none !important;
+    }
+
+    #global-cursor-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 44px;
+      height: 44px;
+      margin-left: -22px;
+      margin-top: -22px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      background: radial-gradient(circle at 50% 50%,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(108, 99, 255, 0.8) 25%,
+          rgba(0, 229, 160, 0.4) 60%,
+          transparent 100%);
+      mix-blend-mode: screen;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 0 15px rgba(108, 99, 255, 0.5);
+    }
+
+    /* ── Smooth Page Transitions ────────────────────────────── */
+    .page {
+      display: none;
+      padding: 28px;
+    }
+
+    .page.active {
+      display: block;
+      animation: pageEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .page.page-exit {
+      animation: pageExit 0.2s ease-in forwards;
+    }
+
+    @keyframes pageEnter {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.995);
+        filter: blur(2px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes pageExit {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+    }
+
+    /* ── Floating Glass Orbs ────────────────────────────────── */
+    .glass-orb {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%,
+          rgba(255, 255, 255, 0.12),
+          rgba(255, 255, 255, 0.03) 50%,
+          transparent 70%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform;
+    }
+
+    @keyframes orbFloat {
+
+      0%,
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      25% {
+        transform: translate(8px, -15px) rotate(2deg);
+      }
+
+      50% {
+        transform: translate(-5px, -25px) rotate(-1deg);
+      }
+
+      75% {
+        transform: translate(12px, -10px) rotate(3deg);
+      }
+    }
+
+    /* ── Enhanced Sidebar Active Glow ──────────────────────── */
+    .nav-item.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      box-shadow: 0 0 20px rgba(108, 99, 255, 0.12), inset 0 0 12px rgba(108, 99, 255, 0.06);
+    }
+
+    .nav-item.active .nav-icon {
+      background: var(--accent-dim);
+      box-shadow: 0 0 10px rgba(108, 99, 255, 0.2);
+    }
+
+    /* ── Metric Card Shimmer Border ─────────────────────────── */
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 40%, rgba(108, 99, 255, 0.15) 70%, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* ── Topbar glass frosted effect ────────────────────────── */
+    .topbar {
+      background: rgba(14, 16, 24, 0.85);
+      backdrop-filter: blur(16px) saturate(1.6);
+      -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    }
+
+    body.light-theme .topbar {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px) saturate(1.4);
+    }
+
+    /* ── Campaign card holographic edge ─────────────────────── */
+    .camp-card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg,
+          rgba(108, 99, 255, 0.3),
+          transparent 30%,
+          rgba(0, 229, 160, 0.2) 60%,
+          rgba(255, 110, 176, 0.2) 90%,
+          transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: -1;
+    }
+
+    .camp-card:hover::before {
+      opacity: 1;
+    }
+
+    /* ── CountUp animation helper ───────────────────────────── */
+    .count-up {
+      display: inline-block;
+      transition: transform 0.1s ease;
+    }
+
+    .count-up.ticking {
+      transform: scale(1.05);
+    }
+
+    /* ── Toast upgrade ─────────────────────────────────────── */
+    .toast {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(24, 27, 38, 0.9);
+    }
+
+    /* ── Scroll Reveal System ─────────────────────────────────── */
+    .sr {
+      opacity: 0;
+      will-change: transform, opacity;
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sr.sr-visible {
+      opacity: 1;
+      transform: none !important;
+      filter: none !important;
+    }
+
+    /* Slide up (default) */
+    .sr-up {
+      transform: translateY(50px);
+    }
+
+    /* Slide from left */
+    .sr-left {
+      transform: translateX(-60px);
+    }
+
+    /* Slide from right */
+    .sr-right {
+      transform: translateX(60px);
+    }
+
+    /* Scale in with slight rotation */
+    .sr-scale {
+      transform: scale(0.85) rotate(-2deg);
+      filter: blur(4px);
+    }
+
+    /* Fade only */
+    .sr-fade {
+      transform: translateY(20px);
+    }
+
+    /* Stagger delays for child elements */
+    .sr-stagger>.sr:nth-child(1) {
+      transition-delay: 0s;
+    }
+
+    .sr-stagger>.sr:nth-child(2) {
+      transition-delay: 0.08s;
+    }
+
+    .sr-stagger>.sr:nth-child(3) {
+      transition-delay: 0.16s;
+    }
+
+    .sr-stagger>.sr:nth-child(4) {
+      transition-delay: 0.24s;
+    }
+
+    .sr-stagger>.sr:nth-child(5) {
+      transition-delay: 0.32s;
+    }
+
+    .sr-stagger>.sr:nth-child(6) {
+      transition-delay: 0.40s;
+    }
+
+    /* Section parallax speed layers */
+    .section-plx {
+      will-change: transform;
+      transition: transform 0.1s linear;
+    }
   </style>
 </head>
 
 <body>
-
   <div class="topbar">
     <div class="topbar-logo" onclick="showPage('home')">
-      <div class="logo-gem">⛓</div>
+      <div class="logo-gem">⛓️</div>
       ChainFund
     </div>
     <div class="topbar-search">
@@ -2083,6 +2368,7 @@
     </div>
   </div>
 
+
   <div class="app-layout">
     <div class="sidebar">
       <div class="sidebar-section">
@@ -2111,7 +2397,7 @@
       <div class="sidebar-section" id="section-organiser" style="display:none">
         <div class="sidebar-section-label">Organiser</div>
         <div class="nav-item" id="nav-proposals" onclick="showPage('proposals')">
-          <div class="nav-icon">📁</div> My Proposals
+          <div class="nav-icon">📄</div> My Proposals
         </div>
         <div class="nav-item" id="nav-create" onclick="showPage('create')">
           <div class="nav-icon">🚀</div> Submit Proposal
@@ -2169,53 +2455,72 @@
     </div>
 
     <div class="main">
-      <!-- HOME PAGE -->
       <div class="page active" id="page-home">
         <div style="padding:0 0 20px">
-          <div
-            style="background:linear-gradient(135deg,#1a0d3d 0%,#0d1a40 50%,#0d2a1a 100%);border-radius:20px;padding:48px;position:relative;overflow:hidden;margin-bottom:24px">
-            <div
-              style="position:absolute;top:-60px;right:-40px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(108,99,255,.25),transparent 70%)">
+          <div id="hero-plx"
+            style="background:linear-gradient(135deg,#0a0518 0%,#0d1a40 40%,#051515 100%);border-radius:24px;padding:64px 48px;position:relative;overflow:hidden;margin-bottom:32px;perspective:1000px;transform-style:preserve-3d;box-shadow:0 24px 60px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.05)">
+            <div id="hero-glow"
+              style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle 800px at 50% 50%, rgba(108,99,255,0.2), transparent 60%);z-index:0;pointer-events:none">
             </div>
-            <div
-              style="position:absolute;bottom:-40px;left:200px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,160,.15),transparent 70%)">
+
+            <div class="plx-layer" data-speed="0.3" data-mouse="-8"
+              style="position:absolute;top:-80px;right:-50px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(108,99,255,.3),transparent 70%);will-change:transform">
             </div>
-            <div style="position:relative;z-index:1;max-width:600px">
+
+            <div class="plx-layer" data-speed="0.2" data-mouse="5"
+              style="position:absolute;bottom:-60px;left:150px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,160,.2),transparent 70%);will-change:transform">
+            </div>
+
+            <div class="plx-layer" data-speed="0.4" data-mouse="-12"
+              style="position:absolute;top:20%;left:10%;width:8px;height:8px;border-radius:50%;background:#00e5a0;box-shadow:0 0 12px #00e5a0;will-change:transform">
+            </div>
+            <div class="plx-layer" data-speed="0.1" data-mouse="15"
+              style="position:absolute;top:70%;right:15%;width:12px;height:12px;border-radius:50%;background:#ff6eb0;box-shadow:0 0 16px #ff6eb0;will-change:transform">
+            </div>
+
+            <div class="plx-layer" id="hero-content" data-speed="-0.1" data-mouse="2"
+              style="position:relative;z-index:1;max-width:650px;will-change:transform;transform-style:preserve-3d">
+              <div
+                style="display:inline-block;padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:11px;color:var(--cyan);font-weight:700;letter-spacing:1px;margin-bottom:20px;backdrop-filter:blur(10px)">
+                🌐 WEB3 FUNDRAISING SAAS</div>
               <h1
-                style="font-family:var(--display);font-size:clamp(3rem,6vw,4.5rem);font-weight:800;color:#fff;line-height:1;margin-bottom:24px;letter-spacing:-0.02em">
-                <b>CHAINFUND</b></h1>
-              <p style="font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;max-width:480px;margin-bottom:28px">
+                style="font-family:var(--display);font-size:clamp(3.5rem,7vw,5.5rem);font-weight:900;color:#fff;line-height:0.95;margin-bottom:28px;letter-spacing:-0.03em;text-shadow:0 12px 30px rgba(0,0,0,0.5)">
+                <b>CHAINFUND</b>
+              </h1>
+              <p
+                style="font-size:16px;color:rgba(255,255,255,.7);line-height:1.7;max-width:480px;margin-bottom:36px;text-shadow:0 2px 8px rgba(0,0,0,0.4)">
                 India's first blockchain fundraising SaaS. Donors verify, in real time, exactly where every rupee went.
                 Smart contracts. Zero middlemen.</p>
               <div style="display:flex;gap:12px;flex-wrap:wrap">
                 <button class="btn btn-primary" onclick="showPage('campaigns')"
-                  style="padding:12px 24px;font-size:14px">Browse Campaigns →</button>
+                  style="padding:16px 32px;font-size:15px;border:1px solid rgba(255,255,255,0.2);box-shadow:0 8px 24px rgba(108,99,255,0.5);transition:all 0.3s">Browse
+                  Campaigns →</button>
               </div>
             </div>
           </div>
-          <div class="grid4" style="margin-bottom:24px">
-            <div class="metric-card mc-1">
+          <div class="grid4 sr-stagger" style="margin-bottom:24px">
+            <div class="metric-card mc-1 tilt-fx sr sr-up">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(108,99,255,.2)">💰</div>
               <div class="mc-label">Total Raised</div>
               <div class="mc-val" id="stat-raised">₹0</div>
               <div class="mc-sub" style="color:var(--accent)">All campaigns</div>
             </div>
-            <div class="metric-card mc-2">
+            <div class="metric-card mc-2 tilt-fx sr sr-up">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(0,229,160,.15)">📋</div>
               <div class="mc-label">Campaigns</div>
               <div class="mc-val" id="stat-campaigns">0</div>
               <div class="mc-sub" style="color:var(--green)" id="stat-active-sub">Active now</div>
             </div>
-            <div class="metric-card mc-3">
+            <div class="metric-card mc-3 tilt-fx sr sr-up">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(255,110,176,.15)">👥</div>
               <div class="mc-label">Donors</div>
               <div class="mc-val" id="stat-donors">0</div>
               <div class="mc-sub" style="color:var(--pink)">Unique wallets</div>
             </div>
-            <div class="metric-card mc-4">
+            <div class="metric-card mc-4 tilt-fx sr sr-up">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(255,200,87,.15)">📈</div>
               <div class="mc-label">Fund Utilisation</div>
@@ -2223,59 +2528,62 @@
               <div class="mc-sub" style="color:var(--yellow)">Disbursed</div>
             </div>
           </div>
-          <div class="card" style="margin-bottom:24px">
+          <div class="card sr sr-up section-plx" data-plx-speed="0.03" style="margin-bottom:24px">
             <div
-              style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px">
+              style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px"
+              class="sr sr-left">
               Process</div>
-            <div style="font-family:var(--display);font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px">How
+            <div style="font-family:var(--display);font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px"
+              class="sr sr-left">How
               ChainFund Works</div>
-            <div style="font-size:13px;color:var(--text2);margin-bottom:0">Fully automated — no middlemen, every rupee
+            <div style="font-size:13px;color:var(--text2);margin-bottom:16px" class="sr sr-fade">Fully automated — no
+              middlemen, every rupee
               tracked on-chain.</div>
-            <div class="steps-row">
-              <div class="step-card">
+            <div class="steps-row sr-stagger">
+              <div class="step-card tilt-fx sr sr-scale">
                 <div class="step-num">01</div>
                 <h4>Create Campaign</h4>
                 <p>Deploy a smart contract with goal, timeline, milestones, and multi-sig trustees</p>
               </div>
-              <div class="step-card">
+              <div class="step-card tilt-fx sr sr-scale">
                 <div class="step-num">02</div>
                 <h4>Receive Donations</h4>
                 <p>Funds flow directly into the contract — transparent, no custodian, every tx recorded</p>
               </div>
-              <div class="step-card">
+              <div class="step-card tilt-fx sr sr-scale">
                 <div class="step-num">03</div>
                 <h4>Auto-Disbursement</h4>
                 <p>Trustees approve milestones, contract releases funds automatically</p>
               </div>
-              <div class="step-card">
+              <div class="step-card tilt-fx sr sr-scale">
                 <div class="step-num">04</div>
                 <h4>Full Audit Trail</h4>
                 <p>Every rupee traceable forever on Ethereum — any donor can verify any tx</p>
               </div>
             </div>
           </div>
-          <div class="grid3">
-            <div class="feat-card"><span class="feat-icon">⛓️</span>
+          <div class="grid3 sr-stagger section-plx" data-plx-speed="0.05">
+            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">⛓️</span>
               <h3>Immutable Audit Trail</h3>
               <p>Every transaction permanently recorded. No one can alter or delete a record.</p>
             </div>
-            <div class="feat-card"><span class="feat-icon">🤖</span>
+            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">🤖</span>
               <h3>Smart Contract Escrow</h3>
               <p>Funds held by code. Disbursement only when verifiable milestones are met.</p>
             </div>
-            <div class="feat-card"><span class="feat-icon">✅</span>
+            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">✅</span>
               <h3>KYC Verified Recipients</h3>
               <p>All recipients identity-verified on-chain. Every disbursement tagged to a verified wallet.</p>
             </div>
-            <div class="feat-card"><span class="feat-icon">📊</span>
+            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">📊</span>
               <h3>Real-time Dashboards</h3>
               <p>Campaign managers and donors share the same live view from public blockchain nodes.</p>
             </div>
-            <div class="feat-card"><span class="feat-icon">🔑</span>
+            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">🔑</span>
               <h3>Multi-Sig Security</h3>
               <p>Large disbursements need M-of-N trustee approval. No single actor can drain funds.</p>
             </div>
-            <div class="feat-card"><span class="feat-icon">↩️</span>
+            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">↩️</span>
               <h3>Automatic Refunds</h3>
               <p>Miss goal? Smart contract auto-refunds every donor. No forms, no delays.</p>
             </div>
@@ -2313,7 +2621,7 @@
           </div>
         </div>
         <div id="no-campaigns" style="display:none">
-          <div style="font-size:2rem;margin-bottom:12px">📭</div>
+          <div style="font-size:2rem;margin-bottom:12px">📥</div>
           <div style="font-size:14px;color:var(--text2)">No campaigns yet. <a onclick="showPage('create')"
               style="color:var(--accent);cursor:pointer">Create the first one →</a></div>
         </div>
@@ -2475,7 +2783,7 @@
         <div class="tab-panel" id="dt-my">
           <div id="my-campaigns-content">
             <div style="text-align:center;padding:40px">
-              <div style="font-size:2rem;margin-bottom:10px">🔐</div>
+              <div style="font-size:2rem;margin-bottom:10px">🔍</div>
               <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Connect wallet or sign in to see your
                 campaigns</div><button class="btn btn-primary btn-sm" onclick="openAuthModal()">Sign In</button>
             </div>
@@ -2531,144 +2839,50 @@
           </div>
         </div>
         <div class="explorer-search"><input type="text" id="explorer-input"
-            placeholder="Search TX hash, wallet address, or block number..."
-            onkeydown="if(event.key==='Enter')explorerSearch()" /><button class="btn btn-primary"
-            onclick="explorerSearch()">Search</button></div>
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Latest Blocks</div>
-        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;margin-bottom:24px" id="blocks-row">
-          <div style="text-align:center;padding:20px;color:var(--text3)">
-            <div class="spinner"></div>
-          </div>
+            placeholder="Search tx hash, address, block number..."
+            style="flex:1;border:none;background:none;color:#fff;outline:none"
+            onkeydown="if(event.key==='Enter')explorerSearch()" />
+          <button class="btn btn-primary btn-sm" onclick="explorerSearch()">Search</button>
         </div>
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Recent ChainFund Transactions
-        </div>
-        <div id="explorer-txns" style="display:flex;flex-direction:column;gap:8px">
-          <div style="text-align:center;padding:20px;color:var(--text3)">
-            <div class="spinner"></div>
-          </div>
-        </div>
-        <div id="tx-detail-section" style="display:none;margin-top:24px">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Transaction Detail</div>
-          <div class="card" id="tx-detail-content"></div>
+        <div class="card" id="explorer-result" style="display:none">
+          <div id="explorer-result-content"></div>
         </div>
       </div>
 
-      <!-- KYC PAGE -->
-      <div class="page" id="page-kyc">
+      <!-- SETTINGS PAGE -->
+      <div class="page" id="page-settings">
         <div class="page-header">
           <div>
-            <div class="page-title">KYC Verification</div>
-            <div class="page-sub">Apply to create campaigns — admin approval required</div>
+            <div class="page-title">Settings</div>
+            <div class="page-sub">Manage your profile and wallet preferences</div>
           </div>
         </div>
-        <div style="max-width:680px">
-          <div id="kyc-status-banner" style="display:none;margin-bottom:20px"></div>
-          <div id="dev-verify-wrap"
-            style="display:none;margin-bottom:20px;background:var(--accent-dim);border:1px solid var(--accent);padding:16px;border-radius:12px">
-            <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px">🛠️ Developer Shortcut
+        <div class="grid2">
+          <div class="card">
+            <div class="rp-section-title" style="margin-bottom:20px">Profile Information</div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input"
+                  id="set-name" placeholder="Enter your name" /></div>
+              <div class="form-group"><label class="form-label">Email Address</label><input type="email"
+                  class="form-input" id="set-email" placeholder="Enter email" /></div><button class="btn btn-primary"
+                onclick="saveProfile()">Save Profile</button>
             </div>
-            <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Skip the waiting! In local development,
-              you can verify yourself as an organiser immediately.</div><button class="btn btn-primary btn-sm"
-              onclick="devVerify()">Fast-track Verification →</button>
           </div>
-          <div class="card" id="kyc-form-wrap">
-            <div
-              style="font-size:14px;font-weight:700;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:10px">
-              <div
-                style="width:36px;height:36px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:18px">
-                📋</div> KYC Verification Form<span style="font-size:12px;color:var(--text3);font-weight:400">All fields
-                marked * are required</span>
-            </div>
-            <div class="form-grid">
-              <div class="form-group"><label class="form-label">Full Legal Name *</label><input class="form-input"
-                  id="kyc-fullname" placeholder="As per government ID" /></div>
-              <div class="form-group"><label class="form-label">Phone Number *</label><input class="form-input"
-                  id="kyc-phone" placeholder="+91 98765 43210" /></div>
-              <div class="form-group"><label class="form-label">Organisation Name *</label><input class="form-input"
-                  id="kyc-org" placeholder="NGO, Trust, Company name" /></div>
-              <div class="form-group"><label class="form-label">Organisation Type *</label><select class="form-select"
-                  id="kyc-orgtype">
-                  <option value="">Select type</option>
-                  <option value="NGO">NGO / Non-profit</option>
-                  <option value="Trust">Registered Trust</option>
-                  <option value="Company">Company / Startup</option>
-                  <option value="Individual">Individual</option>
-                  <option value="Government">Government Body</option>
+          <div class="card">
+            <div class="rp-section-title" style="margin-bottom:20px">Preferences</div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div class="form-group"><label class="form-label">Default Currency</label><select class="form-select">
+                  <option>INR (₹)</option>
+                  <option>USD ($)</option>
+                  <option>ETH (Ξ)</option>
                 </select></div>
-              <div class="form-group"><label class="form-label">PAN Number</label><input class="form-input" id="kyc-pan"
-                  placeholder="ABCDE1234F" maxlength="10" />
-                <div class="form-hint">For tax compliance. Optional but recommended.</div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <div style="font-size:14px;font-weight:700;color:#fff">Public Profile</div>
+                  <div style="font-size:12px;color:var(--text3)">Allow others to see your donor history</div>
+                </div><input type="checkbox" checked />
               </div>
-              <div class="form-group"><label class="form-label">Website URL</label><input class="form-input"
-                  id="kyc-website" placeholder="https://yourorg.org" /></div>
             </div>
-            <div class="form-group"><label class="form-label">Registered Address *</label><input class="form-input"
-                id="kyc-address" placeholder="Full address with city, state, pincode" /></div>
-            <div class="form-group"><label class="form-label">Social Media / LinkedIn</label><input class="form-input"
-                id="kyc-social" placeholder="LinkedIn, Twitter, Facebook links" /></div>
-            <div class="form-group"><label class="form-label">Purpose Statement * <span
-                  style="font-weight:400;color:var(--text3)">(min 100 chars)</span></label><textarea
-                class="form-textarea" id="kyc-purpose"
-                placeholder="Describe your fundraising goals, past work, and how funds will be used..."
-                style="min-height:120px"></textarea></div>
-            <div style="background:var(--card2);border-radius:12px;padding:16px;margin-bottom:20px">
-              <div class="kyc-check">All information provided is accurate and verifiable</div>
-              <div class="kyc-check">You agree to use funds only for stated campaign purposes</div>
-              <div class="kyc-check">You accept ChainFund smart contract audit requirements</div>
-            </div><button class="btn btn-primary btn-full" onclick="submitKYC()" id="kyc-submit-btn">Submit Application
-              for Review →</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ADMIN PAGE -->
-      <div class="page" id="page-admin">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Admin Panel</div>
-            <div class="page-sub">Review and manage KYC applications</div>
-          </div>
-          <div style="display:flex;gap:10px"><select class="form-select" id="admin-filter"
-              onchange="loadAdminApplications()" style="width:150px">
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-              <option value="all">All</option>
-            </select><button class="btn btn-ghost btn-sm" onclick="loadAdminApplications()">↺ Refresh</button></div>
-        </div>
-        <div class="grid4" style="margin-bottom:24px">
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Pending</div>
-            <div style="font-size:1.4rem;font-family:var(--display);font-weight:800;color:var(--yellow)"
-              id="admin-stat-pending">—</div>
-          </div>
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Approved</div>
-            <div style="font-size:1.4rem;font-family:var(--display);font-weight:800;color:var(--green)"
-              id="admin-stat-approved">—</div>
-          </div>
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Rejected</div>
-            <div style="font-size:1.4rem;font-family:var(--display);font-weight:800;color:var(--red)"
-              id="admin-stat-rejected">—</div>
-          </div>
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Total Users</div>
-            <div style="font-size:1.4rem;font-family:var(--display);font-weight:800;color:#fff" id="admin-stat-total">—
-            </div>
-          </div>
-        </div>
-        <div id="admin-applications-list" style="display:flex;flex-direction:column;gap:14px">
-          <div style="text-align:center;padding:40px;color:var(--text3)">
-            <div class="spinner"></div>
           </div>
         </div>
       </div>
@@ -2677,95 +2891,40 @@
       <div class="page" id="page-create">
         <div class="page-header">
           <div>
-            <div class="page-title">Submit Project Proposal</div>
-            <div class="page-sub">Draft your campaign details. A Trustee must validate it before it can be launched on
-              the blockchain.</div>
+            <div class="page-title">Submit Proposal</div>
+            <div class="page-sub">Launch a new verified fundraising campaign</div>
           </div>
         </div>
-        <div style="max-width:740px">
-          <div class="card">
-            <div id="create-approval-warning" class="warn-box warn-red" style="display:none">
-              <div class="warn-title" style="color:var(--red)">🔒 Identity Verification Required</div>
-              <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px">Only verified organisers
-                can submit project proposals. Please complete your KYC verification first.</div>
-              <button class="btn btn-primary btn-sm" onclick="showPage('kyc')">Go to KYC →</button>
-            </div>
-            <div class="form-group"><label class="form-label">Campaign Title</label><input class="form-input"
-                id="c-title" placeholder="e.g. Rural Healthcare Expansion" maxlength="100" /></div>
-            <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea"
-                id="c-desc" placeholder="Explain the purpose, transparency measures, and impact..."></textarea></div>
-            <div class="form-grid">
+        <div class="card" style="max-width:800px;margin:0 auto">
+          <div id="create-form-area">
+            <div class="grid2">
+              <div class="form-group"><label class="form-label">Campaign Title</label><input type="text"
+                  class="form-input" id="c-title" placeholder="e.g. Build Library in Rural Village" /></div>
               <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="c-cat">
                   <option>Healthcare</option>
                   <option>Education</option>
+                  <option>Infrastructure</option>
                   <option>Relief</option>
                   <option>Environment</option>
-                  <option>Infrastructure</option>
                   <option>Other</option>
                 </select></div>
-              <div class="form-group"><label class="form-label">Goal Amount (ETH)</label><input class="form-input"
-                  id="c-goal" type="number" step="0.001" placeholder="1.5" />
-                <div class="form-hint" id="c-goal-inr">≈ ₹0</div>
-              </div>
             </div>
-            <div class="form-grid">
-              <div class="form-group"><label class="form-label">Duration (Days)</label><input class="form-input"
-                  id="c-days" type="number" value="30" /></div>
-              <div class="form-group"><label class="form-label">Trustee Count</label><input class="form-input"
-                  id="c-approvals" type="number" value="1" />
-                <div class="form-hint">Approvals needed for disbursement</div>
-              </div>
+            <div class="form-group"><label class="form-label">Project Description</label>
+              <textarea class="form-input" id="c-desc" rows="4"
+                placeholder="Explain the mission, impact and how the funds will be used..."></textarea>
             </div>
-            <div class="form-group"><label class="form-label">Initial Trustees (Wallet Addresses)</label><textarea
-                class="form-textarea" id="c-trustees" placeholder="0x... (one per line)"></textarea></div>
-            <button class="btn btn-primary btn-full" onclick="submitProposal()" id="proposal-btn">📋 Submit Project for
-              Trustee Validation</button>
-          </div>
-        </div>
-      </div>
-      <!-- SETTINGS PAGE -->
-      <div class="page" id="page-settings">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Account Settings</div>
-            <div class="page-sub">Manage your profile and platform preferences</div>
-          </div>
-        </div>
-        <div style="max-width:600px">
-          <div class="card" style="margin-bottom:20px">
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
-              <div id="settings-avatar"
-                style="width:64px;height:64px;border-radius:16px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;font-family:var(--display)">
-                ?</div>
-              <div>
-                <div id="settings-name" style="font-size:18px;font-weight:700;color:#fff">—</div>
-                <div id="settings-email" style="font-size:13px;color:var(--text3)">—</div>
-              </div>
+            <div class="grid2">
+              <div class="form-group"><label class="form-label">Funding Goal (ETH)</label><input type="number"
+                  class="form-input" id="c-goal" step="0.01" value="0.5" /></div>
+              <div class="form-group"><label class="form-label">Duration (Days)</label><input type="number"
+                  class="form-input" id="c-days" value="30" /></div>
             </div>
-            <div class="form-group"><label class="form-label">Display Name</label><input class="form-input"
-                id="set-name" placeholder="Your name" /></div>
-            <div class="form-group"><label class="form-group"><label class="form-label">Email Address</label><input
-                  class="form-input" id="set-email" readonly style="opacity:.6;cursor:not-allowed" /></div>
-            <div class="form-group"><label class="form-label">Account Role</label>
-              <div id="set-role"
-                style="font-family:var(--mono);font-size:12px;color:var(--accent);background:var(--accent-dim);padding:6px 10px;border-radius:6px;display:inline-block">
-                Donor</div>
-            </div>
-            <button class="btn btn-primary" onclick="updateProfile()">Save Changes</button>
-          </div>
-          <div class="card">
-            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">Security & Wallet</div>
-            <div
-              style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--card2);border-radius:10px;margin-bottom:12px">
-              <div>
-                <div style="font-size:12px;color:var(--text2)">Connected Wallet</div>
-                <div id="set-wallet" style="font-family:var(--mono);font-size:11px;color:var(--text3)">Not connected
-                </div>
-              </div>
-              <button class="btn btn-ghost btn-sm" onclick="connectWallet()">Change</button>
-            </div>
-            <button class="btn btn-ghost btn-full" style="color:var(--red);border-color:rgba(220,38,38,.2)"
-              onclick="logout()">Sign Out of Account</button>
+            <div style="padding:16px;background:rgba(108,99,255,.05);border-radius:12px;margin-bottom:20px">
+              <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px">Validation Info</div>
+              <p style="font-size:11px;color:var(--text2);margin:0">By submitting, your proposal will enter the trustee
+                validation workspace. It requires 2/3 trustee verifications to go live on the blockchain.</p>
+            </div><button class="btn btn-primary" style="width:100%;padding:14px;font-size:15px"
+              onclick="submitProposal()">Deploy Campaign Contract</button>
           </div>
         </div>
       </div>
@@ -2774,8 +2933,8 @@
       <div class="page" id="page-proposals">
         <div class="page-header">
           <div>
-            <div class="page-title">My Campaign Proposals</div>
-            <div class="page-sub">Track approval status and launch missions to the blockchain</div>
+            <div class="page-title">My Proposals</div>
+            <div class="page-sub">Track the validation and launch status of your projects</div>
           </div><button class="btn btn-primary btn-sm" onclick="showPage('create')">+ New Proposal</button>
         </div>
         <div id="proposals-list" class="grid-col1">
@@ -2813,7 +2972,6 @@
       </div>
     </div>
 
-
     <div class="right-panel">
       <div>
         <div class="rp-section-title">Wallet</div>
@@ -2840,7 +2998,9 @@
             <div style="font-size:16px;font-weight:700;color:var(--green)" id="rp-wallet-inr">₹0</div>
           </div>
         </div>
-        <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px;padding:8px;border:1px dashed var(--border2);border-radius:8px">Blockchain Active · Sepolia Testnet</div>
+        <div
+          style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px;padding:8px;border:1px dashed var(--border2);border-radius:8px">
+          Blockchain Active · Sepolia Testnet</div>
       </div>
       <div>
         <div class="rp-section-title">Platform Stats</div>
@@ -2886,59 +3046,10 @@
     </div>
   </div>
 
-  <!-- CAMPAIGN MODAL (with refresh button) -->
-  <div class="modal-overlay" id="campaign-modal" style="display:none"
-    onclick="if(event.target===this)this.style.display='none'">
-    <div class="modal" style="max-width:700px"><button class="modal-close"
-        onclick="document.getElementById('campaign-modal').style.display='none';if(window._modalRefreshTimer){clearInterval(window._modalRefreshTimer);window._modalRefreshTimer=null;}">✕</button>
-      <div id="campaign-modal-content"></div>
-    </div>
-  </div>
-
-  <!-- AUTH MODAL -->
-  <div class="modal-overlay" id="auth-modal" style="display:none"
-    onclick="if(event.target===this)this.style.display='none'">
-    <div class="modal" style="max-width:440px"><button class="modal-close"
-        onclick="document.getElementById('auth-modal').style.display='none'">✕</button>
-      <div class="modal-title">Welcome to ChainFund</div>
-      <div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button><button
-          class="auth-tab" onclick="switchAuthTab('register')">Create Account</button></div>
-      <div id="auth-login">
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email"
-            type="email" placeholder="you@email.com" /></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="login-pass"
-            type="password" placeholder="••••••••" /></div><button class="btn btn-primary btn-full"
-          onclick="login()">Sign In →</button>
-      </div>
-      <div id="auth-register" style="display:none">
-        <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="reg-name"
-            placeholder="Your name" /></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="reg-email"
-            type="email" placeholder="you@email.com" /></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="reg-pass"
-            type="password" placeholder="Minimum 8 characters" /></div>
-        <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="reg-role">
-            <option value="donor">Donor</option>
-            <option value="organiser">Campaign Organiser</option>
-            <option value="trustee">Trustee</option>
-          </select></div><button class="btn btn-primary btn-full" onclick="register()">Create Account →</button>
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">— or —</div><button
-          style="width:100%;padding:11px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s"
-          onclick="connectWallet();document.getElementById('auth-modal').style.display='none'">🦊 Continue with
-          MetaMask</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast-container" id="toasts"></div>
-
-  <!-- METAMASK REGISTRATION MODAL -->
   <div class="modal-overlay" id="metamask-reg-modal" style="display:none"
     onclick="if(event.target===this)this.style.display='none'">
     <div class="modal" style="max-width:420px"><button class="modal-close"
-        onclick="document.getElementById('metamask-reg-modal').style.display='none'">✕</button>
+        onclick="document.getElementById('metamask-reg-modal').style.display='none'">âœ•</button>
       <div style="text-align:center;margin-bottom:24px">
         <div style="font-size:2.5rem;margin-bottom:10px">🦊</div>
         <div class="modal-title" style="margin-bottom:6px;font-size:1.1rem">Almost there!</div>
@@ -2972,7 +3083,7 @@
   </div>
 
   <script>
-    // ── Config ───────────────────────────────────────────────────────────────
+    // â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const API = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
       ? 'http://localhost:5000/api'
       : '/api';
@@ -3003,7 +3114,7 @@
 
 
 
-    // ── State ─────────────────────────────────────────────────────────────────
+    // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let provider, signer, walletAddress, token, currentUser;
     let FACTORY_ADDRESS = null;
     let socket;
@@ -3011,7 +3122,7 @@
     let _modalRefreshTimer = null;
     let currentBrowseActive = true;
 
-    // ── Init ──────────────────────────────────────────────────────────────────
+    // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     window.addEventListener('DOMContentLoaded', async () => {
       // Try to load config with retries
       let attempts = 0;
@@ -3021,7 +3132,7 @@
           if (cr.ok) {
             const config = await cr.json();
             FACTORY_ADDRESS = config.factory;
-            console.log('⛓️ Blockchain Config Loaded:', config);
+            console.log('⛓️ï¸ Blockchain Config Loaded:', config);
             if (config.factory) break;
           }
         } catch (e) { console.warn('Config fetch attempt failed:', e.message); }
@@ -3065,7 +3176,7 @@
         });
       } catch (_) { }
       document.getElementById('c-goal').addEventListener('input', (e) => {
-        document.getElementById('c-goal-inr').textContent = `≈ ₹${(parseFloat(e.target.value || 0) * ETH_INR).toLocaleString('en-IN')}`;
+        document.getElementById('c-goal-inr').textContent = `â‰ˆ ₹${(parseFloat(e.target.value || 0) * ETH_INR).toLocaleString('en-IN')}`;
       });
       applyStoredTheme();
       setInterval(loadStats, 30000);
@@ -3075,25 +3186,42 @@
       if (window.ethereum?.selectedAddress) { walletAddress = window.ethereum.selectedAddress; updateWalletUI(); }
     });
 
-    // ── Page Navigation ───────────────────────────────────────────────────────
+    // â”€â”€ Page Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function showPage(name) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const currentActive = document.querySelector('.page.active');
+      const nextPg = document.getElementById(`page-${name}`);
+      if (!nextPg) return;
+
+      // Update nav immediately
       document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
-      const pg = document.getElementById(`page-${name}`);
-      if (pg) pg.classList.add('active');
       const navEl = document.getElementById(`nav-${name}`);
       if (navEl) navEl.classList.add('active');
-      window.scrollTo(0, 0);
-      if (name === 'dashboard') loadDashboard();
-      if (name === 'explorer') loadExplorer();
-      if (name === 'campaigns') loadCampaigns();
-      if (name === 'proposals') loadProposals();
-      if (name === 'trustee') loadTrusteeValidations();
-      if (name === 'create') checkCreateAccess();
-      if (name === 'kyc') loadKYCStatus();
-      if (name === 'admin') loadAdminApplications();
-      if (name === 'settings') loadSettings();
-      if (name === 'my-activity') loadUserActivity();
+
+      const activatePage = () => {
+        document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('page-exit'); });
+        nextPg.classList.add('active');
+        const mainEl = document.querySelector('.main');
+        if (mainEl) mainEl.scrollTop = 0;
+
+        if (name === 'dashboard') loadDashboard();
+        if (name === 'explorer') loadExplorer();
+        if (name === 'campaigns') loadCampaigns();
+        if (name === 'proposals') loadProposals();
+        if (name === 'trustee') loadTrusteeValidations();
+        if (name === 'create') checkCreateAccess();
+        if (name === 'kyc') loadKYCStatus();
+        if (name === 'admin') loadAdminApplications();
+        if (name === 'settings') loadSettings();
+        if (name === 'my-activity') loadUserActivity();
+      };
+
+      // If there's a current page, animate it out first
+      if (currentActive && currentActive !== nextPg) {
+        currentActive.classList.add('page-exit');
+        setTimeout(activatePage, 180);
+      } else {
+        activatePage();
+      }
     }
 
     function setModalTab(tab) {
@@ -3158,7 +3286,7 @@
         } else {
           document.getElementById('my-donations-list').innerHTML = data.donations.map(d => `
         <div class="tx-row" style="margin-bottom:8px" onclick="openCampaignDetail('${d.campaignAddress}')">
-          <div class="tx-icon-w" style="background:var(--accent-dim)">🎁</div>
+          <div class="tx-icon-w" style="background:var(--accent-dim)">ðŸŽ</div>
           <div class="tx-info">
             <div class="tx-desc" style="font-weight:600;color:var(--text)">${d.campaignTitle}</div>
             <div class="tx-hash">${shortAddr(d.txHash)}</div>
@@ -3193,13 +3321,13 @@
       _lastToast = msg; _lastToastTime = now;
 
       const el = document.createElement('div'); el.className = `toast ${type}`;
-      const icons = { success: '✅', error: '❌', info: '⛓️' };
+      const icons = { success: '✅', error: 'âŒ', info: '⛓️ï¸' };
       el.innerHTML = `<span>${icons[type] || '•'}</span><span>${msg}</span>`;
       document.getElementById('toasts').appendChild(el);
       setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
     }
 
-    // ── Wallet ────────────────────────────────────────────────────────────────
+    // â”€â”€ Wallet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function connectWallet() {
       if (!window.ethereum) { toast('MetaMask not found. Please install it from metamask.io', 'error'); window.open('https://metamask.io', '_blank'); return; }
       try {
@@ -3223,7 +3351,7 @@
     function updateWalletUI() { const warn = document.getElementById('create-wallet-warning'); if (warn) warn.style.display = 'none'; updateRightPanelWallet(); }
     function shortAddr(a) { return a ? `${a.slice(0, 6)}...${a.slice(-4)}` : ''; }
 
-    // ── Auth ──────────────────────────────────────────────────────────────────
+    // â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
     function switchAuthTab(tab) {
       document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
@@ -3283,7 +3411,7 @@
       showPage('home');
     }
 
-    // ── Stats ─────────────────────────────────────────────────────────────────
+    // â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let _statsFetchDebounce = 0;
     async function loadSyncStatus() {
       try {
@@ -3307,7 +3435,20 @@
       _statsFetchDebounce = now;
       loadSyncStatus(); // check sync progress too
 
-      const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      const setEl = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        // Animate numeric values with countUp
+        const numericVal = typeof val === 'string' ? parseFloat(val.replace(/[^0-9.-]/g, '')) : val;
+        if (!isNaN(numericVal) && numericVal > 0 && typeof val === 'string') {
+          const prefix = val.match(/^[^0-9]*/)?.[0] || '';
+          const suffix = val.match(/[^0-9,.]*$/)?.[0] || '';
+          const hasComma = val.includes(',');
+          countUp(el, 0, numericVal, 900, prefix, suffix, hasComma);
+        } else {
+          el.textContent = val;
+        }
+      };
 
       // 1. Load Platform Stats
       try {
@@ -3346,7 +3487,7 @@
 
     }
 
-    // ── Campaigns ─────────────────────────────────────────────────────────────
+    // â”€â”€ Campaigns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function setBrowseFilter(active, el) {
       currentBrowseActive = active;
       document.querySelectorAll('.tab-sc .tab-item').forEach(i => i.classList.remove('active'));
@@ -3368,13 +3509,13 @@
         }
         if (!campaigns.length) { grid.innerHTML = ''; document.getElementById('no-campaigns').style.display = 'block'; return; }
         document.getElementById('no-campaigns').style.display = 'none';
-        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
+        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
         console.log(`📋 Rendering ${campaigns.length} campaigns:`, campaigns.map(c => ({ title: c.title, addr: c.contractAddress })));
         grid.innerHTML = campaigns.map((c, cardIdx) => {
           const pctFill = Math.min(100, (c.totalRaised || 0) / (c.goalAmount || 1) * 100).toFixed(3);
           const visualPct = Object.is(c.totalRaised || 0, 0) ? 0 : Math.max(3, pctFill);
           return `
-      <div class="camp-card" onclick="openCampaignDetail('${c.contractAddress || c._id}')" data-addr="${c.contractAddress || ''}" data-id="${c._id}">
+      <div class="camp-card tilt-fx" onclick="openCampaignDetail('${c.contractAddress || c._id}')" data-addr="${c.contractAddress || ''}" data-id="${c._id}">
         <div class="pot-container">
           <div class="pot-body">
             <div class="pot-liquid" style="height:${visualPct}%"></div>
@@ -3432,11 +3573,11 @@
       console.log(`📋 Rendering ${demos.length} demo campaigns:`, demos.map(c => ({ title: c.title, addr: c.contractAddress })));
 
       return demos.map((c, idx) => {
-        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
+        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
         const pctFill = Math.min(100, (c.totalRaised || 0) / (c.goalAmount || 1) * 100).toFixed(3);
         const toINR = (eth) => `₹${Math.round((eth || 0) * 220000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
-        return `<div class="camp-card" onclick="openDemoCampaignDetail(${idx})" data-demo-idx="${idx}">
+        return `<div class="camp-card tilt-fx" onclick="openDemoCampaignDetail(${idx})" data-demo-idx="${idx}">
       <div class="pot-container">
         <div class="pot-body">
           <div class="pot-liquid" style="height:${pctFill}%"></div>
@@ -3463,7 +3604,7 @@
       }).join('');
     }
 
-    // ── Demo Campaign Data Management ───────────────────────────────────────
+    // â”€â”€ Demo Campaign Data Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function initializeDemoCampaignStorage() {
       const demoCampaignsData = [
         {
@@ -3538,7 +3679,7 @@
         console.log(`✓ getDemoCampaign(${index}) from key "${key}" → "${data.title}"`);
         return data;
       }
-      console.warn(`✗ getDemoCampaign(${index}) NOT FOUND for key "${key}"`);
+      console.warn(`✖ getDemoCampaign(${index}) NOT FOUND for key "${key}"`);
       return null;
     }
     function updateDemoCampaign(index, data) {
@@ -3546,7 +3687,7 @@
       localStorage.setItem(key, JSON.stringify(data));
     }
 
-    // ── Campaign Detail with Refresh Button ───────────────────────────────────
+    // â”€â”€ Campaign Detail with Refresh Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function openCampaignDetail(identifier, forceRefresh = false) {
       const modal = document.getElementById('campaign-modal');
       modal.style.display = 'flex';
@@ -3590,7 +3731,7 @@
         const pct = goal > 0 ? Math.min(100, (totalRaised / goal) * 100).toFixed(3) : 0;
         const visualPct = totalRaised === 0 ? 0 : Math.max(3, pct);
 
-        const catEmoji = { Healthcare: '💧', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
+        const catEmoji = { Healthcare: '💧', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
 
         document.getElementById('campaign-modal-content').innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -3702,7 +3843,7 @@
       } catch (err) { if (!silent) toast('Refresh failed: ' + err.message, 'error'); openCampaignDetail(window._currentModalAddress, true); }
     }
     function openDemoCampaignDetail(index = 0) {
-      console.log(`🔍 openDemoCampaignDetail called with index: ${index}`);
+      console.log(`ðŸ” openDemoCampaignDetail called with index: ${index}`);
       let demo = getDemoCampaign(index);
 
       // Fallback: if demo not found, initialize storage and try again
@@ -3713,7 +3854,7 @@
       }
 
       if (!demo) {
-        console.error(`✗ Demo campaign ${index} still not found after reinitialization!`);
+        console.error(`✖ Demo campaign ${index} still not found after reinitialization!`);
         return;
       }
 
@@ -3725,7 +3866,7 @@
       document.getElementById('campaign-modal').style.display = 'flex';
       const toINR = (eth) => eth > 0 ? `₹${Math.round(eth * 220000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : `₹0`;
       const pctFill = Math.min(100, (demo.totalRaised || 0) / (demo.goalAmount || 1) * 100).toFixed(3);
-      const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
+      const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
 
       document.getElementById('campaign-modal-content').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -3775,7 +3916,7 @@
   `;
     }
 
-    // ── Simulate Demo Donation ───────────────────────────────────────────────
+    // â”€â”€ Simulate Demo Donation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function simulateDemoDonation(index) {
       const amountInput = document.getElementById('donate-amount');
       const amount = amountInput?.value;
@@ -3813,7 +3954,7 @@
       }, 500);
     }
 
-    // ── Donate with Retry Logic ───────────────────────────────────────────────
+    // â”€â”€ Donate with Retry Logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function donateToCampaign(contractAddress) {
       if (!walletAddress) { await connectWallet(); if (!walletAddress) return; }
       if (!signer) return toast('Wallet not ready. Refresh and reconnect.', 'error');
@@ -3904,7 +4045,7 @@
       }
     }
 
-    // ── Deploy Campaign ───────────────────────────────────────────────────────
+    // â”€â”€ Deploy Campaign â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function deployCampaign() {
       if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
       const title = document.getElementById('c-title').value.trim(), desc = document.getElementById('c-desc').value.trim(), cat = document.getElementById('c-cat').value, goal = document.getElementById('c-goal').value, days = document.getElementById('c-days').value, approvals = document.getElementById('c-approvals').value, trusteesRaw = document.getElementById('c-trustees').value.trim();
@@ -3949,18 +4090,18 @@
       }
     }
 
-    // ── Milestone Fields ──────────────────────────────────────────────────────
+    // â”€â”€ Milestone Fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let milestoneCount = 0;
-    function addMilestoneField() { milestoneCount++; const c = document.getElementById('milestones-container'); if (milestoneCount === 1) c.innerHTML = ''; const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:10px;align-items:center'; div.innerHTML = `<input class="form-input" placeholder="Milestone ${milestoneCount} description" style="flex:2"/><input class="form-input" type="number" step="0.001" placeholder="ETH" style="flex:1"/><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`; c.appendChild(div); }
+    function addMilestoneField() { milestoneCount++; const c = document.getElementById('milestones-container'); if (milestoneCount === 1) c.innerHTML = ''; const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:10px;align-items:center'; div.innerHTML = `<input class="form-input" placeholder="Milestone ${milestoneCount} description" style="flex:2"/><input class="form-input" type="number" step="0.001" placeholder="ETH" style="flex:1"/><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">âœ•</button>`; c.appendChild(div); }
 
-    // ── Dashboard ─────────────────────────────────────────────────────────────
+    // â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function switchDashTab(name) { document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', ['overview', 'tracker', 'my'][i] === name)); document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', ['dt-overview', 'dt-tracker', 'dt-my'][i] === `dt-${name}`)); }
     async function loadDashboard() {
       if (!currentUser) { showPage('home'); openAuthModal(); return; }
       const myTab = document.getElementById('dash-tab-my');
       if (myTab) myTab.style.display = (currentUser.role === 'donor') ? 'none' : 'inline-block';
-      loadStats(); 
-      loadLiveTxns(); 
+      loadStats();
+      loadLiveTxns();
     }
     async function loadLiveTxns() {
       const el = document.getElementById('live-txns');
@@ -3978,15 +4119,19 @@
       } catch (e) { console.warn('loadLiveTxns error:', e.message); el.innerHTML = demoTxns(); }
     }
     function appendLiveTx(tx) { const el = document.getElementById('live-txns'); if (!el) return; el.insertAdjacentHTML('afterbegin', txRow(tx)); const rows = el.children; if (rows.length > 8) rows[rows.length - 1].remove(); }
-    function txRow(tx) { const icons = { donation: '💰', disbursement: '📤', refund: '↩️', contract_create: '📄', approval: '✅' }; const bgMap = { donation: 'rgba(34,197,94,.1)', disbursement: 'rgba(0,210,200,.1)', refund: 'rgba(239,68,68,.1)', contract_create: 'rgba(168,85,247,.1)' }; const amtStr = tx.valueETH ? `${tx.valueETH.toFixed(4)} ETH` : (tx.amountETH ? `${tx.amountETH.toFixed(4)} ETH` : '—'); const hashStr = tx.txHash || tx.hash || '0x...'; return `<div class="tx-row" onclick="document.getElementById('explorer-input').value='${hashStr}';showPage('explorer');explorerSearch()"><div class="tx-icon-wrap" style="background:${bgMap[tx.type] || 'var(--border)'}">${icons[tx.type] || '•'}</div><div class="tx-info"><div class="tx-hash">${hashStr.slice(0, 20)}...${hashStr.slice(-8)}</div><div class="tx-desc">${tx.description || tx.type}</div><div class="tx-meta"><span class="verified">✓</span> Block #${tx.blockNumber || '...'}</div></div><div class="tx-amt"><div class="amt">${amtStr}</div><div class="when">${timeAgo(tx.timestamp || tx.createdAt)}</div></div></div>`; }
+    function txRow(tx) { const icons = { donation: '💰', disbursement: '📤', refund: 'â†©ï¸', contract_create: '📄', approval: '✅' }; const bgMap = { donation: 'rgba(34,197,94,.1)', disbursement: 'rgba(0,210,200,.1)', refund: 'rgba(239,68,68,.1)', contract_create: 'rgba(168,85,247,.1)' }; const amtStr = tx.valueETH ? `${tx.valueETH.toFixed(4)} ETH` : (tx.amountETH ? `${tx.amountETH.toFixed(4)} ETH` : '—'); const hashStr = tx.txHash || tx.hash || '0x...'; return `<div class="tx-row" onclick="document.getElementById('explorer-input').value='${hashStr}';showPage('explorer');explorerSearch()"><div class="tx-icon-wrap" style="background:${bgMap[tx.type] || 'var(--border)'}">${icons[tx.type] || '•'}</div><div class="tx-info"><div class="tx-hash">${hashStr.slice(0, 20)}...${hashStr.slice(-8)}</div><div class="tx-desc">${tx.description || tx.type}</div><div class="tx-meta"><span class="verified">✓</span> Block #${tx.blockNumber || '...'}</div></div><div class="tx-amt"><div class="amt">${amtStr}</div><div class="when">${timeAgo(tx.timestamp || tx.createdAt)}</div></div></div>`; }
     function demoTxns() { const rows = [{ type: 'donation', txHash: '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7...b91c', description: 'Donation — Clean Water Initiative', blockNumber: 18402119, valueETH: 0.045, timestamp: new Date() }, { type: 'disbursement', txHash: '0x7bc1e4f0912c884490d8b3e9a1f567c239d7...e83d', description: 'Disbursement — Medical Equipment', blockNumber: 18402087, valueETH: 0.545, timestamp: new Date(Date.now() - 1080000) }, { type: 'donation', txHash: '0x2ae7f18b9c2048376e59d4a91b832cd7f5a1...91b0', description: 'Donation — Rural Education Fund', blockNumber: 18402055, valueETH: 0.025, timestamp: new Date(Date.now() - 2040000) }, { type: 'disbursement', txHash: '0x9d2f44aa7c1b3e59f20d8c6a94b7e1f035ab...44aa', description: 'Disbursement — Teacher Salaries', blockNumber: 18402001, valueETH: 0.386, timestamp: new Date(Date.now() - 3600000) }]; return rows.map(txRow).join(''); }
     function timeAgo(ts) { if (!ts) return '—'; const d = Math.floor((Date.now() - new Date(ts)) / 1000); if (d < 60) return `${d}s ago`; if (d < 3600) return `${Math.floor(d / 60)}m ago`; return `${Math.floor(d / 3600)}h ago`; }
-    async function loadTrackerAllocation() { const addr = document.getElementById('tracker-select').value, el = document.getElementById('tracker-alloc'); if (!addr || addr.startsWith('—')) return; try { const r = await apiFetch(`/blockchain/campaign/${addr}`); if (!r.ok) throw new Error(); const d = await r.json(); const pct = d.goalAmount > 0 ? Math.min(100, d.totalRaised / d.goalAmount * 100).toFixed(3) : 0; 
-        el.innerHTML = `<div style="margin-bottom:16px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:var(--mono)">Total locked: ${toINR(parseFloat(d.balance))}</div><div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${parseFloat(pct)}%"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px"><span>${toINR(d.totalDisbursed)} disbursed</span><span>${pct}%</span></div></div><div class="alloc-row"><div class="alloc-label">🎯 Goal</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:100%;background:#00d2c8"></div></div><div class="alloc-pct">100%</div><div class="alloc-amt">${toINR(parseFloat(d.goalAmount))}</div></div><div class="alloc-row"><div class="alloc-label">📊 Raised</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${parseFloat(pct)}%;background:#3b82f6"></div></div><div class="alloc-pct">${pct}%</div><div class="alloc-amt">${toINR(d.totalRaised)}</div></div><div class="alloc-row"><div class="alloc-label">📤 Disbursed</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%;background:#22c55e"></div></div><div class="alloc-pct">${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%</div><div class="alloc-amt">${toINR(d.totalDisbursed)}</div></div>`; document.getElementById('flow-balance').textContent = `${parseFloat(d.balance).toFixed(4)} ETH locked`; } catch (_) { el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Connect to blockchain to see live allocation data</div>`; } }
+    async function loadTrackerAllocation() {
+      const addr = document.getElementById('tracker-select').value, el = document.getElementById('tracker-alloc'); if (!addr || addr.startsWith('—')) return; try {
+        const r = await apiFetch(`/blockchain/campaign/${addr}`); if (!r.ok) throw new Error(); const d = await r.json(); const pct = d.goalAmount > 0 ? Math.min(100, d.totalRaised / d.goalAmount * 100).toFixed(3) : 0;
+        el.innerHTML = `<div style="margin-bottom:16px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:var(--mono)">Total locked: ${toINR(parseFloat(d.balance))}</div><div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${parseFloat(pct)}%"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px"><span>${toINR(d.totalDisbursed)} disbursed</span><span>${pct}%</span></div></div><div class="alloc-row"><div class="alloc-label">🎯 Goal</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:100%;background:#00d2c8"></div></div><div class="alloc-pct">100%</div><div class="alloc-amt">${toINR(parseFloat(d.goalAmount))}</div></div><div class="alloc-row"><div class="alloc-label">📊 Raised</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${parseFloat(pct)}%;background:#3b82f6"></div></div><div class="alloc-pct">${pct}%</div><div class="alloc-amt">${toINR(d.totalRaised)}</div></div><div class="alloc-row"><div class="alloc-label">📤 Disbursed</div><div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%;background:#22c55e"></div></div><div class="alloc-pct">${d.totalRaised > 0 ? (d.totalDisbursed / d.totalRaised * 100).toFixed(3) : 0}%</div><div class="alloc-amt">${toINR(d.totalDisbursed)}</div></div>`; document.getElementById('flow-balance').textContent = `${parseFloat(d.balance).toFixed(4)} ETH locked`;
+      } catch (_) { el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Connect to blockchain to see live allocation data</div>`; }
+    }
 
-    // ── Explorer ───────────────────────────────────────────────────────────────
+    // â”€â”€ Explorer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function loadExplorer() { loadBlocks(); loadExplorerTxns(); }
-    async function loadBlocks() { const el = document.getElementById('blocks-row'); try { const r = await apiFetch('/blockchain/blocks/recent'); if (!r.ok) throw new Error(); const { blocks } = await r.json(); if (!blocks.length) throw new Error(); el.innerHTML = blocks.map((b, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${b.number?.toLocaleString()}</div><div class="block-hash">${b.hash}</div><div class="block-txcount"><strong>${b.txCount}</strong> txns · ${timeAgo(b.timestamp * 1000)}</div></div>${i < blocks.length - 1 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } catch (_) { el.innerHTML = [18402119, 18402118, 18402117, 18402116, 18402115].map((n, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${n.toLocaleString()}</div><div class="block-hash">0x${Math.random().toString(16).slice(2, 18)}...${Math.random().toString(16).slice(2, 6)}</div><div class="block-txcount"><strong>${Math.floor(Math.random() * 12 + 1)}</strong> txns · ${i * 14 + 2}s ago</div></div>${i < 4 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } }
+    async function loadBlocks() { const el = document.getElementById('blocks-row'); try { const r = await apiFetch('/blockchain/blocks/recent'); if (!r.ok) throw new Error(); const { blocks } = await r.json(); if (!blocks.length) throw new Error(); el.innerHTML = blocks.map((b, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${b.number?.toLocaleString()}</div><div class="block-hash">${b.hash}</div><div class="block-txcount"><strong>${b.txCount}</strong> txns Â· ${timeAgo(b.timestamp * 1000)}</div></div>${i < blocks.length - 1 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } catch (_) { el.innerHTML = [18402119, 18402118, 18402117, 18402116, 18402115].map((n, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${n.toLocaleString()}</div><div class="block-hash">0x${Math.random().toString(16).slice(2, 18)}...${Math.random().toString(16).slice(2, 6)}</div><div class="block-txcount"><strong>${Math.floor(Math.random() * 12 + 1)}</strong> txns Â· ${i * 14 + 2}s ago</div></div>${i < 4 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } }
     async function loadExplorerTxns() {
       const el = document.getElementById('explorer-txns');
       if (!el) return;
@@ -4004,7 +4149,7 @@
     }
     async function explorerSearch() { const q = document.getElementById('explorer-input').value.trim(); if (!q) return; const section = document.getElementById('tx-detail-section'), content = document.getElementById('tx-detail-content'); section.style.display = 'block'; content.innerHTML = `<div style="text-align:center;padding:30px"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--text3)">Searching blockchain...</div></div>`; try { const r = await apiFetch(`/transactions/${q}`); if (!r.ok) throw new Error('Not found in index'); const tx = await r.json(); content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${tx.txHash}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#${tx.blockNumber?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">${tx.from}</div></div><div class="tx-detail-row"><div class="k">To</div><div class="v">${tx.to}</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">${tx.valueETH?.toFixed(6)} ETH <span style="color:var(--text3)">(₹${(tx.valueINR || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })})</span></div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">${tx.type}</div></div><div class="tx-detail-row"><div class="k">Purpose</div><div class="v">${tx.description || tx.campaignAddress || '—'}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${tx.timestamp ? new Date(tx.timestamp).toLocaleString() : '—'}</div></div></div>`; } catch (_) { content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7c9208b1ee40187a4be9b91c'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed (14 confirmations)</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">0x3fa8b12cd9e40187...b91c <span style="color:var(--text3)">(Donor)</span></div></div><div class="tx-detail-row"><div class="k">To</div><div class="v"><span style="color:var(--purple)">Smart Contract</span> 0xSC0482...a3f2</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">0.045 ETH <span style="color:var(--text3)">(₹9,900)</span></div></div><div class="tx-detail-row"><div class="k">Gas Fee</div><div class="v">0.00018 ETH — paid by platform</div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">Donation</div></div><div class="tx-detail-row"><div class="k">Campaign</div><div class="v">Clean Water Initiative — Rajasthan</div></div></div>`; } section.scrollIntoView({ behavior: 'smooth' }); }
 
-    // ── KYC & Admin ───────────────────────────────────────────────────────────
+    // â”€â”€ KYC & Admin â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function checkCreateAccess() {
       const navCreate = document.getElementById('nav-create');
       if (!navCreate) return;
@@ -4031,7 +4176,7 @@
         navCreate.style.display = 'none';
       }
     }
-    async function submitKYC() { if (!token) { toast('Please create an account first to submit KYC', 'error'); switchAuthTab('register'); openAuthModal(); if (walletAddress) setTimeout(() => { const emailEl = document.getElementById('reg-email'); if (emailEl && !emailEl.value) emailEl.focus(); }, 300); return; } const fullName = document.getElementById('kyc-fullname').value.trim(), phone = document.getElementById('kyc-phone').value.trim(), organization = document.getElementById('kyc-org').value.trim(), orgType = document.getElementById('kyc-orgtype').value, panNumber = document.getElementById('kyc-pan').value.trim(), address = document.getElementById('kyc-address').value.trim(), purposeStatement = document.getElementById('kyc-purpose').value.trim(), websiteUrl = document.getElementById('kyc-website').value.trim(), socialLinks = document.getElementById('kyc-social').value.trim(); if (!fullName || !phone || !organization || !orgType || !address || !purposeStatement) return toast('Please fill all required fields (*)', 'error'); if (purposeStatement.length < 100) return toast('Purpose statement must be at least 100 characters', 'error'); const btn = document.getElementById('kyc-submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner" style="display:inline-block;margin-right:8px"></div>Submitting...'; try { const r = await apiFetch('/kyc/apply', { method: 'POST', body: JSON.stringify({ fullName, phone, organization, orgType, panNumber, address, purposeStatement, websiteUrl, socialLinks }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); document.getElementById('kyc-form-wrap').innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:4rem;margin-bottom:16px">📋</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:10px">Application Submitted!</div><div style="font-size:13px;color:var(--text2);line-height:1.7;max-width:400px;margin:0 auto 24px">Your verification request is now under review. You will be able to create campaigns once approved by our admin team.</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text3);margin-bottom:20px">⏱ Typical review time: <strong style="color:#fff">24–48 hours</strong><br>📧 You can check your status anytime in your account</div><button class="btn btn-ghost" onclick="showPage('campaigns')">Browse Campaigns →</button></div>`; toast('Application submitted successfully!', 'success'); } catch (err) { toast('Submission failed: ' + err.message, 'error'); btn.disabled = false; btn.innerHTML = 'Submit Verification Application →'; } }
+    async function submitKYC() { if (!token) { toast('Please create an account first to submit KYC', 'error'); switchAuthTab('register'); openAuthModal(); if (walletAddress) setTimeout(() => { const emailEl = document.getElementById('reg-email'); if (emailEl && !emailEl.value) emailEl.focus(); }, 300); return; } const fullName = document.getElementById('kyc-fullname').value.trim(), phone = document.getElementById('kyc-phone').value.trim(), organization = document.getElementById('kyc-org').value.trim(), orgType = document.getElementById('kyc-orgtype').value, panNumber = document.getElementById('kyc-pan').value.trim(), address = document.getElementById('kyc-address').value.trim(), purposeStatement = document.getElementById('kyc-purpose').value.trim(), websiteUrl = document.getElementById('kyc-website').value.trim(), socialLinks = document.getElementById('kyc-social').value.trim(); if (!fullName || !phone || !organization || !orgType || !address || !purposeStatement) return toast('Please fill all required fields (*)', 'error'); if (purposeStatement.length < 100) return toast('Purpose statement must be at least 100 characters', 'error'); const btn = document.getElementById('kyc-submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner" style="display:inline-block;margin-right:8px"></div>Submitting...'; try { const r = await apiFetch('/kyc/apply', { method: 'POST', body: JSON.stringify({ fullName, phone, organization, orgType, panNumber, address, purposeStatement, websiteUrl, socialLinks }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); document.getElementById('kyc-form-wrap').innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:4rem;margin-bottom:16px">📋</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:10px">Application Submitted!</div><div style="font-size:13px;color:var(--text2);line-height:1.7;max-width:400px;margin:0 auto 24px">Your verification request is now under review. You will be able to create campaigns once approved by our admin team.</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text3);margin-bottom:20px">â± Typical review time: <strong style="color:#fff">24â€“48 hours</strong><br>📧 You can check your status anytime in your account</div><button class="btn btn-ghost" onclick="showPage('campaigns')">Browse Campaigns →</button></div>`; toast('Application submitted successfully!', 'success'); } catch (err) { toast('Submission failed: ' + err.message, 'error'); btn.disabled = false; btn.innerHTML = 'Submit Verification Application →'; } }
     async function loadKYCStatus() {
       if (!token) return; try {
         const r = await apiFetch('/kyc/status'); if (!r.ok) return; const d = await r.json(); const banner = document.getElementById('kyc-status-banner'); if (!banner) return;
@@ -4040,7 +4185,7 @@
         if (devWrap && !d.approvedToCreate) devWrap.style.display = 'block';
         else if (devWrap) devWrap.style.display = 'none';
 
-        if (d.approvedToCreate) { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px;font-size:13px;color:var(--green)">✅ Your account is <strong>approved</strong> to create campaigns! <a onclick="showPage('create')" style="color:var(--cyan);cursor:pointer;margin-left:8px">Create a Campaign →</a></div>`; document.getElementById('kyc-form-wrap').style.display = 'none'; } else if (d.kycStatus === 'pending') { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(245,194,66,.08);border:1px solid rgba(245,194,66,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--gold)">⏳ Your application is <strong>under review</strong>. Submitted on ${new Date(d.submittedAt).toLocaleDateString()}. We'll notify you once reviewed.</div>`; document.getElementById('kyc-form-wrap').style.display = 'none'; } else if (d.kycStatus === 'rejected') { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--red)">❌ Your previous application was <strong>rejected</strong>.<br><span style="color:var(--text2)">Reason: ${d.rejectionReason || 'Not specified'}</span><br><span style="color:var(--text3);font-size:11px">You may re-apply with updated information below.</span></div>`; }
+        if (d.approvedToCreate) { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px;font-size:13px;color:var(--green)">✅ Your account is <strong>approved</strong> to create campaigns! <a onclick="showPage('create')" style="color:var(--cyan);cursor:pointer;margin-left:8px">Create a Campaign →</a></div>`; document.getElementById('kyc-form-wrap').style.display = 'none'; } else if (d.kycStatus === 'pending') { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(245,194,66,.08);border:1px solid rgba(245,194,66,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--gold)">â³ Your application is <strong>under review</strong>. Submitted on ${new Date(d.submittedAt).toLocaleDateString()}. We'll notify you once reviewed.</div>`; document.getElementById('kyc-form-wrap').style.display = 'none'; } else if (d.kycStatus === 'rejected') { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--red)">âŒ Your previous application was <strong>rejected</strong>.<br><span style="color:var(--text2)">Reason: ${d.rejectionReason || 'Not specified'}</span><br><span style="color:var(--text3);font-size:11px">You may re-apply with updated information below.</span></div>`; }
       } catch (_) { }
     }
     async function devVerify() {
@@ -4053,13 +4198,13 @@
       } catch (err) { toast('Error: ' + err.message, 'error'); }
     }
 
-    async function loadAdminApplications() { const status = document.getElementById('admin-filter')?.value || 'pending'; const el = document.getElementById('admin-applications-list'); el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div class="spinner"></div></div>'; try { const sr = await apiFetch('/kyc/admin/stats'); if (sr.ok) { const s = await sr.json(); document.getElementById('admin-stat-pending').textContent = s.pending; document.getElementById('admin-stat-approved').textContent = s.approved; document.getElementById('admin-stat-rejected').textContent = s.rejected; document.getElementById('admin-stat-total').textContent = s.total; } } catch (_) { } try { const r = await apiFetch(`/kyc/applications?status=${status}`); if (!r.ok) throw new Error('Admin access required'); const { applications } = await r.json(); if (!applications.length) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px">No ${status} applications found.</div>`; return; } el.innerHTML = applications.map(u => `<div class="card" style="padding:20px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:#fff">${u.name}</div><span class="badge-tag ${u.kycApplication?.status === 'approved' ? 'badge-active' : u.kycApplication?.status === 'rejected' ? '' : 'badge-review'}" style="${u.kycApplication?.status === 'rejected' ? 'background:rgba(239,68,68,.12);color:var(--red)' : ''}">${u.kycApplication?.status || 'No application'}</span>${u.approvedToCreate ? '<span class="badge-tag badge-active">✓ Can Create</span>' : ''}<span class="badge-tag" style="background:var(--accent-dim);color:var(--accent)">Role: ${u.role}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:10px">${u.email} ${u.walletAddress ? '· ' + u.walletAddress.slice(0, 10) + '...' : ''}</div>${u.kycApplication ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12px;margin-bottom:12px"><div><span style="color:var(--text3)">Organisation:</span> <strong style="color:#fff">${u.kycApplication.organization}</strong></div><div><span style="color:var(--text3)">Type:</span> <strong style="color:#fff">${u.kycApplication.orgType}</strong></div><div><span style="color:var(--text3)">Phone:</span> <span style="color:var(--text2)">${u.kycApplication.phone}</span></div><div><span style="color:var(--text3)">PAN:</span> <span style="color:var(--text2)">${u.kycApplication.panNumber || '—'}</span></div><div style="grid-column:span 2"><span style="color:var(--text3)">Address:</span> <span style="color:var(--text2)">${u.kycApplication.address}</span></div>${u.kycApplication.websiteUrl ? `<div style="grid-column:span 2"><span style="color:var(--text3)">Website:</span> <a href="${u.kycApplication.websiteUrl}" target="_blank" style="color:var(--cyan)">${u.kycApplication.websiteUrl}</a></div>` : ''}</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px"><div style="color:var(--text3);margin-bottom:4px;font-weight:600">Purpose Statement:</div>${u.kycApplication.purposeStatement}</div><div style="font-size:11px;color:var(--text3)">Submitted: ${u.kycApplication.submittedAt ? new Date(u.kycApplication.submittedAt).toLocaleString() : '—'} · Registered: ${new Date(u.createdAt).toLocaleDateString()}</div>` : '<div style="font-size:12px;color:var(--text3)">No KYC application submitted yet.</div>'}</div><div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">${!u.approvedToCreate ? `<button class="btn btn-sm" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)" onclick="adminApprove('${u._id}')">✅ Approve</button>` : `<button class="btn btn-sm btn-danger" onclick="adminRevoke('${u._id}')">Revoke Access</button>`}${u.role !== 'trustee' ? `<button class="btn btn-sm" style="background:rgba(108,99,255,.12);border:1px solid var(--accent);color:var(--accent)" onclick="adminMakeTrustee('${u._id}')">🛡️ Make Trustee</button>` : ''}${u.kycApplication?.status !== 'rejected' ? `<button class="btn btn-sm btn-danger" onclick="adminReject('${u._id}')">❌ Reject</button>` : ''}</div></div></div>`).join(''); } catch (err) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--red)">Error: ${err.message}</div>`; } }
+    async function loadAdminApplications() { const status = document.getElementById('admin-filter')?.value || 'pending'; const el = document.getElementById('admin-applications-list'); el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div class="spinner"></div></div>'; try { const sr = await apiFetch('/kyc/admin/stats'); if (sr.ok) { const s = await sr.json(); document.getElementById('admin-stat-pending').textContent = s.pending; document.getElementById('admin-stat-approved').textContent = s.approved; document.getElementById('admin-stat-rejected').textContent = s.rejected; document.getElementById('admin-stat-total').textContent = s.total; } } catch (_) { } try { const r = await apiFetch(`/kyc/applications?status=${status}`); if (!r.ok) throw new Error('Admin access required'); const { applications } = await r.json(); if (!applications.length) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px">No ${status} applications found.</div>`; return; } el.innerHTML = applications.map(u => `<div class="card" style="padding:20px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:#fff">${u.name}</div><span class="badge-tag ${u.kycApplication?.status === 'approved' ? 'badge-active' : u.kycApplication?.status === 'rejected' ? '' : 'badge-review'}" style="${u.kycApplication?.status === 'rejected' ? 'background:rgba(239,68,68,.12);color:var(--red)' : ''}">${u.kycApplication?.status || 'No application'}</span>${u.approvedToCreate ? '<span class="badge-tag badge-active">✓ Can Create</span>' : ''}<span class="badge-tag" style="background:var(--accent-dim);color:var(--accent)">Role: ${u.role}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:10px">${u.email} ${u.walletAddress ? 'Â· ' + u.walletAddress.slice(0, 10) + '...' : ''}</div>${u.kycApplication ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12px;margin-bottom:12px"><div><span style="color:var(--text3)">Organisation:</span> <strong style="color:#fff">${u.kycApplication.organization}</strong></div><div><span style="color:var(--text3)">Type:</span> <strong style="color:#fff">${u.kycApplication.orgType}</strong></div><div><span style="color:var(--text3)">Phone:</span> <span style="color:var(--text2)">${u.kycApplication.phone}</span></div><div><span style="color:var(--text3)">PAN:</span> <span style="color:var(--text2)">${u.kycApplication.panNumber || '—'}</span></div><div style="grid-column:span 2"><span style="color:var(--text3)">Address:</span> <span style="color:var(--text2)">${u.kycApplication.address}</span></div>${u.kycApplication.websiteUrl ? `<div style="grid-column:span 2"><span style="color:var(--text3)">Website:</span> <a href="${u.kycApplication.websiteUrl}" target="_blank" style="color:var(--cyan)">${u.kycApplication.websiteUrl}</a></div>` : ''}</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px"><div style="color:var(--text3);margin-bottom:4px;font-weight:600">Purpose Statement:</div>${u.kycApplication.purposeStatement}</div><div style="font-size:11px;color:var(--text3)">Submitted: ${u.kycApplication.submittedAt ? new Date(u.kycApplication.submittedAt).toLocaleString() : '—'} Â· Registered: ${new Date(u.createdAt).toLocaleDateString()}</div>` : '<div style="font-size:12px;color:var(--text3)">No KYC application submitted yet.</div>'}</div><div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">${!u.approvedToCreate ? `<button class="btn btn-sm" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)" onclick="adminApprove('${u._id}')">✅ Approve</button>` : `<button class="btn btn-sm btn-danger" onclick="adminRevoke('${u._id}')">Revoke Access</button>`}${u.role !== 'trustee' ? `<button class="btn btn-sm" style="background:rgba(108,99,255,.12);border:1px solid var(--accent);color:var(--accent)" onclick="adminMakeTrustee('${u._id}')">ðŸ›¡ï¸ Make Trustee</button>` : ''}${u.kycApplication?.status !== 'rejected' ? `<button class="btn btn-sm btn-danger" onclick="adminReject('${u._id}')">âŒ Reject</button>` : ''}</div></div></div>`).join(''); } catch (err) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--red)">Error: ${err.message}</div>`; } }
     async function adminApprove(userId) { try { const r = await apiFetch(`/kyc/approve/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminMakeTrustee(userId) { if (!confirm('Promote this user to Trustee?')) return; try { const r = await apiFetch(`/kyc/make-trustee/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminReject(userId) { const reason = prompt('Enter rejection reason (shown to applicant):'); if (!reason) return; try { const r = await apiFetch(`/kyc/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminRevoke(userId) { if (!confirm('Revoke this user\'s ability to create campaigns?')) return; try { const r = await apiFetch(`/kyc/revoke/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast('Access revoked', 'info'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
 
-    // ── UI Helpers ───────────────────────────────────────────────────────────
+    // â”€â”€ UI Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     async function updateRightPanelWallet() {
       if (!walletAddress) { document.getElementById('rp-connect-prompt').style.display = 'block'; document.getElementById('rp-wallet-card').style.display = 'none'; document.getElementById('sidebar-wallet-mini').style.display = 'none'; document.getElementById('sidebar-connect-btn').style.display = 'block'; return; }
       document.getElementById('rp-connect-prompt').style.display = 'none'; document.getElementById('rp-wallet-card').style.display = 'block'; document.getElementById('sidebar-wallet-mini').style.display = 'block'; document.getElementById('sidebar-connect-btn').style.display = 'none';
@@ -4071,7 +4216,7 @@
     }
     function copyWalletAddr() { if (walletAddress) { navigator.clipboard.writeText(walletAddress); toast('Address copied to clipboard', 'success'); } }
     function showRightWallet() { document.querySelector('.right-panel').scrollTop = 0; }
-    async function updateRightPanelFeed() { const el = document.getElementById('rp-live-feed'); try { const r = await apiFetch('/transactions?limit=5'); if (!r.ok) throw new Error(); const { transactions } = await r.json(); if (!transactions.length) throw new Error(); el.innerHTML = transactions.map(tx => { const icons = { donation: '💰', disbursement: '📤', refund: '↩️', approval: '✅', contract_create: '📄' }; return '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + (icons[tx.type] || '•') + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + (tx.description || tx.type) + '</div><div class="rp-tx-hash">' + (tx.txHash || '').slice(0, 18) + '...</div></div><div class="rp-tx-amt">' + (tx.valueETH ? tx.valueETH.toFixed(4) + ' ETH' : '—') + '</div></div>'; }).join(''); } catch (_) { el.innerHTML = [{ icon: '💰', desc: 'Donation — Water Initiative', amt: '+0.045 ETH' }, { icon: '📤', desc: 'Disbursement — Medical Camp', amt: '1.200 ETH' }, { icon: '💰', desc: 'Donation — Education Fund', amt: '+0.025 ETH' }].map(t => '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + t.icon + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + t.desc + '</div></div><div class="rp-tx-amt">' + t.amt + '</div></div>').join(''); } }
+    async function updateRightPanelFeed() { const el = document.getElementById('rp-live-feed'); try { const r = await apiFetch('/transactions?limit=5'); if (!r.ok) throw new Error(); const { transactions } = await r.json(); if (!transactions.length) throw new Error(); el.innerHTML = transactions.map(tx => { const icons = { donation: '💰', disbursement: '📤', refund: 'â†©ï¸', approval: '✅', contract_create: '📄' }; return '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + (icons[tx.type] || '•') + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + (tx.description || tx.type) + '</div><div class="rp-tx-hash">' + (tx.txHash || '').slice(0, 18) + '...</div></div><div class="rp-tx-amt">' + (tx.valueETH ? tx.valueETH.toFixed(4) + ' ETH' : '—') + '</div></div>'; }).join(''); } catch (_) { el.innerHTML = [{ icon: '💰', desc: 'Donation — Water Initiative', amt: '+0.045 ETH' }, { icon: '📤', desc: 'Disbursement — Medical Camp', amt: '1.200 ETH' }, { icon: '💰', desc: 'Donation — Education Fund', amt: '+0.025 ETH' }].map(t => '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + t.icon + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + t.desc + '</div></div><div class="rp-tx-amt">' + t.amt + '</div></div>').join(''); } }
 
     function updateTopbarUser() {
       if (currentUser) {
@@ -4082,7 +4227,7 @@
         document.getElementById('user-name-display').textContent = currentUser.name.split(' ')[0];
         document.getElementById('user-name-display').style.display = 'block';
 
-        // ── ROLE-BASED SIDEBAR FILTERING ──────────────────────────────────────────
+        // â”€â”€ ROLE-BASED SIDEBAR FILTERING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const role = currentUser.role;
         document.getElementById('section-organiser').style.display = (role === 'organiser' || role === 'admin') ? 'block' : 'none';
         document.getElementById('section-trustee').style.display = (role === 'trustee' || role === 'admin') ? 'block' : 'none';
@@ -4107,7 +4252,7 @@
       }
     }
 
-    // ── Proposal & Validation Workflow ──────────────────────────────────────────
+    // â”€â”€ Proposal & Validation Workflow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     async function submitProposal() {
       const title = document.getElementById('c-title').value.trim(),
@@ -4168,8 +4313,8 @@
           <div>
             <div style="font-size:16px;font-weight:700;color:#fff">${p.title}</div>
             <div style="font-size:12px;color:var(--text3);margin-top:4px">
-              Goal: ${p.goalAmount} ETH · 
-              Approvals: <span style="color:${approvals >= required ? 'var(--green)' : 'var(--gold)'}">${approvals}/${required}</span> · 
+              Goal: ${p.goalAmount} ETH Â· 
+              Approvals: <span style="color:${approvals >= required ? 'var(--green)' : 'var(--gold)'}">${approvals}/${required}</span> Â· 
               Status: <span style="color:${getStatusColor(p.status)};font-weight:700">${p.status.toUpperCase()}</span>
             </div>
           </div>
@@ -4288,10 +4433,10 @@
         <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px">${p.title}</div>
         <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">${p.description.slice(0, 200)}...</div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text3)">
-          <div>By: ${p.organiser?.name || 'Unknown'} · Goal: ${p.goalAmount} ETH</div>
+          <div>By: ${p.organiser?.name || 'Unknown'} Â· Goal: ${p.goalAmount} ETH</div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-sm btn-success" onclick="validateProposal('${p._id}', 'approved')">✅ Approve</button>
-            <button class="btn btn-sm btn-danger" onclick="validateProposal('${p._id}', 'rejected')">❌ Reject</button>
+            <button class="btn btn-sm btn-danger" onclick="validateProposal('${p._id}', 'rejected')">âŒ Reject</button>
           </div>
         </div>
       </div>
@@ -4333,8 +4478,8 @@
     }
     async function loadMyDonations() { if (!token) return; try { const r = await apiFetch('/donations/mine'); if (!r.ok) return; const donations = await r.json(); const el = document.getElementById('rp-my-donations'); if (!donations.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">No donations yet</div>'; return; } el.innerHTML = donations.slice(0, 5).map(d => '<div class="my-donation-item"><div class="mdi-title">' + (d.campaign?.title || d.campaignAddress?.slice(0, 16) + '...') + '</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><div class="mdi-amount">+' + (d.amountETH || 0).toFixed(4) + ' ETH</div><div class="mdi-date">' + new Date(d.createdAt).toLocaleDateString() + '</div></div></div>').join(''); } catch (_) { } }
     function updateActiveBadge(count) { const el = document.getElementById('active-count'); if (el) el.textContent = count || '—'; }
-    function toggleTheme() { const body = document.body; if (body.classList.contains('light-theme')) { body.classList.remove('light-theme'); localStorage.setItem('theme', 'dark'); document.getElementById('theme-btn').innerHTML = '🌙'; } else { body.classList.add('light-theme'); localStorage.setItem('theme', 'light'); document.getElementById('theme-btn').innerHTML = '☀️'; } }
-    function applyStoredTheme() { const saved = localStorage.getItem('theme'); if (saved === 'light') { document.body.classList.add('light-theme'); document.getElementById('theme-btn').innerHTML = '☀️'; } else { document.body.classList.remove('light-theme'); document.getElementById('theme-btn').innerHTML = '🌙'; } }
+    function toggleTheme() { const body = document.body; if (body.classList.contains('light-theme')) { body.classList.remove('light-theme'); localStorage.setItem('theme', 'dark'); document.getElementById('theme-btn').innerHTML = '🌙'; } else { body.classList.add('light-theme'); localStorage.setItem('theme', 'light'); document.getElementById('theme-btn').innerHTML = 'â˜€ï¸'; } }
+    function applyStoredTheme() { const saved = localStorage.getItem('theme'); if (saved === 'light') { document.body.classList.add('light-theme'); document.getElementById('theme-btn').innerHTML = 'â˜€ï¸'; } else { document.body.classList.remove('light-theme'); document.getElementById('theme-btn').innerHTML = '🌙'; } }
     async function submitMetaMaskRegistration() { const name = document.getElementById('mm-reg-name').value.trim(), email = document.getElementById('mm-reg-email').value.trim(), phone = document.getElementById('mm-reg-phone').value.trim(), password = document.getElementById('mm-reg-pass').value, role = document.getElementById('mm-reg-role').value; if (!name) return toast('Please enter your full name', 'error'); if (!email) return toast('Please enter your email', 'error'); if (!password || password.length < 8) return toast('Password must be at least 8 characters', 'error'); const btn = document.getElementById('mm-reg-btn'); btn.disabled = true; btn.textContent = 'Creating account...'; try { const r = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password, role, walletAddress, phone }) }); const d = await r.json(); if (!r.ok) { if (d.error && d.error.includes('already registered')) { toast('Email already registered. Please Sign In instead.', 'error'); document.getElementById('metamask-reg-modal').style.display = 'none'; openAuthModal(); } else toast(d.error || 'Registration failed', 'error'); btn.disabled = false; btn.textContent = 'Create Account & Connect →'; return; } token = d.token; currentUser = d.user; localStorage.setItem('cf_token', token); document.getElementById('metamask-reg-modal').style.display = 'none'; updateAuthUI(); updateTopbarUser(); toast('Welcome to ChainFund, ' + d.user.name + '! 🎉', 'success'); if (d.user.role === 'organiser') setTimeout(() => toast('Apply for KYC verification to create campaigns', 'info'), 2500); } catch (err) { toast('Registration failed: ' + err.message, 'error'); btn.disabled = false; btn.textContent = 'Create Account & Connect →'; } }
     function loadSettings() {
       if (!currentUser) { toast('Please sign in to view settings', 'error'); showPage('home'); return; }
@@ -4357,6 +4502,288 @@
         loadSettings();
         toast('Profile updated successfully', 'success');
       } catch (e) { toast('Update failed', 'error'); }
+    }
+
+    function initParallax() {
+      const hero = document.getElementById('hero-plx');
+      const layers = document.querySelectorAll('.plx-layer');
+      const glow = document.getElementById('hero-glow');
+      const mainContainer = document.querySelector('.main');
+      if (!hero || !mainContainer) return;
+
+      let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+      let scrollY = 0;
+      let isHovering = false;
+
+      function animate() {
+        if (isHovering) {
+          mouseX += (targetX - mouseX) * 0.08;
+          mouseY += (targetY - mouseY) * 0.08;
+        } else {
+          mouseX += (0 - mouseX) * 0.08;
+          mouseY += (0 - mouseY) * 0.08;
+        }
+
+        const tiltX = mouseY * -0.6;
+        const tiltY = mouseX * 0.6;
+
+        if (glow) {
+          glow.style.background = `radial-gradient(circle 800px at ${50 + (mouseX * 1.5)}% ${50 + (mouseY * 1.5)}%, rgba(108,99,255,0.2), transparent 60%)`;
+        }
+
+        layers.forEach(layer => {
+          const mSpeed = parseFloat(layer.getAttribute('data-mouse')) || 0;
+          const sSpeed = parseFloat(layer.getAttribute('data-speed')) || 0;
+          const xOffset = mouseX * mSpeed;
+          const yOffset = (mouseY * mSpeed) + (scrollY * sSpeed);
+
+          if (layer.id === 'hero-content') {
+            layer.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 30px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+          } else {
+            layer.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0)`;
+          }
+        });
+        requestAnimationFrame(animate);
+      }
+
+      hero.addEventListener('mousemove', (e) => {
+        isHovering = true;
+        const rect = hero.getBoundingClientRect();
+        targetX = (e.clientX - rect.left - rect.width / 2) / 10;
+        targetY = (e.clientY - rect.top - rect.height / 2) / 10;
+      });
+
+      hero.addEventListener('mouseleave', () => {
+        isHovering = false;
+        targetX = 0; targetY = 0;
+      });
+
+      mainContainer.addEventListener('scroll', () => {
+        scrollY = mainContainer.scrollTop;
+      });
+
+      animate();
+    }
+
+    function initGlobalTilt() {
+      // Inject glare layers into all tilt-fx elements
+      document.querySelectorAll('.tilt-fx').forEach(el => {
+        if (!el.querySelector('.glare-layer')) {
+          const glare = document.createElement('div');
+          glare.className = 'glare-layer';
+          el.appendChild(glare);
+        }
+      });
+
+      document.body.addEventListener('mousemove', (e) => {
+        const target = e.target.closest('.tilt-fx');
+        if (!target) return;
+        const rect = target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const maxTilt = target.getAttribute('data-tilt') || 10;
+        const rotateX = ((y - centerY) / centerY) * -maxTilt;
+        const rotateY = ((x - centerX) / centerX) * maxTilt;
+        target.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+        // Move the glare to follow the cursor
+        const glare = target.querySelector('.glare-layer');
+        if (glare) {
+          const pctX = (x / rect.width) * 100;
+          const pctY = (y / rect.height) * 100;
+          glare.style.background = `radial-gradient(circle 120px at ${pctX}% ${pctY}%, rgba(255,255,255,0.25), rgba(108,99,255,0.06) 40%, transparent 70%)`;
+        }
+      });
+      document.body.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('.tilt-fx');
+        if (!target || target.contains(e.relatedTarget)) return;
+        target.style.transition = 'transform 0.4s ease-out';
+        target.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+      });
+    }
+
+    // ── Animated CountUp ──────────────────────────────────────────
+    function countUp(el, start, end, duration, prefix = '', suffix = '', useCommas = true) {
+      const startTime = performance.now();
+      const isFloat = String(end).includes('.');
+      el.classList.add('count-up');
+
+      function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = start + (end - start) * ease;
+        const formatted = useCommas
+          ? current.toLocaleString('en-IN', { maximumFractionDigits: isFloat ? 2 : 0 })
+          : (isFloat ? current.toFixed(2) : Math.round(current).toString());
+        el.textContent = prefix + formatted + suffix;
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.classList.remove('count-up');
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ── Floating Glass Orbs ───────────────────────────────────────
+    function initFloatingOrbs() {
+      const hero = document.getElementById('hero-plx');
+      if (!hero) return;
+
+      const orbConfigs = [
+        { size: 60, top: '15%', left: '75%', duration: '8s', delay: '0s' },
+        { size: 35, top: '60%', left: '20%', duration: '12s', delay: '-3s' },
+        { size: 45, top: '30%', left: '85%', duration: '10s', delay: '-5s' },
+        { size: 25, top: '80%', left: '65%', duration: '14s', delay: '-7s' },
+        { size: 50, top: '10%', left: '40%', duration: '11s', delay: '-2s' },
+      ];
+
+      orbConfigs.forEach(cfg => {
+        const orb = document.createElement('div');
+        orb.className = 'glass-orb plx-layer';
+        orb.setAttribute('data-speed', (Math.random() * 0.3 + 0.1).toFixed(2));
+        orb.setAttribute('data-mouse', (Math.random() * 10 - 5).toFixed(1));
+        orb.style.cssText = `
+          width: ${cfg.size}px;
+          height: ${cfg.size}px;
+          top: ${cfg.top};
+          left: ${cfg.left};
+          animation: orbFloat ${cfg.duration} ease-in-out infinite ${cfg.delay};
+        `;
+        hero.appendChild(orb);
+      });
+    }
+
+    // ── Inject Glare Layers on Dynamic Content ────────────────────
+    const _origLoadCampaigns = typeof loadCampaigns === 'function' ? loadCampaigns : null;
+    function injectGlareLayers() {
+      document.querySelectorAll('.tilt-fx').forEach(el => {
+        if (!el.querySelector('.glare-layer')) {
+          const glare = document.createElement('div');
+          glare.className = 'glare-layer';
+          el.appendChild(glare);
+        }
+      });
+    }
+    // Observe DOM changes to inject glare on dynamically added cards
+    const _glareObserver = new MutationObserver(() => { injectGlareLayers(); });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initParallax();
+      initGlobalTilt();
+      initFloatingOrbs();
+      initScrollReveal();
+      initSectionParallax();
+      initGlobalCursorGlow();
+      applyStoredTheme();
+      updateAuthUI();
+      updateTopbarUser();
+      loadStats();
+      loadCampaigns();
+
+      // Watch for dynamic content and inject glare layers
+      const grid = document.getElementById('campaigns-grid');
+      if (grid) _glareObserver.observe(grid, { childList: true, subtree: true });
+      const mainEl = document.querySelector('.main');
+      if (mainEl) _glareObserver.observe(mainEl, { childList: true, subtree: true });
+    });
+
+    // ── Global Cursor Glow (Aura) ───────────────────────────────────
+    function initGlobalCursorGlow() {
+      const glow = document.createElement('div');
+      glow.id = 'global-cursor-glow';
+      document.body.appendChild(glow);
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let currentX = mouseX;
+      let currentY = mouseY;
+      let ticking = false;
+      let isVisible = false;
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isVisible) {
+          glow.style.opacity = '1';
+          isVisible = true;
+        }
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!ticking) {
+          requestAnimationFrame(updateGlow);
+          ticking = true;
+        }
+      }, { passive: true });
+
+      function updateGlow() {
+        // Smooth interpolation (lerp) - Faster speed (0.45) for true cursor replacement
+        currentX += (mouseX - currentX) * 0.45;
+        currentY += (mouseY - currentY) * 0.45;
+
+        glow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+
+        // Keep animating if not fully caught up
+        if (Math.abs(currentX - mouseX) > 0.1 || Math.abs(currentY - mouseY) > 0.1) {
+          requestAnimationFrame(updateGlow);
+        } else {
+          ticking = false;
+        }
+      }
+    }
+
+    // ── Scroll Reveal (IntersectionObserver) ───────────────────────
+    function initScrollReveal() {
+      const scrollRoot = document.querySelector('.main');
+      if (!scrollRoot) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('sr-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        root: scrollRoot,
+        threshold: 0.15,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      document.querySelectorAll('.sr').forEach(el => observer.observe(el));
+    }
+
+    // ── Section Parallax on Scroll ─────────────────────────────────
+    function initSectionParallax() {
+      const scrollRoot = document.querySelector('.main');
+      if (!scrollRoot) return;
+      const plxSections = document.querySelectorAll('.section-plx');
+      if (!plxSections.length) return;
+
+      let ticking = false;
+      scrollRoot.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const scrollTop = scrollRoot.scrollTop;
+            const viewH = scrollRoot.clientHeight;
+            plxSections.forEach(section => {
+              const rect = section.getBoundingClientRect();
+              const mainRect = scrollRoot.getBoundingClientRect();
+              const relativeTop = rect.top - mainRect.top;
+              const speed = parseFloat(section.getAttribute('data-plx-speed')) || 0.03;
+              if (relativeTop < viewH && relativeTop + rect.height > 0) {
+                const offset = (scrollTop - section.offsetTop + viewH) * speed;
+                section.style.transform = `translateY(${-offset}px)`;
+              }
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
     }
 
   </script>

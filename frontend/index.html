@@ -3046,10 +3046,49 @@
     </div>
   </div>
 
+  <!-- AUTH MODAL -->
+  <div class="modal-overlay" id="auth-modal" style="display:none"
+    onclick="if(event.target===this)this.style.display='none'">
+    <div class="modal" style="max-width:440px"><button class="modal-close"
+        onclick="document.getElementById('auth-modal').style.display='none'">✕</button>
+      <div class="modal-title">Welcome to ChainFund</div>
+      <div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button><button
+          class="auth-tab" onclick="switchAuthTab('register')">Create Account</button></div>
+      <div id="auth-login">
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email"
+            type="email" placeholder="you@email.com" /></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="login-pass"
+            type="password" placeholder="••••••••" /></div><button class="btn btn-primary btn-full" onclick="login()">Sign
+          In →</button>
+      </div>
+      <div id="auth-register" style="display:none">
+        <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="reg-name"
+            placeholder="Your name" /></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="reg-email"
+            type="email" placeholder="you@email.com" /></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="reg-pass"
+            type="password" placeholder="Minimum 8 characters" /></div>
+        <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="reg-role">
+            <option value="donor">Donor</option>
+            <option value="organiser">Campaign Organiser</option>
+            <option value="trustee">Trustee</option>
+          </select></div><button class="btn btn-primary btn-full" onclick="register()">Create Account →</button>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">— or —</div><button
+          style="width:100%;padding:11px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s"
+          onclick="connectWallet();document.getElementById('auth-modal').style.display='none'">🦊 Continue with
+          MetaMask</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toasts"></div>
+
   <div class="modal-overlay" id="metamask-reg-modal" style="display:none"
     onclick="if(event.target===this)this.style.display='none'">
     <div class="modal" style="max-width:420px"><button class="modal-close"
-        onclick="document.getElementById('metamask-reg-modal').style.display='none'">âœ•</button>
+        onclick="document.getElementById('metamask-reg-modal').style.display='none'">✕</button>
       <div style="text-align:center;margin-bottom:24px">
         <div style="font-size:2.5rem;margin-bottom:10px">🦊</div>
         <div class="modal-title" style="margin-bottom:6px;font-size:1.1rem">Almost there!</div>
@@ -3286,7 +3325,7 @@
         } else {
           document.getElementById('my-donations-list').innerHTML = data.donations.map(d => `
         <div class="tx-row" style="margin-bottom:8px" onclick="openCampaignDetail('${d.campaignAddress}')">
-          <div class="tx-icon-w" style="background:var(--accent-dim)">ðŸŽ</div>
+          <div class="tx-icon-w" style="background:var(--accent-dim)">ðŸŽ </div>
           <div class="tx-info">
             <div class="tx-desc" style="font-weight:600;color:var(--text)">${d.campaignTitle}</div>
             <div class="tx-hash">${shortAddr(d.txHash)}</div>
@@ -4293,7 +4332,7 @@
     async function loadProposals() {
       const el = document.getElementById('proposals-list');
       try {
-        const r = await apiFetch('/campaigns'); // Future: add /mine filter if needed, currently lists all but let's assume we filter organiser
+        const r = await apiFetch('/campaigns?status=all'); // Fetches all statuses for the current user to filter
         const { campaigns } = await r.json();
         const myProposals = campaigns.filter(c => c.organiser?._id === currentUser.id || c.organiser === currentUser.id);
 

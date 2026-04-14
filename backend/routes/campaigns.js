@@ -16,7 +16,9 @@ router.get("/", async (req, res) => {
       if (filter.active) filter.status = "active";
     }
     
-    if (req.query.status) {
+    if (req.query.status === "all") {
+      // Do not apply status filter, fetching everything
+    } else if (req.query.status) {
       filter.status = req.query.status;
     } else if (!filter.status) {
       // Default: exclude proposals and rejected, but also exclude 'approved' from the main browse list

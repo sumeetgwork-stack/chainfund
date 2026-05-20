@@ -4625,8 +4625,12 @@
       } else {
         document.getElementById('topbar-user-area').style.display = 'flex';
         document.getElementById('topbar-loggedin').style.display = 'none';
-      } catch (err) {
-        el.innerHTML = `<div style="color:var(--red);text-align:center">Error loading proposals</div>`;
+        document.getElementById('mobile-profile-btn').textContent = '\ud83d\udc64';
+        document.getElementById('section-organiser').style.display = 'none';
+        document.getElementById('section-trustee').style.display = 'none';
+        document.getElementById('section-admin').style.display = 'none';
+        document.getElementById('divider-admin').style.display = 'none';
+        document.getElementById('rp-my-donations-section').style.display = 'none';
       }
     }
 

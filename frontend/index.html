@@ -1967,6 +1967,59 @@
       display: inline-block
     }
 
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(22, 24, 38, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      z-index: 10000;
+      padding: 0 16px;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    body.light-theme .mobile-nav {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      font-size: 10px;
+      font-weight: 600;
+      gap: 4px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      transition: all .2s;
+      cursor: pointer;
+    }
+
+    .mobile-nav-item .nav-icon {
+      font-size: 20px;
+      filter: grayscale(1) opacity(0.5);
+    }
+
+    .mobile-nav-item.active {
+      color: var(--accent);
+    }
+
+    .mobile-nav-item.active .nav-icon {
+      filter: none;
+    }
+
+    #mobile-profile-btn {
+      display: none;
+    }
+
     @media(max-width:1200px) {
       .right-panel {
         display: none
@@ -1976,6 +2029,45 @@
     @media(max-width:800px) {
       .sidebar {
         display: none
+      }
+
+      .mobile-nav {
+        display: flex;
+      }
+      
+      .main {
+        padding: 0 0 100px;
+        margin-left: 0;
+      }
+      
+      .page {
+        padding: 20px 16px;
+      }
+
+      #mobile-profile-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        color: var(--accent);
+        font-weight: 800;
+        cursor: pointer;
+        border: 1px solid rgba(108, 99, 255, 0.3);
+      }
+
+      #topbar-loggedin {
+        display: none !important;
+      }
+      
+      #topbar-user-area {
+        display: none !important;
+      }
+
+      .page-title {
+        font-size: 1.5rem !important;
       }
 
       .form-grid,
@@ -1988,6 +2080,19 @@
 
       .steps-row {
         grid-template-columns: 1fr 1fr
+      }
+      
+      .modal {
+        width: 100% !important;
+        margin: 0;
+        border-radius: 24px 24px 0 0 !important;
+        position: absolute;
+        bottom: 0;
+        transform: translateY(0);
+      }
+      
+      .modal-overlay {
+        align-items: flex-end;
       }
     }
 
@@ -2199,6 +2304,7 @@
       <div class="notif-btn" id="notif-btn" onclick="showPage('dashboard')">🔔<span class="notif-dot" id="notif-dot"
           style="display:none"></span></div>
       <div class="notif-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme" style="font-size:16px">🌙</div>
+      <div id="mobile-profile-btn" onclick="openAuthModal()" title="Account">👤</div>
       <div id="topbar-user-area" style="display:flex;align-items:center;gap:8px">
         <button class="topbar-btn btn-signin" id="auth-btn" onclick="openAuthModal()">Sign In</button>
         <button class="topbar-btn btn-signup" id="signup-btn" onclick="switchAuthTab('register');openAuthModal()">Sign
@@ -2217,6 +2323,29 @@
 
 
   <div class="app-layout">
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav">
+      <div class="mobile-nav-item active" id="mob-nav-home" onclick="showPage('home')">
+        <div class="nav-icon">🏠</div>
+        <span>Home</span>
+      </div>
+      <div class="mobile-nav-item" id="mob-nav-campaigns" onclick="showPage('campaigns')">
+        <div class="nav-icon">📋</div>
+        <span>Campaigns</span>
+      </div>
+      <div class="mobile-nav-item" id="mob-nav-dashboard" onclick="showPage('dashboard')">
+        <div class="nav-icon">📊</div>
+        <span>Dash</span>
+      </div>
+      <div class="mobile-nav-item" id="mob-nav-my-activity" onclick="showPage('my-activity');loadUserActivity()">
+        <div class="nav-icon">🚶</div>
+        <span>Activity</span>
+      </div>
+      <div class="mobile-nav-item" id="mob-nav-explorer" onclick="showPage('explorer')">
+        <div class="nav-icon">🔍</div>
+        <span>Explorer</span>
+      </div>
+    </div>
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-section-label">Main</div>
@@ -3280,8 +3409,11 @@
 
       // Update nav immediately
       document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-item').forEach(a => a.classList.remove('active'));
       const navEl = document.getElementById(`nav-${name}`);
       if (navEl) navEl.classList.add('active');
+      const mobNavEl = document.getElementById(`mob-nav-${name}`);
+      if (mobNavEl) mobNavEl.classList.add('active');
 
       const activatePage = () => {
         document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('page-exit'); });
@@ -4422,7 +4554,7 @@
     async function adminReject(userId) { const reason = prompt('Enter rejection reason (shown to applicant):'); if (!reason) return; try { const r = await apiFetch(`/kyc/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminRevoke(userId) { if (!confirm('Revoke this user\'s ability to create campaigns?')) return; try { const r = await apiFetch(`/kyc/revoke/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast('Access revoked', 'info'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
 
-    // â”€â”€ UI Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ————————————————————————————————————————————————————————————————————————————————
     async function updateRightPanelWallet() {
       if (!walletAddress) { document.getElementById('rp-connect-prompt').style.display = 'block'; document.getElementById('rp-wallet-card').style.display = 'none'; document.getElementById('sidebar-wallet-mini').style.display = 'none'; document.getElementById('sidebar-connect-btn').style.display = 'block'; return; }
       document.getElementById('rp-connect-prompt').style.display = 'none'; document.getElementById('rp-wallet-card').style.display = 'block'; document.getElementById('sidebar-wallet-mini').style.display = 'block'; document.getElementById('sidebar-connect-btn').style.display = 'none';
@@ -4442,6 +4574,7 @@
         document.getElementById('topbar-loggedin').style.display = 'flex';
         const initials = currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
         document.getElementById('user-initials').textContent = initials;
+        document.getElementById('mobile-profile-btn').textContent = initials;
         document.getElementById('user-name-display').textContent = currentUser.name.split(' ')[0];
         document.getElementById('user-name-display').style.display = 'block';
 
@@ -4460,6 +4593,7 @@
       } else {
         document.getElementById('topbar-user-area').style.display = 'flex';
         document.getElementById('topbar-loggedin').style.display = 'none';
+        document.getElementById('mobile-profile-btn').textContent = '👤';
         document.getElementById('rp-my-donations-section').style.display = 'none';
 
         // Hide all restricted sections

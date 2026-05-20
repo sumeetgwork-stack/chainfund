@@ -8,6 +8,7 @@
     "compile": "npx hardhat compile",
     "deploy:local": "npx hardhat run scripts/deploy.js --network localhost",
     "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
+    "dev": "npm run backend",
     "backend": "cd backend && npm run dev",
     "start": "cd backend && npm start",
     "test": "npx hardhat test"
@@ -19,5 +20,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "razorpay": "^2.9.6"
   }
 }

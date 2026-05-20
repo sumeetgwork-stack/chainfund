@@ -7,6 +7,7 @@
   <title>ChainFund — Transparent Blockchain Fundraising</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
@@ -423,6 +424,23 @@
       to {
         opacity: 1;
         transform: translateY(0)
+      }
+    }
+
+
+    .page-exit {
+      animation: fadeOut .15s ease forwards;
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0)
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-8px)
       }
     }
 
@@ -1731,6 +1749,118 @@
       border-color: var(--accent)
     }
 
+
+    .block-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      min-width: 170px;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: border-color .2s
+    }
+
+    .block-card:hover,
+    .block-card.block-latest {
+      border-color: var(--accent)
+    }
+
+    .block-card.block-latest {
+      background: var(--accent-dim)
+    }
+
+    .new-tag {
+      font-size: 9px;
+      font-weight: 700;
+      background: var(--accent);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .block-num {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 5px;
+      font-weight: 500
+    }
+
+    .block-hash {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 148px
+    }
+
+    .block-txcount {
+      font-size: 11px;
+      color: var(--text2)
+    }
+
+    .block-txcount strong {
+      color: #fff
+    }
+
+    .tx-detail-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .tx-detail-row {
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 16px
+    }
+
+    .tx-detail-row:last-child {
+      border-bottom: none
+    }
+
+    .tx-detail-row .k {
+      font-size: 12px;
+      color: var(--text3);
+      min-width: 110px;
+      flex-shrink: 0;
+      font-weight: 600
+    }
+
+    .tx-detail-row .v {
+      font-size: 12px;
+      color: var(--text);
+      font-family: var(--mono);
+      word-break: break-all
+    }
+
+    .badge-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-block
+    }
+
+    .badge-tag.badge-active {
+      background: rgba(0, 229, 160, .15);
+      color: var(--green)
+    }
+
+    .badge-tag.badge-review {
+      background: rgba(255, 200, 87, .15);
+      color: var(--yellow)
+    }
+
+
     .explorer-search {
       display: flex;
       gap: 10px;
@@ -2045,289 +2175,6 @@
       height: 2px;
       background: var(--accent)
     }
-
-    .tilt-fx {
-      transform-style: preserve-3d;
-      will-change: transform;
-      transition: transform 0.15s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* ── Holographic Glare Overlay ──────────────────────────── */
-    .tilt-fx .glare-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 10;
-      border-radius: inherit;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      background: radial-gradient(circle at 50% 50%,
-          rgba(255, 255, 255, 0.25) 0%,
-          rgba(108, 99, 255, 0.08) 30%,
-          rgba(0, 229, 160, 0.04) 60%,
-          transparent 80%);
-      mix-blend-mode: soft-light;
-    }
-
-    .tilt-fx:hover .glare-layer {
-      opacity: 1;
-    }
-
-    /* ── Global Cursor Glow ─────────────────────────────────── */
-    * {
-      cursor: none !important;
-    }
-
-    #global-cursor-glow {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 44px;
-      height: 44px;
-      margin-left: -22px;
-      margin-top: -22px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      background: radial-gradient(circle at 50% 50%,
-          rgba(255, 255, 255, 0.9) 0%,
-          rgba(108, 99, 255, 0.8) 25%,
-          rgba(0, 229, 160, 0.4) 60%,
-          transparent 100%);
-      mix-blend-mode: screen;
-      transform: translate3d(0, 0, 0);
-      will-change: transform;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      box-shadow: 0 0 15px rgba(108, 99, 255, 0.5);
-    }
-
-    /* ── Smooth Page Transitions ────────────────────────────── */
-    .page {
-      display: none;
-      padding: 28px;
-    }
-
-    .page.active {
-      display: block;
-      animation: pageEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-
-    .page.page-exit {
-      animation: pageExit 0.2s ease-in forwards;
-    }
-
-    @keyframes pageEnter {
-      from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.995);
-        filter: blur(2px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-      }
-    }
-
-    @keyframes pageExit {
-      from {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      to {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-    }
-
-    /* ── Floating Glass Orbs ────────────────────────────────── */
-    .glass-orb {
-      position: absolute;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%,
-          rgba(255, 255, 255, 0.12),
-          rgba(255, 255, 255, 0.03) 50%,
-          transparent 70%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(4px);
-      pointer-events: none;
-      z-index: 0;
-      will-change: transform;
-    }
-
-    @keyframes orbFloat {
-
-      0%,
-      100% {
-        transform: translate(0, 0) rotate(0deg);
-      }
-
-      25% {
-        transform: translate(8px, -15px) rotate(2deg);
-      }
-
-      50% {
-        transform: translate(-5px, -25px) rotate(-1deg);
-      }
-
-      75% {
-        transform: translate(12px, -10px) rotate(3deg);
-      }
-    }
-
-    /* ── Enhanced Sidebar Active Glow ──────────────────────── */
-    .nav-item.active {
-      background: var(--accent-dim);
-      color: var(--accent);
-      box-shadow: 0 0 20px rgba(108, 99, 255, 0.12), inset 0 0 12px rgba(108, 99, 255, 0.06);
-    }
-
-    .nav-item.active .nav-icon {
-      background: var(--accent-dim);
-      box-shadow: 0 0 10px rgba(108, 99, 255, 0.2);
-    }
-
-    /* ── Metric Card Shimmer Border ─────────────────────────── */
-    .metric-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 40%, rgba(108, 99, 255, 0.15) 70%, transparent);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    /* ── Topbar glass frosted effect ────────────────────────── */
-    .topbar {
-      background: rgba(14, 16, 24, 0.85);
-      backdrop-filter: blur(16px) saturate(1.6);
-      -webkit-backdrop-filter: blur(16px) saturate(1.6);
-    }
-
-    body.light-theme .topbar {
-      background: rgba(255, 255, 255, 0.82);
-      backdrop-filter: blur(16px) saturate(1.4);
-    }
-
-    /* ── Campaign card holographic edge ─────────────────────── */
-    .camp-card::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      background: linear-gradient(135deg,
-          rgba(108, 99, 255, 0.3),
-          transparent 30%,
-          rgba(0, 229, 160, 0.2) 60%,
-          rgba(255, 110, 176, 0.2) 90%,
-          transparent);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      z-index: -1;
-    }
-
-    .camp-card:hover::before {
-      opacity: 1;
-    }
-
-    /* ── CountUp animation helper ───────────────────────────── */
-    .count-up {
-      display: inline-block;
-      transition: transform 0.1s ease;
-    }
-
-    .count-up.ticking {
-      transform: scale(1.05);
-    }
-
-    /* ── Toast upgrade ─────────────────────────────────────── */
-    .toast {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(24, 27, 38, 0.9);
-    }
-
-    /* ── Scroll Reveal System ─────────────────────────────────── */
-    .sr {
-      opacity: 0;
-      will-change: transform, opacity;
-      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-        filter 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .sr.sr-visible {
-      opacity: 1;
-      transform: none !important;
-      filter: none !important;
-    }
-
-    /* Slide up (default) */
-    .sr-up {
-      transform: translateY(50px);
-    }
-
-    /* Slide from left */
-    .sr-left {
-      transform: translateX(-60px);
-    }
-
-    /* Slide from right */
-    .sr-right {
-      transform: translateX(60px);
-    }
-
-    /* Scale in with slight rotation */
-    .sr-scale {
-      transform: scale(0.85) rotate(-2deg);
-      filter: blur(4px);
-    }
-
-    /* Fade only */
-    .sr-fade {
-      transform: translateY(20px);
-    }
-
-    /* Stagger delays for child elements */
-    .sr-stagger>.sr:nth-child(1) {
-      transition-delay: 0s;
-    }
-
-    .sr-stagger>.sr:nth-child(2) {
-      transition-delay: 0.08s;
-    }
-
-    .sr-stagger>.sr:nth-child(3) {
-      transition-delay: 0.16s;
-    }
-
-    .sr-stagger>.sr:nth-child(4) {
-      transition-delay: 0.24s;
-    }
-
-    .sr-stagger>.sr:nth-child(5) {
-      transition-delay: 0.32s;
-    }
-
-    .sr-stagger>.sr:nth-child(6) {
-      transition-delay: 0.40s;
-    }
-
-    /* Section parallax speed layers */
-    .section-plx {
-      will-change: transform;
-      transition: transform 0.1s linear;
-    }
   </style>
 </head>
 
@@ -2458,69 +2305,47 @@
       <div class="page active" id="page-home">
         <div style="padding:0 0 20px">
           <div id="hero-plx"
-            style="background:linear-gradient(135deg,#0a0518 0%,#0d1a40 40%,#051515 100%);border-radius:24px;padding:64px 48px;position:relative;overflow:hidden;margin-bottom:32px;perspective:1000px;transform-style:preserve-3d;box-shadow:0 24px 60px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.05)">
-            <div id="hero-glow"
-              style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle 800px at 50% 50%, rgba(108,99,255,0.2), transparent 60%);z-index:0;pointer-events:none">
-            </div>
-
-            <div class="plx-layer" data-speed="0.3" data-mouse="-8"
-              style="position:absolute;top:-80px;right:-50px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(108,99,255,.3),transparent 70%);will-change:transform">
-            </div>
-
-            <div class="plx-layer" data-speed="0.2" data-mouse="5"
-              style="position:absolute;bottom:-60px;left:150px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,160,.2),transparent 70%);will-change:transform">
-            </div>
-
-            <div class="plx-layer" data-speed="0.4" data-mouse="-12"
-              style="position:absolute;top:20%;left:10%;width:8px;height:8px;border-radius:50%;background:#00e5a0;box-shadow:0 0 12px #00e5a0;will-change:transform">
-            </div>
-            <div class="plx-layer" data-speed="0.1" data-mouse="15"
-              style="position:absolute;top:70%;right:15%;width:12px;height:12px;border-radius:50%;background:#ff6eb0;box-shadow:0 0 16px #ff6eb0;will-change:transform">
-            </div>
-
-            <div class="plx-layer" id="hero-content" data-speed="-0.1" data-mouse="2"
-              style="position:relative;z-index:1;max-width:650px;will-change:transform;transform-style:preserve-3d">
+            style="background:linear-gradient(135deg,#1a1140 0%,#0d1a40 100%);border-radius:24px;padding:64px 48px;position:relative;overflow:hidden;margin-bottom:32px;box-shadow:0 24px 60px rgba(0,0,0,0.4)">
+            <div id="hero-content" style="position:relative;z-index:1;max-width:650px">
               <div
-                style="display:inline-block;padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:11px;color:var(--cyan);font-weight:700;letter-spacing:1px;margin-bottom:20px;backdrop-filter:blur(10px)">
+                style="display:inline-block;padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:11px;color:var(--cyan);font-weight:700;letter-spacing:1px;margin-bottom:20px">
                 🌐 WEB3 FUNDRAISING SAAS</div>
               <h1
-                style="font-family:var(--display);font-size:clamp(3.5rem,7vw,5.5rem);font-weight:900;color:#fff;line-height:0.95;margin-bottom:28px;letter-spacing:-0.03em;text-shadow:0 12px 30px rgba(0,0,0,0.5)">
+                style="font-family:var(--display);font-size:clamp(3rem,7vw,4.5rem);font-weight:900;color:#fff;line-height:1;margin-bottom:24px;letter-spacing:-0.03em">
                 <b>CHAINFUND</b>
               </h1>
-              <p
-                style="font-size:16px;color:rgba(255,255,255,.7);line-height:1.7;max-width:480px;margin-bottom:36px;text-shadow:0 2px 8px rgba(0,0,0,0.4)">
+              <p style="font-size:16px;color:rgba(255,255,255,.7);line-height:1.7;max-width:480px;margin-bottom:36px">
                 India's first blockchain fundraising SaaS. Donors verify, in real time, exactly where every rupee went.
                 Smart contracts. Zero middlemen.</p>
               <div style="display:flex;gap:12px;flex-wrap:wrap">
                 <button class="btn btn-primary" onclick="showPage('campaigns')"
-                  style="padding:16px 32px;font-size:15px;border:1px solid rgba(255,255,255,0.2);box-shadow:0 8px 24px rgba(108,99,255,0.5);transition:all 0.3s">Browse
-                  Campaigns →</button>
+                  style="padding:16px 32px;font-size:15px">Browse Campaigns →</button>
               </div>
             </div>
           </div>
-          <div class="grid4 sr-stagger" style="margin-bottom:24px">
-            <div class="metric-card mc-1 tilt-fx sr sr-up">
+          <div class="grid4 " style="margin-bottom:24px">
+            <div class="metric-card mc-1 ">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(108,99,255,.2)">💰</div>
               <div class="mc-label">Total Raised</div>
               <div class="mc-val" id="stat-raised">₹0</div>
               <div class="mc-sub" style="color:var(--accent)">All campaigns</div>
             </div>
-            <div class="metric-card mc-2 tilt-fx sr sr-up">
+            <div class="metric-card mc-2 ">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(0,229,160,.15)">📋</div>
               <div class="mc-label">Campaigns</div>
               <div class="mc-val" id="stat-campaigns">0</div>
               <div class="mc-sub" style="color:var(--green)" id="stat-active-sub">Active now</div>
             </div>
-            <div class="metric-card mc-3 tilt-fx sr sr-up">
+            <div class="metric-card mc-3 ">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(255,110,176,.15)">👥</div>
               <div class="mc-label">Donors</div>
               <div class="mc-val" id="stat-donors">0</div>
               <div class="mc-sub" style="color:var(--pink)">Unique wallets</div>
             </div>
-            <div class="metric-card mc-4 tilt-fx sr sr-up">
+            <div class="metric-card mc-4 ">
               <div class="mc-glow"></div>
               <div class="mc-icon" style="background:rgba(255,200,87,.15)">📈</div>
               <div class="mc-label">Fund Utilisation</div>
@@ -2528,62 +2353,62 @@
               <div class="mc-sub" style="color:var(--yellow)">Disbursed</div>
             </div>
           </div>
-          <div class="card sr sr-up section-plx" data-plx-speed="0.03" style="margin-bottom:24px">
+          <div class="card section-plx" style="margin-bottom:24px">
             <div
               style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px"
-              class="sr sr-left">
+              class="">
               Process</div>
             <div style="font-family:var(--display);font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px"
-              class="sr sr-left">How
+              class="">How
               ChainFund Works</div>
-            <div style="font-size:13px;color:var(--text2);margin-bottom:16px" class="sr sr-fade">Fully automated — no
-              middlemen, every rupee
+            <div style="font-size:13px;color:var(--text2);margin-bottom:16px" class="">Fully automated — no middlemen,
+              every rupee
               tracked on-chain.</div>
-            <div class="steps-row sr-stagger">
-              <div class="step-card tilt-fx sr sr-scale">
+            <div class="steps-row ">
+              <div class="step-card ">
                 <div class="step-num">01</div>
                 <h4>Create Campaign</h4>
                 <p>Deploy a smart contract with goal, timeline, milestones, and multi-sig trustees</p>
               </div>
-              <div class="step-card tilt-fx sr sr-scale">
+              <div class="step-card ">
                 <div class="step-num">02</div>
                 <h4>Receive Donations</h4>
                 <p>Funds flow directly into the contract — transparent, no custodian, every tx recorded</p>
               </div>
-              <div class="step-card tilt-fx sr sr-scale">
+              <div class="step-card ">
                 <div class="step-num">03</div>
                 <h4>Auto-Disbursement</h4>
                 <p>Trustees approve milestones, contract releases funds automatically</p>
               </div>
-              <div class="step-card tilt-fx sr sr-scale">
+              <div class="step-card ">
                 <div class="step-num">04</div>
                 <h4>Full Audit Trail</h4>
                 <p>Every rupee traceable forever on Ethereum — any donor can verify any tx</p>
               </div>
             </div>
           </div>
-          <div class="grid3 sr-stagger section-plx" data-plx-speed="0.05">
-            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">⛓️</span>
+          <div class="grid3 section-plx">
+            <div class="feat-card "><span class="feat-icon">⛓️</span>
               <h3>Immutable Audit Trail</h3>
               <p>Every transaction permanently recorded. No one can alter or delete a record.</p>
             </div>
-            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">🤖</span>
+            <div class="feat-card "><span class="feat-icon">🤖</span>
               <h3>Smart Contract Escrow</h3>
               <p>Funds held by code. Disbursement only when verifiable milestones are met.</p>
             </div>
-            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">✅</span>
+            <div class="feat-card "><span class="feat-icon">✅</span>
               <h3>KYC Verified Recipients</h3>
               <p>All recipients identity-verified on-chain. Every disbursement tagged to a verified wallet.</p>
             </div>
-            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">📊</span>
+            <div class="feat-card "><span class="feat-icon">📊</span>
               <h3>Real-time Dashboards</h3>
               <p>Campaign managers and donors share the same live view from public blockchain nodes.</p>
             </div>
-            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">🔑</span>
+            <div class="feat-card "><span class="feat-icon">🔑</span>
               <h3>Multi-Sig Security</h3>
               <p>Large disbursements need M-of-N trustee approval. No single actor can drain funds.</p>
             </div>
-            <div class="feat-card tilt-fx sr sr-scale"><span class="feat-icon">↩️</span>
+            <div class="feat-card "><span class="feat-icon">↩️</span>
               <h3>Automatic Refunds</h3>
               <p>Miss goal? Smart contract auto-refunds every donor. No forms, no delays.</p>
             </div>
@@ -2825,6 +2650,190 @@
         <div class="card" style="padding:24px">
           <h3 style="margin-bottom:20px;font-size:15px">Recent Contributions</h3>
           <div id="my-donations-list">
+          <div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-sub">Live fund intelligence from the blockchain</div>
+          </div><span
+            style="font-size:12px;color:var(--green);display:flex;align-items:center;gap:6px;font-weight:600"><span
+              class="live-dot"></span> Live on-chain</span>
+        </div>
+        <div class="grid4" style="margin-bottom:22px">
+          <div class="card card-sm">
+            <div
+              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
+              Total Raised</div>
+            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:#fff" id="db-raised">—</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-raised-sub"></div>
+          </div>
+          <div class="card card-sm">
+            <div
+              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
+              Active Campaigns</div>
+            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:var(--green)" id="db-active">—
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-active-sub"></div>
+          </div>
+          <div class="card card-sm">
+            <div
+              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
+              Total Disbursed</div>
+            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:var(--pink)"
+              id="db-disbursed">—</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-disbursed-sub"></div>
+          </div>
+          <div class="card card-sm">
+            <div
+              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
+              On-chain Txns</div>
+            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:var(--accent)" id="db-txns">—
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-txns-sub"></div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchDashTab('overview')">Overview</button>
+          <button class="tab-btn" onclick="switchDashTab('tracker')">Fund Tracker</button>
+          <button class="tab-btn" onclick="switchDashTab('my')" id="dash-tab-my">My Campaigns</button>
+        </div>
+        <div class="tab-panel active" id="dt-overview">
+          <div class="grid2">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Live Transactions</div>
+              <div id="live-txns" style="display:flex;flex-direction:column;gap:8px">
+                <div style="text-align:center;padding:30px;color:var(--text3)">
+                  <div class="spinner"></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Fund Allocation</div>
+              <div class="card card-sm">
+                <div class="donut-row" style="flex-direction:column;gap:16px"><svg width="160" height="160"
+                    viewBox="0 0 160 160">
+                    <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="22" />
+                    <circle cx="80" cy="80" r="60" fill="none" stroke="#6c63ff" stroke-width="22"
+                      stroke-dasharray="113 264" stroke-dashoffset="-10" stroke-linecap="round" />
+                    <circle cx="80" cy="80" r="60" fill="none" stroke="#00e5a0" stroke-width="22"
+                      stroke-dasharray="71 264" stroke-dashoffset="-127" stroke-linecap="round" />
+                    <circle cx="80" cy="80" r="60" fill="none" stroke="#ffc857" stroke-width="22"
+                      stroke-dasharray="53 264" stroke-dashoffset="-202" stroke-linecap="round" />
+                    <circle cx="80" cy="80" r="60" fill="none" stroke="#ff6eb0" stroke-width="22"
+                      stroke-dasharray="27 264" stroke-dashoffset="-257" stroke-linecap="round" /><text x="80" y="74"
+                      text-anchor="middle" fill="#fff" font-family="Syne" font-weight="800"
+                      font-size="18">89%</text><text x="80" y="92" text-anchor="middle" fill="#4a4f66" font-size="11"
+                      font-family="Plus Jakarta Sans">Utilised</text>
+                  </svg>
+                  <div class="legend">
+                    <div class="legend-item">
+                      <div class="legend-dot" style="background:#6c63ff"></div>Healthcare — 43%
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-dot" style="background:#00e5a0"></div>Education — 27%
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-dot" style="background:#ffc857"></div>Infrastructure — 20%
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-dot" style="background:#ff6eb0"></div>Other — 10%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="dt-tracker">
+          <div class="grid2">
+            <div class="flow-box">
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">Live Fund Flow</div><svg
+                width="100%" viewBox="0 0 400 220">
+                <defs>
+                  <marker id="arr3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L6,3 Z" fill="rgba(108,99,255,.6)" />
+                  </marker>
+                </defs>
+                <rect x="10" y="10" width="95" height="36" rx="8" fill="rgba(108,99,255,.08)"
+                  stroke="rgba(108,99,255,.3)" stroke-width="1" /><text x="57" y="24" text-anchor="middle"
+                  fill="#8b85ff" font-size="10" font-family="Plus Jakarta Sans" font-weight="700">Donors</text><text
+                  x="57" y="38" text-anchor="middle" fill="#4a4f66" font-size="8" font-family="JetBrains Mono">Multiple
+                  wallets</text>
+                <line x1="105" y1="28" x2="168" y2="68" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
+                  marker-end="url(#arr3)" />
+                <rect x="170" y="52" width="115" height="56" rx="10" fill="rgba(108,99,255,.08)"
+                  stroke="rgba(108,99,255,.4)" stroke-width="1.5" /><text x="227" y="74" text-anchor="middle"
+                  fill="#8b85ff" font-size="10" font-family="Plus Jakarta Sans" font-weight="700">Smart
+                  Contract</text><text x="227" y="88" text-anchor="middle" fill="#4a4f66" font-size="8"
+                  font-family="JetBrains Mono">Escrow + Rules</text><text x="227" y="101" text-anchor="middle"
+                  fill="#00e5a0" font-size="8" font-family="JetBrains Mono" id="flow-balance">0 ETH locked</text>
+                <line x1="285" y1="66" x2="330" y2="40" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
+                  marker-end="url(#arr3)" />
+                <line x1="285" y1="80" x2="330" y2="90" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
+                  marker-end="url(#arr3)" />
+                <line x1="285" y1="94" x2="330" y2="142" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
+                  marker-end="url(#arr3)" />
+                <rect x="333" y="18" width="60" height="36" rx="8" fill="rgba(0,229,160,.08)"
+                  stroke="rgba(0,229,160,.3)" stroke-width="1" /><text x="363" y="34" text-anchor="middle"
+                  fill="#00e5a0" font-size="9" font-family="Plus Jakarta Sans" font-weight="700">NGO</text><text x="363"
+                  y="46" text-anchor="middle" fill="#4a4f66" font-size="8" font-family="JetBrains Mono">40%</text>
+                <rect x="333" y="66" width="60" height="36" rx="8" fill="rgba(0,229,160,.08)"
+                  stroke="rgba(0,229,160,.3)" stroke-width="1" /><text x="363" y="82" text-anchor="middle"
+                  fill="#00e5a0" font-size="9" font-family="Plus Jakarta Sans" font-weight="700">School</text><text
+                  x="363" y="94" text-anchor="middle" fill="#4a4f66" font-size="8"
+                  font-family="JetBrains Mono">35%</text>
+                <rect x="333" y="116" width="60" height="36" rx="8" fill="rgba(0,229,160,.08)"
+                  stroke="rgba(0,229,160,.3)" stroke-width="1" /><text x="363" y="132" text-anchor="middle"
+                  fill="#00e5a0" font-size="9" font-family="Plus Jakarta Sans" font-weight="700">Relief</text><text
+                  x="363" y="144" text-anchor="middle" fill="#4a4f66" font-size="8"
+                  font-family="JetBrains Mono">25%</text>
+              </svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Campaign Allocation</div>
+              <select class="form-select" id="tracker-select" onchange="loadTrackerAllocation()"
+                style="margin-bottom:16px">
+                <option>— Select a Campaign —</option>
+              </select>
+              <div id="tracker-alloc">
+                <div style="text-align:center;padding:30px;font-size:13px;color:var(--text3)">Select a campaign above
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="dt-my">
+          <div id="my-campaigns-content">
+            <div style="text-align:center;padding:40px">
+              <div style="font-size:2rem;margin-bottom:10px">🔍</div>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Connect wallet or sign in to see your
+                campaigns</div><button class="btn btn-primary btn-sm" onclick="openAuthModal()">Sign In</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+              <div class="grid3" style="margin-bottom:28px">
+          <div class="metric-card mc-1">
+            <div class="mc-glow"></div>
+            <div class="mc-icon">💰</div>
+            <div class="mc-label">Total Donated</div>
+            <div class="mc-val" id="my-total-donated">₹0</div>
+          </div>
+          <div class="metric-card mc-2">
+            <div class="mc-glow"></div>
+            <div class="mc-icon">📋</div>
+            <div class="mc-label">Campaigns Backed</div>
+            <div class="mc-val" id="my-backed-count">0</div>
+          </div>
+          <div class="metric-card mc-4">
+            <div class="mc-glow"></div>
+            <div class="mc-icon">🦊</div>
+            <div class="mc-label">Your Wallet</div>
+            <div class="mc-val" id="my-wallet-short" style="font-size:12px;font-family:var(--mono)">...</div>
+          </div>
+        </div>
+        <div class="card" style="padding:24px">
+          <h3 style="margin-bottom:20px;font-size:15px">Recent Contributions</h3>
+          <div id="my-donations-list">
             <div style="text-align:center;padding:40px;color:var(--text3)">Connect wallet to view your activity</div>
           </div>
         </div>
@@ -2844,8 +2853,89 @@
             onkeydown="if(event.key==='Enter')explorerSearch()" />
           <button class="btn btn-primary btn-sm" onclick="explorerSearch()">Search</button>
         </div>
-        <div class="card" id="explorer-result" style="display:none">
-          <div id="explorer-result-content"></div>
+
+        <!-- Recent Blocks -->
+        <div style="margin-bottom:24px">
+          <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:12px">⛓ Recent Blocks</div>
+          <div id="blocks-row" style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px">
+            <div style="text-align:center;padding:30px;color:var(--text3);width:100%"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card" style="margin-bottom:24px">
+          <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:16px">📜 Recent Transactions</div>
+          <div id="explorer-txns" style="display:flex;flex-direction:column;gap:8px">
+            <div style="text-align:center;padding:30px;color:var(--text3)"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- Transaction Detail (shown after search) -->
+        <div id="tx-detail-section" style="display:none;margin-bottom:24px">
+          <div id="tx-detail-title" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:12px">🔍 Transaction Details</div>
+          <div class="card">
+            <div id="tx-detail-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KYC VERIFICATION PAGE -->
+      <div class="page" id="page-kyc">
+        <div class="page-header">
+          <div>
+            <div class="page-title">KYC Verification</div>
+            <div class="page-sub">Apply for campaign creator verification to start fundraising</div>
+          </div>
+        </div>
+
+        <div id="kyc-status-banner" style="display:none;margin-bottom:20px"></div>
+
+        <div id="dev-verify-wrap" style="display:none;margin-bottom:16px">
+          <div class="card" style="padding:16px;border-color:rgba(108,99,255,.3)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--accent)">⚡ Dev Fast-Track</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:2px">Instantly verify your account (development mode only)</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="devVerify()">Fast-Track →</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="kyc-form-wrap">
+          <div class="card" style="max-width:720px">
+            <div class="rp-section-title" style="margin-bottom:20px">Submit Verification Application</div>
+            <div style="background:rgba(108,99,255,.05);border-radius:10px;padding:14px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.6">
+              <strong style="color:var(--accent)">Why KYC?</strong> — ChainFund requires all campaign organisers to complete identity verification. This ensures donor trust and platform integrity. Your information is encrypted and never shared publicly.
+            </div>
+            <div class="grid2">
+              <div class="form-group">
+                <label class="form-label">Full Legal Name</label>
+                <input type="text" class="form-input" id="kyc-name" placeholder="As per government ID" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-input" id="kyc-phone" placeholder="+91 98765 43210" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Organisation / NGO Name</label>
+              <input type="text" class="form-input" id="kyc-org" placeholder="Your registered organisation name (if any)" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Aadhaar / PAN Number</label>
+              <input type="text" class="form-input" id="kyc-doc" placeholder="Enter your Aadhaar or PAN number" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Purpose of Fundraising</label>
+              <textarea class="form-input" id="kyc-purpose" rows="3" placeholder="Briefly describe why you want to create campaigns on ChainFund..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Wallet Address</label>
+              <input type="text" class="form-input" id="kyc-wallet" readonly style="opacity:0.7;cursor:not-allowed" placeholder="Connect wallet first" />
+            </div>
+            <button class="btn btn-primary" onclick="submitKYC()" id="kyc-submit-btn">📋 Submit KYC Application</button>
+          </div>
         </div>
       </div>
 
@@ -2854,35 +2944,155 @@
         <div class="page-header">
           <div>
             <div class="page-title">Settings</div>
-            <div class="page-sub">Manage your profile and wallet preferences</div>
+            <div class="page-sub">Manage your account, preferences and security</div>
           </div>
         </div>
-        <div class="grid2">
-          <div class="card">
-            <div class="rp-section-title" style="margin-bottom:20px">Profile Information</div>
-            <div style="display:flex;flex-direction:column;gap:16px">
-              <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input"
-                  id="set-name" placeholder="Enter your name" /></div>
-              <div class="form-group"><label class="form-label">Email Address</label><input type="email"
-                  class="form-input" id="set-email" placeholder="Enter email" /></div><button class="btn btn-primary"
-                onclick="saveProfile()">Save Profile</button>
-            </div>
-          </div>
-          <div class="card">
-            <div class="rp-section-title" style="margin-bottom:20px">Preferences</div>
-            <div style="display:flex;flex-direction:column;gap:16px">
-              <div class="form-group"><label class="form-label">Default Currency</label><select class="form-select">
-                  <option>INR (₹)</option>
-                  <option>USD ($)</option>
-                  <option>ETH (Ξ)</option>
-                </select></div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div>
-                  <div style="font-size:14px;font-weight:700;color:#fff">Public Profile</div>
-                  <div style="font-size:12px;color:var(--text3)">Allow others to see your donor history</div>
-                </div><input type="checkbox" checked />
+
+        <!-- Profile Card -->
+        <div class="card" style="margin-bottom:24px;padding:28px">
+          <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px">
+            <div id="settings-avatar"
+              style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;flex-shrink:0">
+              ?</div>
+            <div>
+              <div id="settings-name" style="font-size:18px;font-weight:700;color:#fff">—</div>
+              <div id="settings-email" style="font-size:13px;color:var(--text2);margin-top:2px">—</div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <span class="badge badge-active" id="set-role">—</span>
+                <span style="font-family:var(--mono);font-size:11px;color:var(--cyan)" id="set-wallet">Not
+                  connected</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-bottom:24px">
+          <!-- Profile Info -->
+          <div class="card">
+            <div class="rp-section-title" style="margin-bottom:20px">Profile Information</div>
+            <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input"
+                id="set-name" placeholder="Enter your name" /></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input type="email"
+                class="form-input" id="set-email" placeholder="Enter email" disabled
+                style="opacity:0.6;cursor:not-allowed" /></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input"
+                id="set-phone" placeholder="+91 98765 43210" /></div>
+            <button class="btn btn-primary" onclick="updateProfile()">Save Profile</button>
+          </div>
+
+          <!-- Security -->
+          <div class="card">
+            <div class="rp-section-title" style="margin-bottom:20px">Security</div>
+            <div class="form-group"><label class="form-label">Current Password</label><input type="password"
+                class="form-input" id="set-old-pass" placeholder="Enter current password" /></div>
+            <div class="form-group"><label class="form-label">New Password</label><input type="password"
+                class="form-input" id="set-new-pass" placeholder="Min 8 characters" /></div>
+            <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password"
+                class="form-input" id="set-confirm-pass" placeholder="Re-enter new password" /></div>
+            <button class="btn btn-ghost" onclick="changePassword()">Update Password</button>
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-bottom:24px">
+          <!-- Preferences -->
+          <div class="card">
+            <div class="rp-section-title" style="margin-bottom:20px">Preferences</div>
+            <div class="form-group"><label class="form-label">Default Currency Display</label>
+              <select class="form-select" id="set-currency" onchange="saveCurrencyPref()">
+                <option value="inr">INR (₹)</option>
+                <option value="usd">USD ($)</option>
+                <option value="eth">ETH (Ξ)</option>
+              </select>
+            </div>
+
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border)">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#fff">Dark Mode</div>
+                <div style="font-size:11px;color:var(--text3)">Toggle dark/light theme</div>
+              </div>
+              <label style="position:relative;width:48px;height:26px;cursor:pointer">
+                <input type="checkbox" id="set-darkmode" checked onchange="toggleTheme()"
+                  style="opacity:0;width:0;height:0" />
+                <span
+                  style="position:absolute;inset:0;background:var(--card2);border-radius:26px;transition:.3s;border:1px solid var(--border)"></span>
+                <span id="set-darkmode-knob"
+                  style="position:absolute;left:3px;top:3px;width:20px;height:20px;background:var(--accent);border-radius:50%;transition:.3s"></span>
+              </label>
+            </div>
+
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border)">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#fff">Email Notifications</div>
+                <div style="font-size:11px;color:var(--text3)">Receive updates on donations and campaigns</div>
+              </div>
+              <label style="position:relative;width:48px;height:26px;cursor:pointer">
+                <input type="checkbox" id="set-notif" checked onchange="saveNotifPref()"
+                  style="opacity:0;width:0;height:0" />
+                <span
+                  style="position:absolute;inset:0;background:var(--card2);border-radius:26px;transition:.3s;border:1px solid var(--border)"></span>
+                <span id="set-notif-knob"
+                  style="position:absolute;left:3px;top:3px;width:20px;height:20px;background:var(--green);border-radius:50%;transition:.3s"></span>
+              </label>
+            </div>
+
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--border)">
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#fff">Public Profile</div>
+                <div style="font-size:11px;color:var(--text3)">Allow others to see your donor history</div>
+              </div>
+              <label style="position:relative;width:48px;height:26px;cursor:pointer">
+                <input type="checkbox" id="set-public" checked onchange="savePublicPref()"
+                  style="opacity:0;width:0;height:0" />
+                <span
+                  style="position:absolute;inset:0;background:var(--card2);border-radius:26px;transition:.3s;border:1px solid var(--border)"></span>
+                <span id="set-public-knob"
+                  style="position:absolute;left:3px;top:3px;width:20px;height:20px;background:var(--green);border-radius:50%;transition:.3s"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Wallet & Blockchain -->
+          <div class="card">
+            <div class="rp-section-title" style="margin-bottom:20px">Wallet & Blockchain</div>
+            <div
+              style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Connected Wallet</div>
+              <div id="set-wallet-addr"
+                style="font-family:var(--mono);font-size:12px;color:var(--green);word-break:break-all">Not connected
+              </div>
+              <div style="margin-top:8px;font-size:11px;color:var(--text3)">Network: <span style="color:var(--cyan)"
+                  id="set-network">Sepolia Testnet</span></div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="connectWallet()" style="width:100%;margin-bottom:10px">🦊
+              Connect / Switch Wallet</button>
+            <button class="btn btn-ghost btn-sm" style="width:100%"
+              onclick="if(walletAddress) navigator.clipboard.writeText(walletAddress).then(()=>toast('Wallet address copied!','success'))">📋
+              Copy Wallet Address</button>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card" style="border-color:rgba(255,92,124,.2)">
+          <div class="rp-section-title" style="margin-bottom:16px;color:var(--red)">Danger Zone</div>
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border)">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:#fff">Sign Out</div>
+              <div style="font-size:11px;color:var(--text3)">Log out of your ChainFund account</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="logout()">Sign Out</button>
+          </div>
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border)">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--red)">Delete Account</div>
+              <div style="font-size:11px;color:var(--text3)">Permanently delete your account and data</div>
+            </div>
+            <button class="btn btn-danger btn-sm"
+              onclick="if(confirm('Are you sure? This cannot be undone.')) deleteAccount()">Delete</button>
           </div>
         </div>
       </div>
@@ -3046,49 +3256,71 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL -->
+  <!-- Auth Modal -->
   <div class="modal-overlay" id="auth-modal" style="display:none"
     onclick="if(event.target===this)this.style.display='none'">
-    <div class="modal" style="max-width:440px"><button class="modal-close"
-        onclick="document.getElementById('auth-modal').style.display='none'">✕</button>
+    <div class="modal" style="max-width:420px">
+      <button class="modal-close" onclick="document.getElementById('auth-modal').style.display='none'">✕</button>
       <div class="modal-title">Welcome to ChainFund</div>
-      <div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button><button
-          class="auth-tab" onclick="switchAuthTab('register')">Create Account</button></div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+      </div>
       <div id="auth-login">
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email"
-            type="email" placeholder="you@email.com" /></div>
+            type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')login()" /></div>
         <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="login-pass"
-            type="password" placeholder="••••••••" /></div><button class="btn btn-primary btn-full" onclick="login()">Sign
-          In →</button>
+            type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')login()" /></div>
+        <button class="btn btn-primary btn-full" onclick="login()">Sign In</button>
+        <div style="text-align:center;margin-top:16px">
+          <button class="btn btn-ghost btn-full"
+            onclick="document.getElementById('auth-modal').style.display='none';connectWallet()"
+            style="display:flex;align-items:center;justify-content:center;gap:8px">🦊 Connect with MetaMask</button>
+        </div>
       </div>
       <div id="auth-register" style="display:none">
         <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="reg-name"
-            placeholder="Your name" /></div>
+            placeholder="Your full name" /></div>
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="reg-email"
             type="email" placeholder="you@email.com" /></div>
         <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="reg-pass"
-            type="password" placeholder="Minimum 8 characters" /></div>
-        <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="reg-role">
-            <option value="donor">Donor</option>
-            <option value="organiser">Campaign Organiser</option>
-            <option value="trustee">Trustee</option>
-          </select></div><button class="btn btn-primary btn-full" onclick="register()">Create Account →</button>
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">— or —</div><button
-          style="width:100%;padding:11px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s"
-          onclick="connectWallet();document.getElementById('auth-modal').style.display='none'">🦊 Continue with
-          MetaMask</button>
+            type="password" placeholder="Min 8 characters" /></div>
+        <div class="form-group"><label class="form-label">I am a</label><select class="form-select" id="reg-role">
+            <option value="donor">Donor — I want to donate to campaigns</option>
+            <option value="organiser">Organiser — I want to create campaigns</option>
+            <option value="trustee">Trustee — I approve fund disbursements</option>
+          </select></div>
+        <button class="btn btn-primary btn-full" onclick="register()">Create Account</button>
+        <div style="text-align:center;margin-top:16px">
+          <button class="btn btn-ghost btn-full"
+            onclick="document.getElementById('auth-modal').style.display='none';connectWallet()"
+            style="display:flex;align-items:center;justify-content:center;gap:8px">🦊 Connect with MetaMask</button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Campaign Detail Modal -->
+  <div class="modal-overlay" id="campaign-modal" style="display:none"
+    onclick="if(event.target===this)this.style.display='none'">
+    <div class="modal" style="max-width:640px">
+      <button class="modal-close" onclick="document.getElementById('campaign-modal').style.display='none'">✕</button>
+      <div id="campaign-modal-content">
+        <div style="text-align:center;padding:40px">
+          <div class="spinner"></div>
+          <div style="margin-top:12px">Loading campaign data...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
   <div class="toast-container" id="toasts"></div>
 
   <div class="modal-overlay" id="metamask-reg-modal" style="display:none"
     onclick="if(event.target===this)this.style.display='none'">
     <div class="modal" style="max-width:420px"><button class="modal-close"
-        onclick="document.getElementById('metamask-reg-modal').style.display='none'">✕</button>
+        onclick="document.getElementById('metamask-reg-modal').style.display='none'">âœ•</button>
       <div style="text-align:center;margin-bottom:24px">
         <div style="font-size:2.5rem;margin-bottom:10px">🦊</div>
         <div class="modal-title" style="margin-bottom:6px;font-size:1.1rem">Almost there!</div>
@@ -3254,13 +3486,8 @@
         if (name === 'my-activity') loadUserActivity();
       };
 
-      // If there's a current page, animate it out first
-      if (currentActive && currentActive !== nextPg) {
-        currentActive.classList.add('page-exit');
-        setTimeout(activatePage, 180);
-      } else {
-        activatePage();
-      }
+      // Switch pages immediately
+      activatePage();
     }
 
     function setModalTab(tab) {
@@ -3285,17 +3512,17 @@
         const txs = await r.json();
         if (!txs.length) { list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3)">No transactions yet</div>'; return; }
         list.innerHTML = txs.map(tx => `
-      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="color:var(--text);font-weight:600">${tx.from === address ? 'Disbursement' : 'Donation'}</div>
-          <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">${shortAddr(tx.from)}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="color:var(--green);font-weight:700">${tx.valueETH.toFixed(4)} ETH</div>
-          <div style="font-size:10px;color:var(--text3)">${new Date(tx.timestamp).toLocaleDateString()}</div>
-        </div>
-      </div>
-    `).join('');
+ <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+ <div>
+ <div style="color:var(--text);font-weight:600">${tx.from === address ? 'Disbursement' : 'Donation'}</div>
+ <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">${shortAddr(tx.from)}</div>
+ </div>
+ <div style="text-align:right">
+ <div style="color:var(--green);font-weight:700">${tx.valueETH.toFixed(4)} ETH</div>
+ <div style="font-size:10px;color:var(--text3)">${new Date(tx.timestamp).toLocaleDateString()}</div>
+ </div>
+ </div>
+ `).join('');
       } catch (e) { list.innerHTML = '<div style="color:var(--red)">Failed to load history</div>'; }
     }
 
@@ -3324,18 +3551,18 @@
           document.getElementById('my-donations-list').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">You haven\'t made any donations yet.</div>';
         } else {
           document.getElementById('my-donations-list').innerHTML = data.donations.map(d => `
-        <div class="tx-row" style="margin-bottom:8px" onclick="openCampaignDetail('${d.campaignAddress}')">
-          <div class="tx-icon-w" style="background:var(--accent-dim)">ðŸŽ </div>
-          <div class="tx-info">
-            <div class="tx-desc" style="font-weight:600;color:var(--text)">${d.campaignTitle}</div>
-            <div class="tx-hash">${shortAddr(d.txHash)}</div>
-          </div>
-          <div class="tx-amount">
-            <div class="amt">${(d.valueETH || 0).toFixed(4)} ETH</div>
-            <div class="when">${new Date(d.timestamp).toLocaleDateString()}</div>
-          </div>
-        </div>
-      `).join('');
+ <div class="tx-row" style="margin-bottom:8px" onclick="openCampaignDetail('${d.campaignAddress}')">
+ <div class="tx-icon-w" style="background:var(--accent-dim)">🎁</div>
+ <div class="tx-info">
+ <div class="tx-desc" style="font-weight:600;color:var(--text)">${d.campaignTitle}</div>
+ <div class="tx-hash">${shortAddr(d.txHash)}</div>
+ </div>
+ <div class="tx-amount">
+ <div class="amt">${(d.valueETH || 0).toFixed(4)} ETH</div>
+ <div class="when">${new Date(d.timestamp).toLocaleDateString()}</div>
+ </div>
+ </div>
+ `).join('');
         }
       } catch (e) { toast('Failed to load activity', 'error'); }
     }
@@ -3483,7 +3710,7 @@
           const prefix = val.match(/^[^0-9]*/)?.[0] || '';
           const suffix = val.match(/[^0-9,.]*$/)?.[0] || '';
           const hasComma = val.includes(',');
-          countUp(el, 0, numericVal, 900, prefix, suffix, hasComma);
+          el.textContent = val;
         } else {
           el.textContent = val;
         }
@@ -3554,34 +3781,34 @@
           const pctFill = Math.min(100, (c.totalRaised || 0) / (c.goalAmount || 1) * 100).toFixed(3);
           const visualPct = Object.is(c.totalRaised || 0, 0) ? 0 : Math.max(3, pctFill);
           return `
-      <div class="camp-card tilt-fx" onclick="openCampaignDetail('${c.contractAddress || c._id}')" data-addr="${c.contractAddress || ''}" data-id="${c._id}">
-        <div class="pot-container">
-          <div class="pot-body">
-            <div class="pot-liquid" style="height:${visualPct}%"></div>
-          </div>
-          <div class="pot-handle"></div>
-          <div class="pot-rim">${catEmoji[c.category] || '📌'}</div>
-        </div>
-        <div class="camp-info">
-          <div class="camp-cat">${c.category}</div>
-          <div class="camp-title">${c.title}</div>
-          <div class="camp-desc">${c.description && c.description !== 'undefined' ? c.description : 'A blockchain-verified fundraising campaign.'}</div>
-          <div class="camp-meta">
-            <div class="camp-stats" style="margin-bottom:8px">
-              <span class="camp-raised">₹${((c.totalRaised || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-              <span style="color:var(--text3);font-size:10px">/ ₹${((c.goalAmount || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:10px">
-              <span style="color:var(--cyan);font-weight:600">${pctFill}% full</span>
-              <span style="color:var(--text3)">•</span>
-              ${c.contractAddress ? `<a href="https://sepolia.etherscan.io/address/${c.contractAddress}" target="_blank" style="color:var(--text3);text-decoration:underline" onclick="event.stopPropagation()">Explorer ↗</a>` : '<span style="color:var(--text3)">Syncing...</span>'}
-              <span class="badge-tag ${c.active ? 'badge-active' : (c.status === 'approved' ? 'badge-pending' : 'badge-ended')}" style="margin-left:auto">
-                ${c.active ? 'Active' : (c.status === 'approved' ? 'Approved' : 'Ended')}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>`
+ <div class="camp-card " onclick="openCampaignDetail('${c.contractAddress || c._id}')" data-addr="${c.contractAddress || ''}" data-id="${c._id}">
+ <div class="pot-container">
+ <div class="pot-body">
+ <div class="pot-liquid" style="height:${visualPct}%"></div>
+ </div>
+ <div class="pot-handle"></div>
+ <div class="pot-rim">${catEmoji[c.category] || '📌'}</div>
+ </div>
+ <div class="camp-info">
+ <div class="camp-cat">${c.category}</div>
+ <div class="camp-title">${c.title}</div>
+ <div class="camp-desc">${c.description && c.description !== 'undefined' ? c.description : 'A blockchain-verified fundraising campaign.'}</div>
+ <div class="camp-meta">
+ <div class="camp-stats" style="margin-bottom:8px">
+ <span class="camp-raised">₹${((c.totalRaised || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+ <span style="color:var(--text3);font-size:10px">/ ₹${((c.goalAmount || 0) * ETH_INR).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+ </div>
+ <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:10px">
+ <span style="color:var(--cyan);font-weight:600">${pctFill}% full</span>
+ <span style="color:var(--text3)">•</span>
+ ${c.contractAddress ? `<a href="https://sepolia.etherscan.io/address/${c.contractAddress}" target="_blank" style="color:var(--text3);text-decoration:underline" onclick="event.stopPropagation()">Explorer ↗</a>` : '<span style="color:var(--text3)">Syncing...</span>'}
+ <span class="badge-tag ${c.active ? 'badge-active' : (c.status === 'approved' ? 'badge-pending' : 'badge-ended')}" style="margin-left:auto">
+ ${c.active ? 'Active' : (c.status === 'approved' ? 'Approved' : 'Ended')}
+ </span>
+ </div>
+ </div>
+ </div>
+ </div>`
         }).join('');
         const sel = document.getElementById('tracker-select');
         sel.innerHTML = '<option>— Select a Campaign —</option>' + campaigns.map(c => `<option value="${c.contractAddress}">${c.title.slice(0, 40)}</option>`).join('');
@@ -3616,30 +3843,30 @@
         const pctFill = Math.min(100, (c.totalRaised || 0) / (c.goalAmount || 1) * 100).toFixed(3);
         const toINR = (eth) => `₹${Math.round((eth || 0) * 220000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
-        return `<div class="camp-card tilt-fx" onclick="openDemoCampaignDetail(${idx})" data-demo-idx="${idx}">
-      <div class="pot-container">
-        <div class="pot-body">
-          <div class="pot-liquid" style="height:${pctFill}%"></div>
-        </div>
-        <div class="pot-handle"></div>
-        <div class="pot-rim">${catEmoji[c.category] || '📌'}</div>
-      </div>
-      <div class="camp-info">
-        <div class="camp-cat">${c.category}</div>
-        <div class="camp-title">${c.title}</div>
-        <div class="camp-desc">${c.description}</div>
-        <div class="camp-meta">
-          <div class="camp-stats">
-            <span class="camp-raised">${toINR(c.totalRaised)}</span>
-            <span style="color:var(--text3)">of ${toINR(c.goalAmount)}</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="color:var(--cyan);font-weight:600">${pctFill}% full</span>
-            <span class="badge-tag badge-active">${c.active ? '🟢 Active' : '⚫ Ended'}</span>
-          </div>
-        </div>
-      </div>
-    </div>`;
+        return `<div class="camp-card " onclick="openDemoCampaignDetail(${idx})" data-demo-idx="${idx}">
+ <div class="pot-container">
+ <div class="pot-body">
+ <div class="pot-liquid" style="height:${pctFill}%"></div>
+ </div>
+ <div class="pot-handle"></div>
+ <div class="pot-rim">${catEmoji[c.category] || '📌'}</div>
+ </div>
+ <div class="camp-info">
+ <div class="camp-cat">${c.category}</div>
+ <div class="camp-title">${c.title}</div>
+ <div class="camp-desc">${c.description}</div>
+ <div class="camp-meta">
+ <div class="camp-stats">
+ <span class="camp-raised">${toINR(c.totalRaised)}</span>
+ <span style="color:var(--text3)">of ${toINR(c.goalAmount)}</span>
+ </div>
+ <div style="display:flex;justify-content:space-between;align-items:center">
+ <span style="color:var(--cyan);font-weight:600">${pctFill}% full</span>
+ <span class="badge-tag badge-active">${c.active ? '🟢 Active' : '⚫ Ended'}</span>
+ </div>
+ </div>
+ </div>
+ </div>`;
       }).join('');
     }
 
@@ -3773,68 +4000,79 @@
         const catEmoji = { Healthcare: '💧', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
 
         document.getElementById('campaign-modal-content').innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-        <div class="modal-title" style="margin-bottom:0">${c.title}</div>
-        <button class="btn btn-ghost btn-sm" onclick="refreshCampaignModal()" style="padding:6px 10px;font-size:12px">🔄 Refresh</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:20px">
-        <span class="badge-tag badge-active">${c.category}</span>
-        <span class="badge-tag ${c.active ? 'badge-active' : (c.status === 'approved' ? 'badge-pending' : 'badge-ended')}">
-          ${c.active ? '🟢 Active' : (c.status === 'approved' ? '🟢 Approved' : '⚫ Ended')}
-        </span>
-      </div>
-      <div style="text-align:center;margin-bottom:30px">
-        <div style="position:relative;width:140px;height:200px;margin:0 auto">
-          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140px;height:150px;background:linear-gradient(135deg,#ff8c42 0%,#ff6b42 50%,#d4512a 100%);border:3px solid #d4512a;border-radius:50% 50% 35% 35%;box-shadow:inset -4px -4px 12px rgba(0,0,0,.4),0 12px 30px rgba(255,107,66,.5),inset 2px 2px 8px rgba(255,255,255,.1);overflow:hidden">
-            <div id="modal-pot-liquid" class="pot-liquid" style="height:${visualPct}%;position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(180deg,#00d4ff 0%,#0099dd 50%,#006eaa 100%);border-radius:50% 50% 0 0;transition:height .8s cubic-bezier(0.34, 1.56, 0.64, 1);box-shadow:inset 0 2px 8px rgba(255,255,255,.4),inset -2px -2px 6px rgba(0,0,0,.2)"></div>
-          </div>
-          <div style="position:absolute;right:-20px;top:25px;width:32px;height:50px;border:3px solid #d4512a;border-radius:0 22px 22px 0;box-shadow:3px 2px 8px rgba(0,0,0,.4),inset 1px 1px 4px rgba(255,255,255,.1)"></div>
-          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:150px;height:18px;background:linear-gradient(180deg,#ffb366 0%,#ff8c42 50%,#d4512a 100%);border:2px solid #d4512a;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.3),0 6px 14px rgba(0,0,0,.3),inset 1px 1px 4px rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:24px">${catEmoji[c.category] || '📌'}</div>
-          <div style="position:absolute;bottom:-35px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap"><div style="font-size:13px;font-weight:600;color:var(--cyan)" id="modal-pot-pct">${pct}% full</div></div>
-        </div>
-      </div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+ <div class="modal-title" style="margin-bottom:0">${c.title}</div>
+ <button class="btn btn-ghost btn-sm" onclick="refreshCampaignModal()" style="padding:6px 10px;font-size:12px">🔄 Refresh</button>
+ </div>
+ <div style="display:flex;gap:8px;margin-bottom:20px">
+ <span class="badge-tag badge-active">${c.category}</span>
+ <span class="badge-tag ${c.active ? 'badge-active' : (c.status === 'approved' ? 'badge-pending' : 'badge-ended')}">
+ ${c.active ? '🟢 Active' : (c.status === 'approved' ? '🟢 Approved' : '⚫ Ended')}
+ </span>
+ </div>
+ <div style="text-align:center;margin-bottom:30px">
+ <div style="position:relative;width:140px;height:200px;margin:0 auto">
+ <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140px;height:150px;background:linear-gradient(135deg,#ff8c42 0%,#ff6b42 50%,#d4512a 100%);border:3px solid #d4512a;border-radius:50% 50% 35% 35%;box-shadow:inset -4px -4px 12px rgba(0,0,0,.4),0 12px 30px rgba(255,107,66,.5),inset 2px 2px 8px rgba(255,255,255,.1);overflow:hidden">
+ <div id="modal-pot-liquid" class="pot-liquid" style="height:${visualPct}%;position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(180deg,#00d4ff 0%,#0099dd 50%,#006eaa 100%);border-radius:50% 50% 0 0;transition:height .8s cubic-bezier(0.34, 1.56, 0.64, 1);box-shadow:inset 0 2px 8px rgba(255,255,255,.4),inset -2px -2px 6px rgba(0,0,0,.2)"></div>
+ </div>
+ <div style="position:absolute;right:-20px;top:25px;width:32px;height:50px;border:3px solid #d4512a;border-radius:0 22px 22px 0;box-shadow:3px 2px 8px rgba(0,0,0,.4),inset 1px 1px 4px rgba(255,255,255,.1)"></div>
+ <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:150px;height:18px;background:linear-gradient(180deg,#ffb366 0%,#ff8c42 50%,#d4512a 100%);border:2px solid #d4512a;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.3),0 6px 14px rgba(0,0,0,.3),inset 1px 1px 4px rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:24px">${catEmoji[c.category] || '📌'}</div>
+ <div style="position:absolute;bottom:-35px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap"><div style="font-size:13px;font-weight:600;color:var(--cyan)" id="modal-pot-pct">${pct}% full</div></div>
+ </div>
+ </div>
 
-      <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;text-align:center">${c.description}</p>
-      <div class="grid3" style="margin-bottom:20px">
-        <div class="metric card-sm"><div class="metric-label">Raised</div><div class="metric-val" style="font-size:1.3rem" id="modal-raised">${toINR(totalRaised)}</div></div>
-        <div class="metric card-sm"><div class="metric-label">Goal</div><div class="metric-val" style="font-size:1.3rem" id="modal-goal">${toINR(goal)}</div></div>
-        <div class="metric card-sm"><div class="metric-label">Progress</div><div class="metric-val" style="font-size:1.3rem" id="modal-progress">${pct}%</div></div>
-      </div>
-      <div class="chain-badge" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
-        <span><span class="v">✓</span> ${c.contractAddress ? `Contract: <span style="font-family:var(--mono);color:var(--cyan)">${c.contractAddress}</span>` : 'Syncing contract from blockchain...'}</span>
-        <div style="display:flex;gap:12px;align-items:center">
-          ${c.contractAddress ? `
-            <button class="btn-ghost" onclick="syncSpecificCampaign('${c.contractAddress}')" style="font-size:11px;padding:4px 8px" title="Re-sync with blockchain">🔄 Sync</button>
-            <a href="https://sepolia.etherscan.io/address/${c.contractAddress}" target="_blank" style="font-size:11px;color:var(--text3);text-decoration:underline">Explorer ↗</a>
-          ` : ''}
-          <span id="last-updated" style="font-size:10px;color:var(--text3)">updated just now</span>
-        </div>
-      </div>
-      
-      <div id="modal-tabs" style="display:flex;gap:20px;margin-bottom:16px;border-bottom:1px solid var(--border)">
-        <div class="modal-tab active" onclick="setModalTab('details')">Details</div>
-        <div class="modal-tab" onclick="setModalTab('history')">History</div>
-      </div>
-      
-      <div id="modal-tab-details">
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
-          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">💰 Donate via MetaMask</div>
-          ${c.active ? `
-            <div style="display:flex;gap:10px"><input class="form-input" id="donate-amount" type="number" step="0.001" min="0.001" placeholder="Amount in ETH (e.g. 0.01)" style="flex:1"/><button class="btn btn-primary" onclick="donateToCampaign('${c.contractAddress}')">Donate</button></div>
-            <div class="form-hint" style="margin-top:6px">Connected wallet: ${walletAddress ? shortAddr(walletAddress) : '<a onclick="connectWallet()" style="color:var(--cyan);cursor:pointer">Connect first</a>'}</div>
-          ` : `
-            <div style="text-align:center;padding:10px;color:var(--text3);font-size:12px">Donations will be enabled once the contract is fully synced.</div>
-          `}
-        </div>
-        ${c.milestones && c.milestones.length ? `<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Milestones</div>${c.milestones.map((m, i) => `<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;color:#fff">${m.description}</div><span class="badge-tag ${m.completed ? 'badge-active' : 'badge-review'}">${m.completed ? '✓ Done' : `${m.approvalCount}/${c.requiredApprovals || 1} approvals`}</span></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Target: ${toINR(parseFloat(m.targetAmount))}</div></div>`).join('')}` : ''}
-      </div>
+ <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;text-align:center">${c.description}</p>
+ <div class="grid3" style="margin-bottom:20px">
+ <div class="metric card-sm"><div class="metric-label">Raised</div><div class="metric-val" style="font-size:1.3rem" id="modal-raised">${toINR(totalRaised)}</div></div>
+ <div class="metric card-sm"><div class="metric-label">Goal</div><div class="metric-val" style="font-size:1.3rem" id="modal-goal">${toINR(goal)}</div></div>
+ <div class="metric card-sm"><div class="metric-label">Progress</div><div class="metric-val" style="font-size:1.3rem" id="modal-progress">${pct}%</div></div>
+ </div>
+ <div class="chain-badge" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+ <span><span class="v">✓</span> ${c.contractAddress ? `Contract: <span style="font-family:var(--mono);color:var(--cyan)">${c.contractAddress}</span>` : 'Syncing contract from blockchain...'}</span>
+ <div style="display:flex;gap:12px;align-items:center">
+ ${c.contractAddress ? `
+ <button class="btn-ghost" onclick="syncSpecificCampaign('${c.contractAddress}')" style="font-size:11px;padding:4px 8px" title="Re-sync with blockchain">🔄 Sync</button>
+ <a href="https://sepolia.etherscan.io/address/${c.contractAddress}" target="_blank" style="font-size:11px;color:var(--text3);text-decoration:underline">Explorer ↗</a>
+ ` : ''}
+ <span id="last-updated" style="font-size:10px;color:var(--text3)">updated just now</span>
+ </div>
+ </div>
+ 
+ <div id="modal-tabs" style="display:flex;gap:20px;margin-bottom:16px;border-bottom:1px solid var(--border)">
+ <div class="modal-tab active" onclick="setModalTab('details')">Details</div>
+ <div class="modal-tab" onclick="setModalTab('history')">History</div>
+ </div>
+ 
+ <div id="modal-tab-details">
+ <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px">
+ <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px">💰 Support This Campaign</div>
+ ${c.active ? `
+ <div style="display:flex;gap:8px;margin-bottom:14px">
+ <button class="btn btn-ghost btn-sm donate-method-btn active" id="dm-fiat" onclick="switchDonateMethod('fiat')" style="flex:1;padding:10px;border-radius:8px;font-size:12px;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent)">💳 UPI / Card</button>
+ <button class="btn btn-ghost btn-sm donate-method-btn" id="dm-crypto" onclick="switchDonateMethod('crypto')" style="flex:1;padding:10px;border-radius:8px;font-size:12px;border:1px solid var(--border);color:var(--text2)">🦊 Crypto</button>
+ </div>
+ <div id="donate-fiat-section">
+ <div style="display:flex;gap:10px;margin-bottom:8px"><input class="form-input" id="donate-inr-amount" type="number" min="1" step="1" placeholder="Amount in ₹ (e.g. 500)" style="flex:1"/><button class="btn btn-primary" onclick="donateViaRazorpay('${c.contractAddress}','${c._id}','${c.title}')">Pay ₹</button></div>
+ <div class="form-hint">Razorpay · UPI, Debit/Credit Cards, Net Banking, Wallets</div>
+ <div class="form-hint" style="margin-top:4px;color:var(--green);font-size:10px">🔗 Every fiat donation gets an immutable blockchain receipt</div>
+ </div>
+ <div id="donate-crypto-section" style="display:none">
+ <div style="display:flex;gap:10px;margin-bottom:8px"><input class="form-input" id="donate-amount" type="number" step="0.001" min="0.001" placeholder="Amount in ETH (e.g. 0.01)" style="flex:1"/><button class="btn btn-primary" onclick="donateToCampaign('${c.contractAddress}')">Donate ETH</button></div>
+ <div class="form-hint">Wallet: ${walletAddress ? shortAddr(walletAddress) : '<a onclick="connectWallet()" style="color:var(--cyan);cursor:pointer">Connect first</a>'}</div>
+ </div>
+ ` : `
+ <div style="text-align:center;padding:10px;color:var(--text3);font-size:12px">Donations will be enabled once the campaign is active.</div>
+ `}
+ </div>
+ ${c.milestones && c.milestones.length ? `<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Milestones</div>${c.milestones.map((m, i) => `<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;color:#fff">${m.description}</div><span class="badge-tag ${m.completed ? 'badge-active' : 'badge-review'}">${m.completed ? '✓ Done' : `${m.approvalCount}/${c.requiredApprovals || 1} approvals`}</span></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Target: ${toINR(parseFloat(m.targetAmount))}</div></div>`).join('')}` : ''}
+ </div>
 
-      <div id="modal-tab-history" style="display:none">
-        <div id="campaign-history-list" style="max-height:300px;overflow-y:auto;font-size:12px">
-          <div style="text-align:center;padding:20px;color:var(--text3)">Loading transaction history...</div>
-        </div>
-      </div>
-    `;
+ <div id="modal-tab-history" style="display:none">
+ <div id="campaign-history-list" style="max-height:300px;overflow-y:auto;font-size:12px">
+ <div style="text-align:center;padding:20px;color:var(--text3)">Loading transaction history...</div>
+ </div>
+ </div>
+ `;
         window._currentRaised = totalRaised; window._currentGoal = goal;
       } catch (err) {
         document.getElementById('campaign-modal-content').innerHTML = '<div style="color:var(--red);text-align:center;padding:40px">Error loading campaign details.</div>';
@@ -3908,51 +4146,51 @@
       const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
 
       document.getElementById('campaign-modal-content').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div class="modal-title" style="margin-bottom:0">${catEmoji[demo.category] || '📌'} ${demo.title}</div>
-      <button class="btn btn-ghost btn-sm" onclick="" style="padding:6px 10px;font-size:12px;cursor:not-allowed">Demo</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:20px">
-      <span class="badge-tag badge-active">${demo.category}</span>
-      <span class="badge-tag" style="background:rgba(0,210,200,.1);color:var(--cyan)">${demo.active ? '🟢 Active' : '⚫ Ended'}</span>
-    </div>
-    <div style="text-align:center;margin-bottom:30px">
-      <div style="position:relative;width:140px;height:200px;margin:0 auto">
-        <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140px;height:150px;background:linear-gradient(135deg,#ff8c42 0%,#ff6b42 50%,#d4512a 100%);border:3px solid #d4512a;border-radius:50% 50% 35% 35%;box-shadow:inset -4px -4px 12px rgba(0,0,0,.4),0 12px 30px rgba(255,107,66,.5),inset 2px 2px 8px rgba(255,255,255,.1);overflow:hidden">
-          <div id="modal-demo-pot-liquid" style="height:${pctFill}%;position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(180deg,#00d4ff 0%,#0099dd 50%,#006eaa 100%);border-radius:50% 50% 0 0;transition:height .8s cubic-bezier(0.34, 1.56, 0.64, 1);box-shadow:inset 0 2px 8px rgba(255,255,255,.4),inset -2px -2px 6px rgba(0,0,0,.2)"></div>
-        </div>
-        <div style="position:absolute;right:-20px;top:25px;width:32px;height:50px;border:3px solid #d4512a;border-radius:0 22px 22px 0;box-shadow:3px 2px 8px rgba(0,0,0,.4),inset 1px 1px 4px rgba(255,255,255,.1)"></div>
-        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:150px;height:18px;background:linear-gradient(180deg,#ffb366 0%,#ff8c42 50%,#d4512a 100%);border:2px solid #d4512a;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.3),0 6px 14px rgba(0,0,0,.3),inset 1px 1px 4px rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:24px">${catEmoji[demo.category] || '📌'}</div>
-        <div style="position:absolute;bottom:-35px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap">
-          <div style="font-size:13px;font-weight:600;color:var(--cyan)" id="modal-demo-pot-pct">${pctFill}% full</div>
-        </div>
-      </div>
-    </div>
-    <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;text-align:center">${demo.description}</p>
-    <div class="grid3" style="margin-bottom:20px">
-      <div class="metric card-sm">
-        <div class="metric-label">Raised</div>
-        <div class="metric-val" style="font-size:1.3rem" id="modal-demo-raised">${toINR(demo.totalRaised)}</div>
-      </div>
-      <div class="metric card-sm">
-        <div class="metric-label">Goal</div>
-        <div class="metric-val" style="font-size:1.3rem" id="modal-demo-goal">${toINR(demo.goalAmount)}</div>
-      </div>
-      <div class="metric card-sm">
-        <div class="metric-label">Progress</div>
-        <div class="metric-val" style="font-size:1.3rem" id="modal-demo-progress">${pctFill}%</div>
-      </div>
-    </div>
-    <div class="chain-badge" style="margin-bottom:20px"><span class="v">✓</span> Demo Campaign (localStorage tracked)</div>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px">
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">💰 Simulate Donation</div>
-      <div style="display:flex;gap:10px">
-        <input class="form-input" id="donate-amount" type="number" step="0.001" min="0.001" placeholder="ETH amount" style="flex:1"/>
-        <button class="btn btn-primary" onclick="simulateDemoDonation(${index})">Add to Pot</button>
-      </div>
-      <div class="form-hint" style="margin-top:6px">This demo data is stored locally in your browser</div>
-    </div>
-  `;
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+ <div class="modal-title" style="margin-bottom:0">${catEmoji[demo.category] || '📌'} ${demo.title}</div>
+ <button class="btn btn-ghost btn-sm" onclick="" style="padding:6px 10px;font-size:12px;cursor:not-allowed">Demo</button>
+ </div>
+ <div style="display:flex;gap:8px;margin-bottom:20px">
+ <span class="badge-tag badge-active">${demo.category}</span>
+ <span class="badge-tag" style="background:rgba(0,210,200,.1);color:var(--cyan)">${demo.active ? '🟢 Active' : '⚫ Ended'}</span>
+ </div>
+ <div style="text-align:center;margin-bottom:30px">
+ <div style="position:relative;width:140px;height:200px;margin:0 auto">
+ <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:140px;height:150px;background:linear-gradient(135deg,#ff8c42 0%,#ff6b42 50%,#d4512a 100%);border:3px solid #d4512a;border-radius:50% 50% 35% 35%;box-shadow:inset -4px -4px 12px rgba(0,0,0,.4),0 12px 30px rgba(255,107,66,.5),inset 2px 2px 8px rgba(255,255,255,.1);overflow:hidden">
+ <div id="modal-demo-pot-liquid" style="height:${pctFill}%;position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(180deg,#00d4ff 0%,#0099dd 50%,#006eaa 100%);border-radius:50% 50% 0 0;transition:height .8s cubic-bezier(0.34, 1.56, 0.64, 1);box-shadow:inset 0 2px 8px rgba(255,255,255,.4),inset -2px -2px 6px rgba(0,0,0,.2)"></div>
+ </div>
+ <div style="position:absolute;right:-20px;top:25px;width:32px;height:50px;border:3px solid #d4512a;border-radius:0 22px 22px 0;box-shadow:3px 2px 8px rgba(0,0,0,.4),inset 1px 1px 4px rgba(255,255,255,.1)"></div>
+ <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:150px;height:18px;background:linear-gradient(180deg,#ffb366 0%,#ff8c42 50%,#d4512a 100%);border:2px solid #d4512a;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.3),0 6px 14px rgba(0,0,0,.3),inset 1px 1px 4px rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:24px">${catEmoji[demo.category] || '📌'}</div>
+ <div style="position:absolute;bottom:-35px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap">
+ <div style="font-size:13px;font-weight:600;color:var(--cyan)" id="modal-demo-pot-pct">${pctFill}% full</div>
+ </div>
+ </div>
+ </div>
+ <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;text-align:center">${demo.description}</p>
+ <div class="grid3" style="margin-bottom:20px">
+ <div class="metric card-sm">
+ <div class="metric-label">Raised</div>
+ <div class="metric-val" style="font-size:1.3rem" id="modal-demo-raised">${toINR(demo.totalRaised)}</div>
+ </div>
+ <div class="metric card-sm">
+ <div class="metric-label">Goal</div>
+ <div class="metric-val" style="font-size:1.3rem" id="modal-demo-goal">${toINR(demo.goalAmount)}</div>
+ </div>
+ <div class="metric card-sm">
+ <div class="metric-label">Progress</div>
+ <div class="metric-val" style="font-size:1.3rem" id="modal-demo-progress">${pctFill}%</div>
+ </div>
+ </div>
+ <div class="chain-badge" style="margin-bottom:20px"><span class="v">✓</span> Demo Campaign (localStorage tracked)</div>
+ <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px">
+ <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">💰 Simulate Donation</div>
+ <div style="display:flex;gap:10px">
+ <input class="form-input" id="donate-amount" type="number" step="0.001" min="0.001" placeholder="ETH amount" style="flex:1"/>
+ <button class="btn btn-primary" onclick="simulateDemoDonation(${index})">Add to Pot</button>
+ </div>
+ <div class="form-hint" style="margin-top:6px">This demo data is stored locally in your browser</div>
+ </div>
+ `;
     }
 
     // â”€â”€ Simulate Demo Donation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -4158,7 +4396,7 @@
       } catch (e) { console.warn('loadLiveTxns error:', e.message); el.innerHTML = demoTxns(); }
     }
     function appendLiveTx(tx) { const el = document.getElementById('live-txns'); if (!el) return; el.insertAdjacentHTML('afterbegin', txRow(tx)); const rows = el.children; if (rows.length > 8) rows[rows.length - 1].remove(); }
-    function txRow(tx) { const icons = { donation: '💰', disbursement: '📤', refund: 'â†©ï¸', contract_create: '📄', approval: '✅' }; const bgMap = { donation: 'rgba(34,197,94,.1)', disbursement: 'rgba(0,210,200,.1)', refund: 'rgba(239,68,68,.1)', contract_create: 'rgba(168,85,247,.1)' }; const amtStr = tx.valueETH ? `${tx.valueETH.toFixed(4)} ETH` : (tx.amountETH ? `${tx.amountETH.toFixed(4)} ETH` : '—'); const hashStr = tx.txHash || tx.hash || '0x...'; return `<div class="tx-row" onclick="document.getElementById('explorer-input').value='${hashStr}';showPage('explorer');explorerSearch()"><div class="tx-icon-wrap" style="background:${bgMap[tx.type] || 'var(--border)'}">${icons[tx.type] || '•'}</div><div class="tx-info"><div class="tx-hash">${hashStr.slice(0, 20)}...${hashStr.slice(-8)}</div><div class="tx-desc">${tx.description || tx.type}</div><div class="tx-meta"><span class="verified">✓</span> Block #${tx.blockNumber || '...'}</div></div><div class="tx-amt"><div class="amt">${amtStr}</div><div class="when">${timeAgo(tx.timestamp || tx.createdAt)}</div></div></div>`; }
+    function txRow(tx) { const icons = { donation: '💚', disbursement: '📤', refund: '↩️', contract_create: '📝', approval: '✅' }; const bgMap = { donation: 'rgba(34,197,94,.1)', disbursement: 'rgba(0,210,200,.1)', refund: 'rgba(239,68,68,.1)', contract_create: 'rgba(168,85,247,.1)' }; const amtStr = tx.valueETH ? `${tx.valueETH.toFixed(4)} ETH` : (tx.amountETH ? `${tx.amountETH.toFixed(4)} ETH` : '—'); const hashStr = tx.txHash || tx.hash || '0x...'; return `<div class="tx-row" onclick="document.getElementById('explorer-input').value='${hashStr}';showPage('explorer');explorerSearch()"><div class="tx-icon-w" style="background:${bgMap[tx.type] || 'var(--border)'}">${icons[tx.type] || '•'}</div><div class="tx-info"><div class="tx-hash">${hashStr.slice(0, 20)}...${hashStr.slice(-8)}</div><div class="tx-desc">${tx.description || tx.type}</div></div><div class="tx-amount"><div class="amt">${amtStr}</div><div class="when">${timeAgo(tx.timestamp || tx.createdAt)}</div></div></div>`; }
     function demoTxns() { const rows = [{ type: 'donation', txHash: '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7...b91c', description: 'Donation — Clean Water Initiative', blockNumber: 18402119, valueETH: 0.045, timestamp: new Date() }, { type: 'disbursement', txHash: '0x7bc1e4f0912c884490d8b3e9a1f567c239d7...e83d', description: 'Disbursement — Medical Equipment', blockNumber: 18402087, valueETH: 0.545, timestamp: new Date(Date.now() - 1080000) }, { type: 'donation', txHash: '0x2ae7f18b9c2048376e59d4a91b832cd7f5a1...91b0', description: 'Donation — Rural Education Fund', blockNumber: 18402055, valueETH: 0.025, timestamp: new Date(Date.now() - 2040000) }, { type: 'disbursement', txHash: '0x9d2f44aa7c1b3e59f20d8c6a94b7e1f035ab...44aa', description: 'Disbursement — Teacher Salaries', blockNumber: 18402001, valueETH: 0.386, timestamp: new Date(Date.now() - 3600000) }]; return rows.map(txRow).join(''); }
     function timeAgo(ts) { if (!ts) return '—'; const d = Math.floor((Date.now() - new Date(ts)) / 1000); if (d < 60) return `${d}s ago`; if (d < 3600) return `${Math.floor(d / 60)}m ago`; return `${Math.floor(d / 3600)}h ago`; }
     async function loadTrackerAllocation() {
@@ -4168,9 +4406,9 @@
       } catch (_) { el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Connect to blockchain to see live allocation data</div>`; }
     }
 
-    // â”€â”€ Explorer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ————————————————————————————————————————————————————————————————————————————————
     async function loadExplorer() { loadBlocks(); loadExplorerTxns(); }
-    async function loadBlocks() { const el = document.getElementById('blocks-row'); try { const r = await apiFetch('/blockchain/blocks/recent'); if (!r.ok) throw new Error(); const { blocks } = await r.json(); if (!blocks.length) throw new Error(); el.innerHTML = blocks.map((b, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${b.number?.toLocaleString()}</div><div class="block-hash">${b.hash}</div><div class="block-txcount"><strong>${b.txCount}</strong> txns Â· ${timeAgo(b.timestamp * 1000)}</div></div>${i < blocks.length - 1 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } catch (_) { el.innerHTML = [18402119, 18402118, 18402117, 18402116, 18402115].map((n, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${n.toLocaleString()}</div><div class="block-hash">0x${Math.random().toString(16).slice(2, 18)}...${Math.random().toString(16).slice(2, 6)}</div><div class="block-txcount"><strong>${Math.floor(Math.random() * 12 + 1)}</strong> txns Â· ${i * 14 + 2}s ago</div></div>${i < 4 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } }
+    async function loadBlocks() { const el = document.getElementById('blocks-row'); try { const r = await apiFetch('/blockchain/blocks/recent'); if (!r.ok) throw new Error(); const { blocks } = await r.json(); if (!blocks.length) throw new Error(); el.innerHTML = blocks.map((b, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}" style="cursor:pointer" onclick="document.getElementById('explorer-input').value='${b.hash}';showPage('explorer');explorerSearch('block')">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${b.number?.toLocaleString()}</div><div class="block-hash">${b.hash}</div><div class="block-txcount"><strong>${b.txCount}</strong> txns · ${timeAgo(b.timestamp * 1000)}</div></div>${i < blocks.length - 1 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } catch (_) { el.innerHTML = [18402119, 18402118, 18402117, 18402116, 18402115].map((n, i) => { const h = '0x'+Math.random().toString(16).slice(2, 18)+'...'+Math.random().toString(16).slice(2, 6); return `<div class="block-card ${i === 0 ? 'block-latest' : ''}" style="cursor:pointer" onclick="document.getElementById('explorer-input').value='${h}';showPage('explorer');explorerSearch('block')">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${n.toLocaleString()}</div><div class="block-hash">${h}</div><div class="block-txcount"><strong>${Math.floor(Math.random() * 12 + 1)}</strong> txns · ${i * 14 + 2}s ago</div></div>${i < 4 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`; }).join(''); } }
     async function loadExplorerTxns() {
       const el = document.getElementById('explorer-txns');
       if (!el) return;
@@ -4186,47 +4424,130 @@
         }).join('');
       } catch (e) { console.warn('loadExplorerTxns error:', e.message); el.innerHTML = demoTxns(); }
     }
-    async function explorerSearch() { const q = document.getElementById('explorer-input').value.trim(); if (!q) return; const section = document.getElementById('tx-detail-section'), content = document.getElementById('tx-detail-content'); section.style.display = 'block'; content.innerHTML = `<div style="text-align:center;padding:30px"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--text3)">Searching blockchain...</div></div>`; try { const r = await apiFetch(`/transactions/${q}`); if (!r.ok) throw new Error('Not found in index'); const tx = await r.json(); content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${tx.txHash}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#${tx.blockNumber?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">${tx.from}</div></div><div class="tx-detail-row"><div class="k">To</div><div class="v">${tx.to}</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">${tx.valueETH?.toFixed(6)} ETH <span style="color:var(--text3)">(₹${(tx.valueINR || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })})</span></div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">${tx.type}</div></div><div class="tx-detail-row"><div class="k">Purpose</div><div class="v">${tx.description || tx.campaignAddress || '—'}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${tx.timestamp ? new Date(tx.timestamp).toLocaleString() : '—'}</div></div></div>`; } catch (_) { content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7c9208b1ee40187a4be9b91c'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed (14 confirmations)</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">0x3fa8b12cd9e40187...b91c <span style="color:var(--text3)">(Donor)</span></div></div><div class="tx-detail-row"><div class="k">To</div><div class="v"><span style="color:var(--purple)">Smart Contract</span> 0xSC0482...a3f2</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">0.045 ETH <span style="color:var(--text3)">(₹9,900)</span></div></div><div class="tx-detail-row"><div class="k">Gas Fee</div><div class="v">0.00018 ETH — paid by platform</div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">Donation</div></div><div class="tx-detail-row"><div class="k">Campaign</div><div class="v">Clean Water Initiative — Rajasthan</div></div></div>`; } section.scrollIntoView({ behavior: 'smooth' }); }
+    async function explorerSearch(hint) { const q = document.getElementById('explorer-input').value.trim(); if (!q) return; const section = document.getElementById('tx-detail-section'), content = document.getElementById('tx-detail-content'), title = document.getElementById('tx-detail-title'); section.style.display = 'block'; title.innerHTML = '🔍 Searching...'; content.innerHTML = `<div style="text-align:center;padding:30px"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--text3)">Searching blockchain...</div></div>`; try { const r = await apiFetch(`/transactions/${q}`); if (r.ok) { const tx = await r.json(); title.innerHTML = '🔍 Transaction Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${tx.txHash}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#${tx.blockNumber?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">${tx.from}</div></div><div class="tx-detail-row"><div class="k">To</div><div class="v">${tx.to}</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">${tx.valueETH?.toFixed(6)} ETH <span style="color:var(--text3)">(₹${(tx.valueINR || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })})</span></div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">${tx.type}</div></div><div class="tx-detail-row"><div class="k">Purpose</div><div class="v">${tx.description || tx.campaignAddress || '—'}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${tx.timestamp ? new Date(tx.timestamp).toLocaleString() : '—'}</div></div></div>`; section.scrollIntoView({ behavior: 'smooth' }); return; } const bReq = await apiFetch(`/blockchain/block/${q}`); if (bReq.ok) { const b = await bReq.json(); title.innerHTML = '🔍 Block Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">Block Hash</div><div class="v" style="color:var(--cyan)">${b.hash}</div></div><div class="tx-detail-row"><div class="k">Block Number</div><div class="v" style="color:#fff">#${b.number?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">Transactions</div><div class="v">${b.txCount}</div></div><div class="tx-detail-row"><div class="k">Miner</div><div class="v">${b.miner}</div></div><div class="tx-detail-row"><div class="k">Gas Used</div><div class="v">${b.gasUsed}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${new Date(b.timestamp * 1000).toLocaleString()}</div></div></div>`; section.scrollIntoView({ behavior: 'smooth' }); return; } throw new Error('Not found in index'); } catch (_) { if (hint === 'block') { title.innerHTML = '🔍 Block Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">Block Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x...'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Mined</span></div></div><div class="tx-detail-row"><div class="k">Block Number</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">Transactions</div><div class="v">${Math.floor(Math.random() * 50) + 1}</div></div><div class="tx-detail-row"><div class="k">Miner</div><div class="v">0xMiner${Math.random().toString(16).slice(2, 10)}...</div></div><div class="tx-detail-row"><div class="k">Gas Used</div><div class="v">1,240,000</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">Just now</div></div></div>`; } else { title.innerHTML = '🔍 Transaction Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7c9208b1ee40187a4be9b91c'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed (14 confirmations)</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">0x3fa8b12cd9e40187...b91c <span style="color:var(--text3)">(Donor)</span></div></div><div class="tx-detail-row"><div class="k">To</div><div class="v"><span style="color:var(--purple)">Smart Contract</span> 0xSC0482...a3f2</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">0.045 ETH <span style="color:var(--text3)">(₹9,900)</span></div></div><div class="tx-detail-row"><div class="k">Gas Fee</div><div class="v">0.00018 ETH — paid by platform</div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">Donation</div></div><div class="tx-detail-row"><div class="k">Campaign</div><div class="v">Clean Water Initiative — Rajasthan</div></div></div>`; } } section.scrollIntoView({ behavior: 'smooth' }); }
 
-    // â”€â”€ KYC & Admin â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ————————————————————————————————————————————————————————————————————————————————
+    // ————————————————————————————————————————————————————————————————————————————————
+
+    async function loadTrusteeValidations() {
+      const el = document.getElementById('trustee-validation-list');
+      if (!el) return;
+      try {
+        const r = await apiFetch('/campaigns/proposals/pending');
+        const proposals = await r.json();
+        document.getElementById('trust-pending').textContent = proposals.length;
+        if (!proposals.length) {
+          el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">No pending proposals to validate. Good job!</div>';
+          return;
+        }
+        el.innerHTML = proposals.map(p => `<div class="card" style="padding:18px;margin-bottom:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <div>
+  <div style="font-size:15px;font-weight:700;color:#fff">${p.title}</div>
+  <div style="font-size:12px;color:var(--text2);margin-top:2px">${p.category} — by ${p.organiserName || 'Unknown'}</div>
+  </div>
+  <span class="badge badge-review">Pending Review</span>
+  </div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">${(p.description || '').slice(0, 200)}${(p.description || '').length > 200 ? '...' : ''}</div>
+  <div style="display:flex;gap:8px">
+  <button class="btn btn-primary btn-sm" onclick="voteProposal('${p._id}', 'approved')">\u2705 Approve</button>
+  <button class="btn btn-danger btn-sm" onclick="voteProposal('${p._id}', 'rejected')">\u274C Reject</button>
+  </div>
+  </div>`).join('');
+      } catch (e) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Failed to load pending proposals</div>'; }
+    }
+
+    async function voteProposal(id, status) {
+      try {
+        const r = await apiFetch(`/campaigns/proposals/${id}/vote`, { method: 'PUT', body: JSON.stringify({ status }) });
+        if (!r.ok) throw new Error();
+        toast(`Proposal ${status === 'approved' ? 'approved' : 'rejected'} successfully`, status === 'approved' ? 'success' : 'info');
+        loadTrusteeValidations();
+      } catch (e) { toast('Failed to submit vote', 'error'); }
+    }
+
     async function checkCreateAccess() {
       const navCreate = document.getElementById('nav-create');
       if (!navCreate) return;
-
-      if (!token) {
-        navCreate.style.display = 'none';
-        return;
-      }
-
+      if (!token) { navCreate.style.display = 'none'; return; }
       try {
         const r = await apiFetch('/kyc/status');
         if (!r.ok) throw new Error();
         const d = await r.json();
-
-        // Strictly show only if approved or admin
         if (d.approvedToCreate || currentUser?.role === 'admin') {
           navCreate.style.display = 'flex';
-          console.log('🚀 Campaign deployment access granted');
         } else {
           navCreate.style.display = 'none';
-          console.log('🔒 Campaign deployment access restricted');
         }
-      } catch (e) {
-        navCreate.style.display = 'none';
+      } catch (e) { navCreate.style.display = 'none'; }
+    }
+
+    async function submitKYC() {
+      if (!token) {
+        toast('Please create an account first to submit KYC', 'error');
+        switchAuthTab('register'); openAuthModal();
+        return;
+      }
+      const fullName = document.getElementById('kyc-fullname').value.trim(),
+        phone = document.getElementById('kyc-phone').value.trim(),
+        organization = document.getElementById('kyc-org').value.trim(),
+        orgType = document.getElementById('kyc-orgtype').value,
+        panNumber = document.getElementById('kyc-pan').value.trim(),
+        address = document.getElementById('kyc-address').value.trim(),
+        purposeStatement = document.getElementById('kyc-purpose').value.trim(),
+        websiteUrl = document.getElementById('kyc-website').value.trim(),
+        socialLinks = document.getElementById('kyc-social').value.trim();
+
+      if (!fullName || !phone || !organization || !orgType || !address || !purposeStatement) return toast('Please fill all required fields (*)', 'error');
+      if (purposeStatement.length < 100) return toast('Purpose statement must be at least 100 characters', 'error');
+
+      const btn = document.getElementById('kyc-submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="display:inline-block;margin-right:8px"></div>Submitting...';
+
+      try {
+        const r = await apiFetch('/kyc/apply', {
+          method: 'POST',
+          body: JSON.stringify({ fullName, phone, organization, orgType, panNumber, address, purposeStatement, websiteUrl, socialLinks })
+        });
+        const d = await r.json();
+        if (!r.ok) return toast(d.error, 'error');
+        document.getElementById('kyc-form-wrap').innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:4rem;margin-bottom:16px">📋</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:10px">Application Submitted!</div><div style="font-size:13px;color:var(--text2);line-height:1.7;max-width:400px;margin:0 auto 24px">Your verification request is now under review. You will be able to create campaigns once approved by our admin team.</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text3);margin-bottom:20px">⏱ Typical review time: <strong style="color:#fff">24–48 hours</strong><br>📧 You can check your status anytime in your account</div><button class="btn btn-ghost" onclick="showPage('campaigns')">Browse Campaigns →</button></div>`;
+        toast('Application submitted successfully!', 'success');
+      } catch (err) {
+        toast('Submission failed: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Verification Application →';
       }
     }
-    async function submitKYC() { if (!token) { toast('Please create an account first to submit KYC', 'error'); switchAuthTab('register'); openAuthModal(); if (walletAddress) setTimeout(() => { const emailEl = document.getElementById('reg-email'); if (emailEl && !emailEl.value) emailEl.focus(); }, 300); return; } const fullName = document.getElementById('kyc-fullname').value.trim(), phone = document.getElementById('kyc-phone').value.trim(), organization = document.getElementById('kyc-org').value.trim(), orgType = document.getElementById('kyc-orgtype').value, panNumber = document.getElementById('kyc-pan').value.trim(), address = document.getElementById('kyc-address').value.trim(), purposeStatement = document.getElementById('kyc-purpose').value.trim(), websiteUrl = document.getElementById('kyc-website').value.trim(), socialLinks = document.getElementById('kyc-social').value.trim(); if (!fullName || !phone || !organization || !orgType || !address || !purposeStatement) return toast('Please fill all required fields (*)', 'error'); if (purposeStatement.length < 100) return toast('Purpose statement must be at least 100 characters', 'error'); const btn = document.getElementById('kyc-submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner" style="display:inline-block;margin-right:8px"></div>Submitting...'; try { const r = await apiFetch('/kyc/apply', { method: 'POST', body: JSON.stringify({ fullName, phone, organization, orgType, panNumber, address, purposeStatement, websiteUrl, socialLinks }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); document.getElementById('kyc-form-wrap').innerHTML = `<div style="text-align:center;padding:40px"><div style="font-size:4rem;margin-bottom:16px">📋</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:10px">Application Submitted!</div><div style="font-size:13px;color:var(--text2);line-height:1.7;max-width:400px;margin:0 auto 24px">Your verification request is now under review. You will be able to create campaigns once approved by our admin team.</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:12px;color:var(--text3);margin-bottom:20px">â± Typical review time: <strong style="color:#fff">24â€“48 hours</strong><br>📧 You can check your status anytime in your account</div><button class="btn btn-ghost" onclick="showPage('campaigns')">Browse Campaigns →</button></div>`; toast('Application submitted successfully!', 'success'); } catch (err) { toast('Submission failed: ' + err.message, 'error'); btn.disabled = false; btn.innerHTML = 'Submit Verification Application →'; } }
+
     async function loadKYCStatus() {
-      if (!token) return; try {
-        const r = await apiFetch('/kyc/status'); if (!r.ok) return; const d = await r.json(); const banner = document.getElementById('kyc-status-banner'); if (!banner) return;
-        // Show dev shortcut if not approved and in local dev
+      if (!token) return;
+      try {
+        const r = await apiFetch('/kyc/status');
+        if (!r.ok) return;
+        const d = await r.json();
+        const banner = document.getElementById('kyc-status-banner');
+        if (!banner) return;
         const devWrap = document.getElementById('dev-verify-wrap');
         if (devWrap && !d.approvedToCreate) devWrap.style.display = 'block';
         else if (devWrap) devWrap.style.display = 'none';
 
-        if (d.approvedToCreate) { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px;font-size:13px;color:var(--green)">✅ Your account is <strong>approved</strong> to create campaigns! <a onclick="showPage('create')" style="color:var(--cyan);cursor:pointer;margin-left:8px">Create a Campaign →</a></div>`; document.getElementById('kyc-form-wrap').style.display = 'none'; } else if (d.kycStatus === 'pending') { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(245,194,66,.08);border:1px solid rgba(245,194,66,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--gold)">â³ Your application is <strong>under review</strong>. Submitted on ${new Date(d.submittedAt).toLocaleDateString()}. We'll notify you once reviewed.</div>`; document.getElementById('kyc-form-wrap').style.display = 'none'; } else if (d.kycStatus === 'rejected') { banner.style.display = 'block'; banner.innerHTML = `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--red)">âŒ Your previous application was <strong>rejected</strong>.<br><span style="color:var(--text2)">Reason: ${d.rejectionReason || 'Not specified'}</span><br><span style="color:var(--text3);font-size:11px">You may re-apply with updated information below.</span></div>`; }
+        if (d.approvedToCreate) {
+          banner.style.display = 'block';
+          banner.innerHTML = `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px;font-size:13px;color:var(--green)">✅ Your account is <strong>approved</strong> to create campaigns! <a onclick="showPage('create')" style="color:var(--cyan);cursor:pointer;margin-left:8px">Create a Campaign →</a></div>`;
+          document.getElementById('kyc-form-wrap').style.display = 'none';
+        } else if (d.kycStatus === 'pending') {
+          banner.style.display = 'block';
+          banner.innerHTML = `<div style="background:rgba(245,194,66,.08);border:1px solid rgba(245,194,66,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--gold)">⏳ Your application is <strong>under review</strong>. Submitted on ${new Date(d.submittedAt).toLocaleDateString()}. We'll notify you once reviewed.</div>`;
+          document.getElementById('kyc-form-wrap').style.display = 'none';
+        } else if (d.kycStatus === 'rejected') {
+          banner.style.display = 'block';
+          banner.innerHTML = `<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:16px;font-size:13px;color:var(--red)">❌ Your previous application was <strong>rejected</strong>.<br><span style="color:var(--text2)">Reason: ${d.rejectionReason || 'Not specified'}</span><br><span style="color:var(--text3);font-size:11px">You may re-apply with updated information below.</span></div>`;
+        }
       } catch (_) { }
     }
+
     async function devVerify() {
       if (!confirm('Dev Tool: Automatically approve your KYC and become an organiser?')) return;
       try {
@@ -4237,7 +4558,50 @@
       } catch (err) { toast('Error: ' + err.message, 'error'); }
     }
 
-    async function loadAdminApplications() { const status = document.getElementById('admin-filter')?.value || 'pending'; const el = document.getElementById('admin-applications-list'); el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div class="spinner"></div></div>'; try { const sr = await apiFetch('/kyc/admin/stats'); if (sr.ok) { const s = await sr.json(); document.getElementById('admin-stat-pending').textContent = s.pending; document.getElementById('admin-stat-approved').textContent = s.approved; document.getElementById('admin-stat-rejected').textContent = s.rejected; document.getElementById('admin-stat-total').textContent = s.total; } } catch (_) { } try { const r = await apiFetch(`/kyc/applications?status=${status}`); if (!r.ok) throw new Error('Admin access required'); const { applications } = await r.json(); if (!applications.length) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px">No ${status} applications found.</div>`; return; } el.innerHTML = applications.map(u => `<div class="card" style="padding:20px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:#fff">${u.name}</div><span class="badge-tag ${u.kycApplication?.status === 'approved' ? 'badge-active' : u.kycApplication?.status === 'rejected' ? '' : 'badge-review'}" style="${u.kycApplication?.status === 'rejected' ? 'background:rgba(239,68,68,.12);color:var(--red)' : ''}">${u.kycApplication?.status || 'No application'}</span>${u.approvedToCreate ? '<span class="badge-tag badge-active">✓ Can Create</span>' : ''}<span class="badge-tag" style="background:var(--accent-dim);color:var(--accent)">Role: ${u.role}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:10px">${u.email} ${u.walletAddress ? 'Â· ' + u.walletAddress.slice(0, 10) + '...' : ''}</div>${u.kycApplication ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12px;margin-bottom:12px"><div><span style="color:var(--text3)">Organisation:</span> <strong style="color:#fff">${u.kycApplication.organization}</strong></div><div><span style="color:var(--text3)">Type:</span> <strong style="color:#fff">${u.kycApplication.orgType}</strong></div><div><span style="color:var(--text3)">Phone:</span> <span style="color:var(--text2)">${u.kycApplication.phone}</span></div><div><span style="color:var(--text3)">PAN:</span> <span style="color:var(--text2)">${u.kycApplication.panNumber || '—'}</span></div><div style="grid-column:span 2"><span style="color:var(--text3)">Address:</span> <span style="color:var(--text2)">${u.kycApplication.address}</span></div>${u.kycApplication.websiteUrl ? `<div style="grid-column:span 2"><span style="color:var(--text3)">Website:</span> <a href="${u.kycApplication.websiteUrl}" target="_blank" style="color:var(--cyan)">${u.kycApplication.websiteUrl}</a></div>` : ''}</div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px"><div style="color:var(--text3);margin-bottom:4px;font-weight:600">Purpose Statement:</div>${u.kycApplication.purposeStatement}</div><div style="font-size:11px;color:var(--text3)">Submitted: ${u.kycApplication.submittedAt ? new Date(u.kycApplication.submittedAt).toLocaleString() : '—'} Â· Registered: ${new Date(u.createdAt).toLocaleDateString()}</div>` : '<div style="font-size:12px;color:var(--text3)">No KYC application submitted yet.</div>'}</div><div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">${!u.approvedToCreate ? `<button class="btn btn-sm" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)" onclick="adminApprove('${u._id}')">✅ Approve</button>` : `<button class="btn btn-sm btn-danger" onclick="adminRevoke('${u._id}')">Revoke Access</button>`}${u.role !== 'trustee' ? `<button class="btn btn-sm" style="background:rgba(108,99,255,.12);border:1px solid var(--accent);color:var(--accent)" onclick="adminMakeTrustee('${u._id}')">ðŸ›¡ï¸ Make Trustee</button>` : ''}${u.kycApplication?.status !== 'rejected' ? `<button class="btn btn-sm btn-danger" onclick="adminReject('${u._id}')">âŒ Reject</button>` : ''}</div></div></div>`).join(''); } catch (err) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--red)">Error: ${err.message}</div>`; } }
+    async function loadAdminApplications() {
+      const status = document.getElementById('admin-filter')?.value || 'pending';
+      const el = document.getElementById('admin-applications-list');
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div class="spinner"></div></div>';
+      try {
+        const sr = await apiFetch('/kyc/admin/stats');
+        if (sr.ok) {
+          const s = await sr.json();
+          const p = document.getElementById('admin-stat-pending'), a = document.getElementById('admin-stat-approved'), rej = document.getElementById('admin-stat-rejected'), t = document.getElementById('admin-stat-total');
+          if (p) p.textContent = s.pending; if (a) a.textContent = s.approved; if (rej) rej.textContent = s.rejected; if (t) t.textContent = s.total;
+        }
+      } catch (_) { }
+      try {
+        const r = await apiFetch(`/kyc/applications?status=${status}`);
+        if (!r.ok) throw new Error('Admin access required');
+        const { applications } = await r.json();
+        if (!applications.length) {
+          el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px">No ${status} applications found.</div>`;
+          return;
+        }
+        el.innerHTML = applications.map(u => `
+        <div class="card" style="padding:20px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                <div style="font-size:15px;font-weight:700;color:#fff">${u.name}</div>
+                <span class="badge-tag ${u.kycApplication?.status === 'approved' ? 'badge-active' : u.kycApplication?.status === 'rejected' ? '' : 'badge-review'}" style="${u.kycApplication?.status === 'rejected' ? 'background:rgba(239,68,68,.12);color:var(--red)' : ''}">${u.kycApplication?.status || 'No application'}</span>
+                ${u.approvedToCreate ? '<span class="badge-tag badge-active">✓ Can Create</span>' : ''}
+              </div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:10px">${u.email}</div>
+              ${u.kycApplication ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12px;margin-bottom:12px">
+                <div><span style="color:var(--text3)">Organisation:</span> <strong style="color:#fff">${u.kycApplication.organization}</strong></div>
+                <div style="grid-column:span 2"><span style="color:var(--text3)">Purpose:</span> <span style="color:var(--text2)">${u.kycApplication.purposeStatement}</span></div>
+              </div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+              ${!u.approvedToCreate ? `<button class="btn btn-sm btn-success" onclick="adminApprove('${u._id}')">✅ Approve</button>` : `<button class="btn btn-sm btn-danger" onclick="adminRevoke('${u._id}')">Revoke Access</button>`}
+              ${u.kycApplication?.status !== 'rejected' ? `<button class="btn btn-sm btn-danger" onclick="adminReject('${u._id}')">❌ Reject</button>` : ''}
+            </div>
+          </div>
+        </div>`).join('');
+      } catch (err) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--red)">Error: ${err.message}</div>`; }
+    }
+
     async function adminApprove(userId) { try { const r = await apiFetch(`/kyc/approve/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminMakeTrustee(userId) { if (!confirm('Promote this user to Trustee?')) return; try { const r = await apiFetch(`/kyc/make-trustee/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminReject(userId) { const reason = prompt('Enter rejection reason (shown to applicant):'); if (!reason) return; try { const r = await apiFetch(`/kyc/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
@@ -4332,7 +4696,7 @@
     async function loadProposals() {
       const el = document.getElementById('proposals-list');
       try {
-        const r = await apiFetch('/campaigns?status=all'); // Fetches all statuses for the current user to filter
+        const r = await apiFetch('/campaigns'); // Future: add /mine filter if needed, currently lists all but let's assume we filter organiser
         const { campaigns } = await r.json();
         const myProposals = campaigns.filter(c => c.organiser?._id === currentUser.id || c.organiser === currentUser.id);
 
@@ -4347,23 +4711,23 @@
           const isDeployable = p.status === 'approved';
 
           return `
-      <div class="card" style="padding:20px;margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-size:16px;font-weight:700;color:#fff">${p.title}</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:4px">
-              Goal: ${p.goalAmount} ETH Â· 
-              Approvals: <span style="color:${approvals >= required ? 'var(--green)' : 'var(--gold)'}">${approvals}/${required}</span> Â· 
-              Status: <span style="color:${getStatusColor(p.status)};font-weight:700">${p.status.toUpperCase()}</span>
-            </div>
-          </div>
-          <div>
-            ${isDeployable ? `<button class="btn btn-primary btn-sm" onclick="deployApprovedCampaign('${p._id}')">🚀 Launch to Blockchain</button>` : ''}
-            ${p.status === 'active' ? `<button class="btn btn-ghost btn-sm" onclick="openCampaignDetail('${p.contractAddress}')">View Live</button>` : ''}
-          </div>
-        </div>
-      </div>
-      `;
+ <div class="card" style="padding:20px;margin-bottom:12px">
+ <div style="display:flex;justify-content:space-between;align-items:center">
+ <div>
+ <div style="font-size:16px;font-weight:700;color:#fff">${p.title}</div>
+ <div style="font-size:12px;color:var(--text3);margin-top:4px">
+ Goal: ${p.goalAmount} ETH Â· 
+ Approvals: <span style="color:${approvals >= required ? 'var(--green)' : 'var(--gold)'}">${approvals}/${required}</span> Â· 
+ Status: <span style="color:${getStatusColor(p.status)};font-weight:700">${p.status.toUpperCase()}</span>
+ </div>
+ </div>
+ <div>
+ ${isDeployable ? `<button class="btn btn-primary btn-sm" onclick="deployApprovedCampaign('${p._id}')">🚀 Launch to Blockchain</button>` : ''}
+ ${p.status === 'active' ? `<button class="btn btn-ghost btn-sm" onclick="openCampaignDetail('${p.contractAddress}')">View Live</button>` : ''}
+ </div>
+ </div>
+ </div>
+ `;
         }).join('');
       } catch (err) {
         el.innerHTML = `<div style="color:var(--red);text-align:center">Error loading proposals</div>`;
@@ -4431,76 +4795,40 @@
         const iface = new ethers.Interface(FACTORY_ABI);
         let campaignAddress;
         for (const log of receipt.logs) {
-          try {
-            const parsed = iface.parseLog(log);
-            if (parsed.name === 'CampaignCreated') { campaignAddress = parsed.args[0]; break; }
-          } catch (_) { }
+          try { const parsed = iface.parseLog(log); if (parsed.name === 'CampaignCreated') { campaignAddress = parsed.args[0]; break; } } catch (_) { }
         }
-
         if (campaignAddress) {
           await apiFetch(`/campaigns/${id}/deploy`, {
             method: 'PUT',
             body: JSON.stringify({ contractAddress: campaignAddress, txHash: receipt.hash, blockNumber: receipt.blockNumber })
           });
-          toast('🚀 Campaign Launched Successfully!', 'success');
-          showPage('campaigns');
-          loadCampaigns();
         }
+        toast(`Campaign deployed! Contract: ${shortAddr(campaignAddress || '0x...')}`, 'success');
+        btn.innerHTML = '✅ Campaign Launched!';
+        setTimeout(() => { showPage('campaigns'); loadCampaigns(); loadStats(); }, 2000);
       } catch (err) {
-        console.error('Deployment Error:', err);
         toast('Deployment failed: ' + (err.reason || err.message), 'error');
         btn.disabled = false;
         btn.innerHTML = '🚀 Launch to Blockchain';
       }
     }
 
-    async function loadTrusteeValidations() {
-      const el = document.getElementById('trustee-validation-list');
-      try {
-        const r = await apiFetch('/campaigns/proposals/pending');
-        const proposals = await r.json();
-
-        document.getElementById('trust-pending').textContent = proposals.length;
-
-        if (!proposals.length) {
-          el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">No pending proposals to validate. Good job!</div>';
-          return;
-        }
-
-        el.innerHTML = proposals.map(p => `
-      <div class="card" style="padding:20px;margin-bottom:12px">
-        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px">${p.title}</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">${p.description.slice(0, 200)}...</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text3)">
-          <div>By: ${p.organiser?.name || 'Unknown'} Â· Goal: ${p.goalAmount} ETH</div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-sm btn-success" onclick="validateProposal('${p._id}', 'approved')">✅ Approve</button>
-            <button class="btn btn-sm btn-danger" onclick="validateProposal('${p._id}', 'rejected')">âŒ Reject</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-      } catch (err) {
-        el.innerHTML = `<div style="color:var(--red);text-align:center">Error loading validations</div>`;
-      }
-    }
-
     async function validateProposal(id, status) {
-      const remarks = prompt(`Enter ${status} remarks (optional):`);
-      try {
-        const r = await apiFetch(`/campaigns/proposals/${id}/validate`, {
-          method: 'POST',
-          body: JSON.stringify({ status, remarks })
-        });
-        if (r.ok) {
-          toast(`Project ${status}!`, 'success');
-          loadTrusteeValidations();
-        } else {
-          const d = await r.json();
-          toast(d.error || 'Failed to validate proposal', 'error');
-        }
-      } catch (err) { toast(err.message, 'error'); }
-    }
+    const remarks = prompt(`Enter ${status} remarks (optional):`);
+    try {
+      const r = await apiFetch(`/campaigns/proposals/${id}/validate`, {
+        method: 'POST',
+        body: JSON.stringify({ status, remarks })
+      });
+      if (r.ok) {
+        toast(`Project ${status}!`, 'success');
+        loadTrusteeValidations();
+      } else {
+        const d = await r.json();
+        toast(d.error || 'Failed to validate proposal', 'error');
+      }
+    } catch (err) { toast(err.message, 'error'); }
+ }
 
     async function syncMyActivity() {
       if (!walletAddress) return toast('Connect wallet first', 'error');
@@ -4543,287 +4871,127 @@
       } catch (e) { toast('Update failed', 'error'); }
     }
 
-    function initParallax() {
-      const hero = document.getElementById('hero-plx');
-      const layers = document.querySelectorAll('.plx-layer');
-      const glow = document.getElementById('hero-glow');
-      const mainContainer = document.querySelector('.main');
-      if (!hero || !mainContainer) return;
+    // ── Fiat Payment via Razorpay ─────────────────────────────────────────────
 
-      let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
-      let scrollY = 0;
-      let isHovering = false;
+    function updateToggleKnob(id, on) { const k = document.getElementById(id); if (k) k.style.left = on ? '25px' : '3px'; }
+    function saveCurrencyPref() { const v = document.getElementById('set-currency')?.value || 'inr'; localStorage.setItem('cf_currency', v); toast('Currency preference saved', 'success'); }
+    function saveNotifPref() { const v = document.getElementById('set-notif')?.checked; localStorage.setItem('cf_notif', v); updateToggleKnob('set-notif-knob', v); toast('Notification preference saved', 'success'); }
+    function savePublicPref() { const v = document.getElementById('set-public')?.checked; localStorage.setItem('cf_public', v); updateToggleKnob('set-public-knob', v); toast('Privacy preference saved', 'success'); }
+    async function changePassword() {
+      const oldP = document.getElementById('set-old-pass')?.value;
+      const newP = document.getElementById('set-new-pass')?.value;
+      const confP = document.getElementById('set-confirm-pass')?.value;
+      if (!oldP || !newP) return toast('Please fill in both password fields', 'error');
+      if (newP.length < 8) return toast('New password must be at least 8 characters', 'error');
+      if (newP !== confP) return toast('Passwords do not match', 'error');
+      try {
+        const r = await apiFetch('/auth/change-password', { method: 'PUT', body: JSON.stringify({ currentPassword: oldP, newPassword: newP }) });
+        if (!r.ok) { const d = await r.json(); return toast(d.error || 'Password update failed', 'error'); }
+        document.getElementById('set-old-pass').value = '';
+        document.getElementById('set-new-pass').value = '';
+        document.getElementById('set-confirm-pass').value = '';
+        toast('Password updated successfully', 'success');
+      } catch (e) { toast('Password update failed: ' + e.message, 'error'); }
+    }
+    async function deleteAccount() {
+      try {
+        const r = await apiFetch('/auth/account', { method: 'DELETE' });
+        if (!r.ok) throw new Error();
+        logout();
+        toast('Account deleted', 'info');
+      } catch (e) { toast('Could not delete account. Contact support.', 'error'); }
+    }
 
-      function animate() {
-        if (isHovering) {
-          mouseX += (targetX - mouseX) * 0.08;
-          mouseY += (targetY - mouseY) * 0.08;
-        } else {
-          mouseX += (0 - mouseX) * 0.08;
-          mouseY += (0 - mouseY) * 0.08;
-        }
+    function switchDonateMethod(method) {
+      const fiatEl = document.getElementById('donate-fiat-section');
+      const cryptoEl = document.getElementById('donate-crypto-section');
+      const fiatBtn = document.getElementById('dm-fiat');
+      const cryptoBtn = document.getElementById('dm-crypto');
+      if (!fiatEl || !cryptoEl) return;
+      fiatEl.style.display = method === 'fiat' ? 'block' : 'none';
+      cryptoEl.style.display = method === 'crypto' ? 'block' : 'none';
+      if (fiatBtn) { fiatBtn.style.background = method === 'fiat' ? 'var(--accent-dim)' : 'transparent'; fiatBtn.style.color = method === 'fiat' ? 'var(--accent)' : 'var(--text2)'; fiatBtn.style.borderColor = method === 'fiat' ? 'var(--accent)' : 'var(--border)'; }
+      if (cryptoBtn) { cryptoBtn.style.background = method === 'crypto' ? 'var(--accent-dim)' : 'transparent'; cryptoBtn.style.color = method === 'crypto' ? 'var(--accent)' : 'var(--text2)'; cryptoBtn.style.borderColor = method === 'crypto' ? 'var(--accent)' : 'var(--border)'; }
+    }
 
-        const tiltX = mouseY * -0.6;
-        const tiltY = mouseX * 0.6;
-
-        if (glow) {
-          glow.style.background = `radial-gradient(circle 800px at ${50 + (mouseX * 1.5)}% ${50 + (mouseY * 1.5)}%, rgba(108,99,255,0.2), transparent 60%)`;
-        }
-
-        layers.forEach(layer => {
-          const mSpeed = parseFloat(layer.getAttribute('data-mouse')) || 0;
-          const sSpeed = parseFloat(layer.getAttribute('data-speed')) || 0;
-          const xOffset = mouseX * mSpeed;
-          const yOffset = (mouseY * mSpeed) + (scrollY * sSpeed);
-
-          if (layer.id === 'hero-content') {
-            layer.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 30px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-          } else {
-            layer.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0)`;
-          }
+    async function donateViaRazorpay(campaignAddress, campaignId, campaignTitle) {
+      const amountInput = document.getElementById('donate-inr-amount');
+      const amount = parseFloat(amountInput?.value);
+      if (!amount || amount < 1) return toast('Please enter an amount (minimum ₹1)', 'error');
+      const amountPaise = Math.round(amount * 100);
+      try {
+        // Step 1: Create order on backend
+        const orderRes = await apiFetch('/fiat/create-order', {
+          method: 'POST',
+          body: JSON.stringify({ amount: amountPaise, currency: 'INR', campaignAddress, campaignId })
         });
-        requestAnimationFrame(animate);
-      }
+        if (!orderRes.ok) { const err = await orderRes.json(); return toast(err.error || 'Order creation failed', 'error'); }
+        const order = await orderRes.json();
 
-      hero.addEventListener('mousemove', (e) => {
-        isHovering = true;
-        const rect = hero.getBoundingClientRect();
-        targetX = (e.clientX - rect.left - rect.width / 2) / 10;
-        targetY = (e.clientY - rect.top - rect.height / 2) / 10;
-      });
-
-      hero.addEventListener('mouseleave', () => {
-        isHovering = false;
-        targetX = 0; targetY = 0;
-      });
-
-      mainContainer.addEventListener('scroll', () => {
-        scrollY = mainContainer.scrollTop;
-      });
-
-      animate();
+        // Step 2: Open Razorpay checkout
+        const options = {
+          key: order.keyId,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'ChainFund',
+          description: 'Donation to ' + (campaignTitle || 'Campaign'),
+          order_id: order.orderId,
+          handler: async function (response) {
+            toast('Verifying payment & generating blockchain proof...', 'info');
+            try {
+              const verifyRes = await apiFetch('/fiat/verify-payment', {
+                method: 'POST',
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  campaignAddress, campaignId,
+                  amount: amountPaise, currency: 'INR',
+                  donorName: currentUser?.name || 'Anonymous',
+                  donorEmail: currentUser?.email || null
+                })
+              });
+              const result = await verifyRes.json();
+              if (verifyRes.ok && result.success) {
+                toast('Donation successful! Blockchain receipt generated.', 'success');
+                amountInput.value = '';
+                const fiatSection = document.getElementById('donate-fiat-section');
+                if (fiatSection) {
+                  fiatSection.innerHTML = '<div style="text-align:center;padding:16px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:8px">'
+                    + '<div style="font-size:2rem;margin-bottom:8px">✅</div>'
+                    + '<div style="font-size:14px;font-weight:600;color:var(--green);margin-bottom:4px">₹' + amount + ' Donated Successfully!</div>'
+                    + '<div style="font-size:11px;color:var(--text3)">Payment ID: ' + result.donation.paymentId + '</div>'
+                    + (result.donation.verifyUrl ? '<div style="margin-top:8px"><a href="' + result.donation.verifyUrl + '" target="_blank" style="font-size:11px;color:var(--cyan)">View Blockchain Proof →</a></div>' : '<div style="font-size:10px;color:var(--text3);margin-top:6px">⛓️ Blockchain proof recording...</div>')
+                    + '</div>';
+                }
+                if (window._currentModalAddress) setTimeout(() => refreshCampaignModal(true), 2000);
+                loadStats();
+              } else { toast(result.error || 'Verification failed', 'error'); }
+            } catch (err) { toast('Verification error: ' + err.message, 'error'); }
+          },
+          prefill: { name: currentUser?.name || '', email: currentUser?.email || '' },
+          theme: { color: '#6c63ff' },
+          modal: { ondismiss: function () { toast('Payment cancelled', 'info'); } }
+        };
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (resp) { toast('Payment failed: ' + (resp.error?.description || 'Unknown error'), 'error'); });
+        rzp.open();
+      } catch (err) { toast('Error: ' + err.message, 'error'); }
     }
-
-    function initGlobalTilt() {
-      // Inject glare layers into all tilt-fx elements
-      document.querySelectorAll('.tilt-fx').forEach(el => {
-        if (!el.querySelector('.glare-layer')) {
-          const glare = document.createElement('div');
-          glare.className = 'glare-layer';
-          el.appendChild(glare);
-        }
-      });
-
-      document.body.addEventListener('mousemove', (e) => {
-        const target = e.target.closest('.tilt-fx');
-        if (!target) return;
-        const rect = target.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const maxTilt = target.getAttribute('data-tilt') || 10;
-        const rotateX = ((y - centerY) / centerY) * -maxTilt;
-        const rotateY = ((x - centerX) / centerX) * maxTilt;
-        target.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-
-        // Move the glare to follow the cursor
-        const glare = target.querySelector('.glare-layer');
-        if (glare) {
-          const pctX = (x / rect.width) * 100;
-          const pctY = (y / rect.height) * 100;
-          glare.style.background = `radial-gradient(circle 120px at ${pctX}% ${pctY}%, rgba(255,255,255,0.25), rgba(108,99,255,0.06) 40%, transparent 70%)`;
-        }
-      });
-      document.body.addEventListener('mouseout', (e) => {
-        const target = e.target.closest('.tilt-fx');
-        if (!target || target.contains(e.relatedTarget)) return;
-        target.style.transition = 'transform 0.4s ease-out';
-        target.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-      });
-    }
-
-    // ── Animated CountUp ──────────────────────────────────────────
-    function countUp(el, start, end, duration, prefix = '', suffix = '', useCommas = true) {
-      const startTime = performance.now();
-      const isFloat = String(end).includes('.');
-      el.classList.add('count-up');
-
-      function tick(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Ease out cubic
-        const ease = 1 - Math.pow(1 - progress, 3);
-        const current = start + (end - start) * ease;
-        const formatted = useCommas
-          ? current.toLocaleString('en-IN', { maximumFractionDigits: isFloat ? 2 : 0 })
-          : (isFloat ? current.toFixed(2) : Math.round(current).toString());
-        el.textContent = prefix + formatted + suffix;
-
-        if (progress < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          el.classList.remove('count-up');
-        }
-      }
-      requestAnimationFrame(tick);
-    }
-
-    // ── Floating Glass Orbs ───────────────────────────────────────
-    function initFloatingOrbs() {
-      const hero = document.getElementById('hero-plx');
-      if (!hero) return;
-
-      const orbConfigs = [
-        { size: 60, top: '15%', left: '75%', duration: '8s', delay: '0s' },
-        { size: 35, top: '60%', left: '20%', duration: '12s', delay: '-3s' },
-        { size: 45, top: '30%', left: '85%', duration: '10s', delay: '-5s' },
-        { size: 25, top: '80%', left: '65%', duration: '14s', delay: '-7s' },
-        { size: 50, top: '10%', left: '40%', duration: '11s', delay: '-2s' },
-      ];
-
-      orbConfigs.forEach(cfg => {
-        const orb = document.createElement('div');
-        orb.className = 'glass-orb plx-layer';
-        orb.setAttribute('data-speed', (Math.random() * 0.3 + 0.1).toFixed(2));
-        orb.setAttribute('data-mouse', (Math.random() * 10 - 5).toFixed(1));
-        orb.style.cssText = `
-          width: ${cfg.size}px;
-          height: ${cfg.size}px;
-          top: ${cfg.top};
-          left: ${cfg.left};
-          animation: orbFloat ${cfg.duration} ease-in-out infinite ${cfg.delay};
-        `;
-        hero.appendChild(orb);
-      });
-    }
-
-    // ── Inject Glare Layers on Dynamic Content ────────────────────
-    const _origLoadCampaigns = typeof loadCampaigns === 'function' ? loadCampaigns : null;
-    function injectGlareLayers() {
-      document.querySelectorAll('.tilt-fx').forEach(el => {
-        if (!el.querySelector('.glare-layer')) {
-          const glare = document.createElement('div');
-          glare.className = 'glare-layer';
-          el.appendChild(glare);
-        }
-      });
-    }
-    // Observe DOM changes to inject glare on dynamically added cards
-    const _glareObserver = new MutationObserver(() => { injectGlareLayers(); });
 
     document.addEventListener('DOMContentLoaded', () => {
-      initParallax();
-      initGlobalTilt();
-      initFloatingOrbs();
-      initScrollReveal();
-      initSectionParallax();
-      initGlobalCursorGlow();
       applyStoredTheme();
       updateAuthUI();
       updateTopbarUser();
       loadStats();
       loadCampaigns();
-
-      // Watch for dynamic content and inject glare layers
-      const grid = document.getElementById('campaigns-grid');
-      if (grid) _glareObserver.observe(grid, { childList: true, subtree: true });
-      const mainEl = document.querySelector('.main');
-      if (mainEl) _glareObserver.observe(mainEl, { childList: true, subtree: true });
     });
 
-    // ── Global Cursor Glow (Aura) ───────────────────────────────────
-    function initGlobalCursorGlow() {
-      const glow = document.createElement('div');
-      glow.id = 'global-cursor-glow';
-      document.body.appendChild(glow);
-
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      let currentX = mouseX;
-      let currentY = mouseY;
-      let ticking = false;
-      let isVisible = false;
-
-      document.addEventListener('mousemove', (e) => {
-        if (!isVisible) {
-          glow.style.opacity = '1';
-          isVisible = true;
-        }
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        if (!ticking) {
-          requestAnimationFrame(updateGlow);
-          ticking = true;
-        }
-      }, { passive: true });
-
-      function updateGlow() {
-        // Smooth interpolation (lerp) - Faster speed (0.45) for true cursor replacement
-        currentX += (mouseX - currentX) * 0.45;
-        currentY += (mouseY - currentY) * 0.45;
-
-        glow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-
-        // Keep animating if not fully caught up
-        if (Math.abs(currentX - mouseX) > 0.1 || Math.abs(currentY - mouseY) > 0.1) {
-          requestAnimationFrame(updateGlow);
-        } else {
-          ticking = false;
-        }
-      }
-    }
-
-    // ── Scroll Reveal (IntersectionObserver) ───────────────────────
-    function initScrollReveal() {
-      const scrollRoot = document.querySelector('.main');
-      if (!scrollRoot) return;
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('sr-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, {
-        root: scrollRoot,
-        threshold: 0.15,
-        rootMargin: '0px 0px -40px 0px'
-      });
-
-      document.querySelectorAll('.sr').forEach(el => observer.observe(el));
-    }
-
-    // ── Section Parallax on Scroll ─────────────────────────────────
-    function initSectionParallax() {
-      const scrollRoot = document.querySelector('.main');
-      if (!scrollRoot) return;
-      const plxSections = document.querySelectorAll('.section-plx');
-      if (!plxSections.length) return;
-
-      let ticking = false;
-      scrollRoot.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            const scrollTop = scrollRoot.scrollTop;
-            const viewH = scrollRoot.clientHeight;
-            plxSections.forEach(section => {
-              const rect = section.getBoundingClientRect();
-              const mainRect = scrollRoot.getBoundingClientRect();
-              const relativeTop = rect.top - mainRect.top;
-              const speed = parseFloat(section.getAttribute('data-plx-speed')) || 0.03;
-              if (relativeTop < viewH && relativeTop + rect.height > 0) {
-                const offset = (scrollTop - section.offsetTop + viewH) * speed;
-                section.style.transform = `translateY(${-offset}px)`;
-              }
-            });
-            ticking = false;
-          });
-          ticking = true;
-        }
-      });
-    }
+    function initParallax() { }
+    function initGlobalTilt() { }
+    function initFloatingOrbs() { }
+    function initScrollReveal() { }
+    function initSectionParallax() { }
 
   </script>
 </body>

@@ -79,12 +79,27 @@ const donationSchema = new Schema({
   campaignAddress: { type: String, lowercase: true },
   donor:           { type: Schema.Types.ObjectId, ref: "User" },
   donorWallet:     { type: String, lowercase: true },
+  donorName:       String,           // For fiat donors (may not have an account)
+  donorEmail:      String,           // For fiat donors
   amountETH:       Number,
   amountINR:       Number,
+  amountPaise:     Number,           // Fiat: amount in smallest currency unit
+  currency:        { type: String, default: "INR" },
+  paymentMethod:   { type: String, enum: ["crypto","fiat"], default: "crypto" },
+  // Crypto fields
   txHash:          { type: String, unique: true },
   blockNumber:     Number,
   blockTimestamp:  Date,
-  status:          { type: String, enum: ["pending","confirmed","failed"], default: "pending" },
+  // Fiat (Razorpay) fields
+  razorpayOrderId:   String,
+  razorpayPaymentId: { type: String, sparse: true },
+  // Blockchain proof fields (for fiat donations recorded on-chain)
+  proofHash:              String,     // SHA-256 hash stored on-chain
+  proofTimestamp:          Number,     // Unix timestamp used in hash generation
+  blockchainTxHash:       String,     // Polygon tx hash of on-chain recording
+  blockchainDonationId:   Number,     // DonationLedger contract donation ID
+  // Status
+  status:          { type: String, enum: ["pending","confirmed","failed","refunded"], default: "pending" },
   refunded:        { type: Boolean, default: false },
   createdAt:       { type: Date, default: Date.now }
 });

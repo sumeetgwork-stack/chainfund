@@ -7,13 +7,15 @@ const { Server }   = require("socket.io");
 const path         = require("path");
 const rateLimit    = require("express-rate-limit");
 
-const authRoutes       = require("./routes/auth");
-const campaignRoutes   = require("./routes/campaigns");
-const donationRoutes   = require("./routes/donations");
-const txRoutes         = require("./routes/transactions");
-const blockchainRoutes = require("./routes/blockchain");
-const kycRoutes        = require("./routes/kyc");
-const { startListener } = require("./services/blockchainListener");
+const authRoutes         = require("./routes/auth");
+const campaignRoutes     = require("./routes/campaigns");
+const donationRoutes     = require("./routes/donations");
+const fiatDonationRoutes = require("./routes/fiatDonations");
+const webhookRoutes      = require("./routes/webhooks");
+const txRoutes           = require("./routes/transactions");
+const blockchainRoutes   = require("./routes/blockchain");
+const kycRoutes          = require("./routes/kyc");
+const { startListener }  = require("./services/blockchainListener");
 
 const app    = express();
 const server = http.createServer(app);
@@ -34,12 +36,14 @@ app.use("/api/", limiter);
 app.use((req, _res, next) => { req.io = io; next(); });
 
 // ── Routes ─────────────────────────────────────────────────────────────────
-app.use("/api/auth",        authRoutes);
-app.use("/api/campaigns",   campaignRoutes);
-app.use("/api/donations",   donationRoutes);
-app.use("/api/transactions",txRoutes);
-app.use("/api/blockchain",  blockchainRoutes);
-app.use("/api/kyc",         kycRoutes);
+app.use("/api/auth",            authRoutes);
+app.use("/api/campaigns",       campaignRoutes);
+app.use("/api/donations",       donationRoutes);
+app.use("/api/fiat",            fiatDonationRoutes);
+app.use("/api/webhooks",        webhookRoutes);
+app.use("/api/transactions",    txRoutes);
+app.use("/api/blockchain",      blockchainRoutes);
+app.use("/api/kyc",             kycRoutes);
 
 // Serve factory address to frontend
 app.get('/config', (_req, res) => {

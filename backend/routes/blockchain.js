@@ -106,6 +106,25 @@ router.get("/blocks/recent", async (_req, res) => {
   }
 });
 
+// Single block by hash or number
+router.get("/block/:id", async (req, res) => {
+  try {
+    const provider = getProvider();
+    const b = await provider.getBlock(req.params.id);
+    if (!b) return res.status(404).json({ error: "Block not found" });
+    res.json({
+      number:    b.number,
+      hash:      b.hash,
+      txCount:   b.transactions.length,
+      timestamp: b.timestamp,
+      miner:     b.miner,
+      gasUsed:   b.gasUsed ? b.gasUsed.toString() : "0"
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /**
  * Get internal transaction history for a campaign from DB
  */

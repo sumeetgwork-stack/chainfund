@@ -12,11 +12,14 @@ router.post("/register", async (req, res) => {
     if (!name || !email || !password)
       return res.status(400).json({ error: "Name, email, and password required" });
 
+    // Prevent self-registration as trustee or admin
+    const safeRole = (role === "trustee" || role === "admin") ? "donor" : (role || "donor");
+
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ error: "Email already registered" });
 
     const hashed = await bcrypt.hash(password, 12);
-    const user   = await User.create({ name, email, password: hashed, walletAddress: walletAddress?.toLowerCase(), role });
+    const user   = await User.create({ name, email, password: hashed, walletAddress: walletAddress?.toLowerCase(), role: safeRole });
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
     res.status(201).json({

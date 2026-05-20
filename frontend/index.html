@@ -2650,190 +2650,6 @@
         <div class="card" style="padding:24px">
           <h3 style="margin-bottom:20px;font-size:15px">Recent Contributions</h3>
           <div id="my-donations-list">
-          <div>
-            <div class="page-title">Dashboard</div>
-            <div class="page-sub">Live fund intelligence from the blockchain</div>
-          </div><span
-            style="font-size:12px;color:var(--green);display:flex;align-items:center;gap:6px;font-weight:600"><span
-              class="live-dot"></span> Live on-chain</span>
-        </div>
-        <div class="grid4" style="margin-bottom:22px">
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Total Raised</div>
-            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:#fff" id="db-raised">—</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-raised-sub"></div>
-          </div>
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Active Campaigns</div>
-            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:var(--green)" id="db-active">—
-            </div>
-            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-active-sub"></div>
-          </div>
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              Total Disbursed</div>
-            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:var(--pink)"
-              id="db-disbursed">—</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-disbursed-sub"></div>
-          </div>
-          <div class="card card-sm">
-            <div
-              style="font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
-              On-chain Txns</div>
-            <div style="font-size:1.5rem;font-family:var(--display);font-weight:800;color:var(--accent)" id="db-txns">—
-            </div>
-            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="db-txns-sub"></div>
-          </div>
-        </div>
-        <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchDashTab('overview')">Overview</button>
-          <button class="tab-btn" onclick="switchDashTab('tracker')">Fund Tracker</button>
-          <button class="tab-btn" onclick="switchDashTab('my')" id="dash-tab-my">My Campaigns</button>
-        </div>
-        <div class="tab-panel active" id="dt-overview">
-          <div class="grid2">
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Live Transactions</div>
-              <div id="live-txns" style="display:flex;flex-direction:column;gap:8px">
-                <div style="text-align:center;padding:30px;color:var(--text3)">
-                  <div class="spinner"></div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Fund Allocation</div>
-              <div class="card card-sm">
-                <div class="donut-row" style="flex-direction:column;gap:16px"><svg width="160" height="160"
-                    viewBox="0 0 160 160">
-                    <circle cx="80" cy="80" r="60" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="22" />
-                    <circle cx="80" cy="80" r="60" fill="none" stroke="#6c63ff" stroke-width="22"
-                      stroke-dasharray="113 264" stroke-dashoffset="-10" stroke-linecap="round" />
-                    <circle cx="80" cy="80" r="60" fill="none" stroke="#00e5a0" stroke-width="22"
-                      stroke-dasharray="71 264" stroke-dashoffset="-127" stroke-linecap="round" />
-                    <circle cx="80" cy="80" r="60" fill="none" stroke="#ffc857" stroke-width="22"
-                      stroke-dasharray="53 264" stroke-dashoffset="-202" stroke-linecap="round" />
-                    <circle cx="80" cy="80" r="60" fill="none" stroke="#ff6eb0" stroke-width="22"
-                      stroke-dasharray="27 264" stroke-dashoffset="-257" stroke-linecap="round" /><text x="80" y="74"
-                      text-anchor="middle" fill="#fff" font-family="Syne" font-weight="800"
-                      font-size="18">89%</text><text x="80" y="92" text-anchor="middle" fill="#4a4f66" font-size="11"
-                      font-family="Plus Jakarta Sans">Utilised</text>
-                  </svg>
-                  <div class="legend">
-                    <div class="legend-item">
-                      <div class="legend-dot" style="background:#6c63ff"></div>Healthcare — 43%
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-dot" style="background:#00e5a0"></div>Education — 27%
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-dot" style="background:#ffc857"></div>Infrastructure — 20%
-                    </div>
-                    <div class="legend-item">
-                      <div class="legend-dot" style="background:#ff6eb0"></div>Other — 10%
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-panel" id="dt-tracker">
-          <div class="grid2">
-            <div class="flow-box">
-              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px">Live Fund Flow</div><svg
-                width="100%" viewBox="0 0 400 220">
-                <defs>
-                  <marker id="arr3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L6,3 Z" fill="rgba(108,99,255,.6)" />
-                  </marker>
-                </defs>
-                <rect x="10" y="10" width="95" height="36" rx="8" fill="rgba(108,99,255,.08)"
-                  stroke="rgba(108,99,255,.3)" stroke-width="1" /><text x="57" y="24" text-anchor="middle"
-                  fill="#8b85ff" font-size="10" font-family="Plus Jakarta Sans" font-weight="700">Donors</text><text
-                  x="57" y="38" text-anchor="middle" fill="#4a4f66" font-size="8" font-family="JetBrains Mono">Multiple
-                  wallets</text>
-                <line x1="105" y1="28" x2="168" y2="68" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
-                  marker-end="url(#arr3)" />
-                <rect x="170" y="52" width="115" height="56" rx="10" fill="rgba(108,99,255,.08)"
-                  stroke="rgba(108,99,255,.4)" stroke-width="1.5" /><text x="227" y="74" text-anchor="middle"
-                  fill="#8b85ff" font-size="10" font-family="Plus Jakarta Sans" font-weight="700">Smart
-                  Contract</text><text x="227" y="88" text-anchor="middle" fill="#4a4f66" font-size="8"
-                  font-family="JetBrains Mono">Escrow + Rules</text><text x="227" y="101" text-anchor="middle"
-                  fill="#00e5a0" font-size="8" font-family="JetBrains Mono" id="flow-balance">0 ETH locked</text>
-                <line x1="285" y1="66" x2="330" y2="40" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
-                  marker-end="url(#arr3)" />
-                <line x1="285" y1="80" x2="330" y2="90" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
-                  marker-end="url(#arr3)" />
-                <line x1="285" y1="94" x2="330" y2="142" stroke="rgba(108,99,255,.4)" stroke-width="1.5"
-                  marker-end="url(#arr3)" />
-                <rect x="333" y="18" width="60" height="36" rx="8" fill="rgba(0,229,160,.08)"
-                  stroke="rgba(0,229,160,.3)" stroke-width="1" /><text x="363" y="34" text-anchor="middle"
-                  fill="#00e5a0" font-size="9" font-family="Plus Jakarta Sans" font-weight="700">NGO</text><text x="363"
-                  y="46" text-anchor="middle" fill="#4a4f66" font-size="8" font-family="JetBrains Mono">40%</text>
-                <rect x="333" y="66" width="60" height="36" rx="8" fill="rgba(0,229,160,.08)"
-                  stroke="rgba(0,229,160,.3)" stroke-width="1" /><text x="363" y="82" text-anchor="middle"
-                  fill="#00e5a0" font-size="9" font-family="Plus Jakarta Sans" font-weight="700">School</text><text
-                  x="363" y="94" text-anchor="middle" fill="#4a4f66" font-size="8"
-                  font-family="JetBrains Mono">35%</text>
-                <rect x="333" y="116" width="60" height="36" rx="8" fill="rgba(0,229,160,.08)"
-                  stroke="rgba(0,229,160,.3)" stroke-width="1" /><text x="363" y="132" text-anchor="middle"
-                  fill="#00e5a0" font-size="9" font-family="Plus Jakarta Sans" font-weight="700">Relief</text><text
-                  x="363" y="144" text-anchor="middle" fill="#4a4f66" font-size="8"
-                  font-family="JetBrains Mono">25%</text>
-              </svg>
-            </div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Campaign Allocation</div>
-              <select class="form-select" id="tracker-select" onchange="loadTrackerAllocation()"
-                style="margin-bottom:16px">
-                <option>— Select a Campaign —</option>
-              </select>
-              <div id="tracker-alloc">
-                <div style="text-align:center;padding:30px;font-size:13px;color:var(--text3)">Select a campaign above
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-panel" id="dt-my">
-          <div id="my-campaigns-content">
-            <div style="text-align:center;padding:40px">
-              <div style="font-size:2rem;margin-bottom:10px">🔍</div>
-              <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Connect wallet or sign in to see your
-                campaigns</div><button class="btn btn-primary btn-sm" onclick="openAuthModal()">Sign In</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-              <div class="grid3" style="margin-bottom:28px">
-          <div class="metric-card mc-1">
-            <div class="mc-glow"></div>
-            <div class="mc-icon">💰</div>
-            <div class="mc-label">Total Donated</div>
-            <div class="mc-val" id="my-total-donated">₹0</div>
-          </div>
-          <div class="metric-card mc-2">
-            <div class="mc-glow"></div>
-            <div class="mc-icon">📋</div>
-            <div class="mc-label">Campaigns Backed</div>
-            <div class="mc-val" id="my-backed-count">0</div>
-          </div>
-          <div class="metric-card mc-4">
-            <div class="mc-glow"></div>
-            <div class="mc-icon">🦊</div>
-            <div class="mc-label">Your Wallet</div>
-            <div class="mc-val" id="my-wallet-short" style="font-size:12px;font-family:var(--mono)">...</div>
-          </div>
-        </div>
-        <div class="card" style="padding:24px">
-          <h3 style="margin-bottom:20px;font-size:15px">Recent Contributions</h3>
-          <div id="my-donations-list">
             <div style="text-align:center;padding:40px;color:var(--text3)">Connect wallet to view your activity</div>
           </div>
         </div>
@@ -3288,7 +3104,7 @@
         <div class="form-group"><label class="form-label">I am a</label><select class="form-select" id="reg-role">
             <option value="donor">Donor — I want to donate to campaigns</option>
             <option value="organiser">Organiser — I want to create campaigns</option>
-            <option value="trustee">Trustee — I approve fund disbursements</option>
+
           </select></div>
         <button class="btn btn-primary btn-full" onclick="register()">Create Account</button>
         <div style="text-align:center;margin-top:16px">
@@ -3343,7 +3159,6 @@
       <div class="form-group"><label class="form-label">I am a</label><select class="form-select" id="mm-reg-role">
           <option value="donor">Donor — I want to donate to campaigns</option>
           <option value="organiser">Organiser — I want to create campaigns</option>
-          <option value="trustee">Trustee — I approve fund disbursements</option>
         </select></div><button class="btn btn-primary" style="width:100%;padding:14px;font-size:14px"
         onclick="submitMetaMaskRegistration()" id="mm-reg-btn">Create Account & Connect →</button>
       <div style="text-align:center;margin-top:14px"><span style="font-size:12px;color:var(--text3)">Already have an

@@ -2186,6 +2186,201 @@
     body.light-theme .card,
     body.light-theme .camp-card,
     body.light-theme .rp-stat,
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      font-size: 10px;
+      font-weight: 600;
+      gap: 4px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      transition: all .2s;
+      cursor: pointer;
+    }
+
+    .mobile-nav-item .nav-icon {
+      font-size: 20px;
+      filter: grayscale(1) opacity(0.5);
+    }
+
+    .mobile-nav-item.active {
+      color: var(--accent);
+    }
+
+    .mobile-nav-item.active .nav-icon {
+      filter: none;
+    }
+
+    #mobile-profile-btn {
+      display: none;
+    }
+
+    @media(max-width:1200px) {
+      .right-panel {
+        display: none
+      }
+    }
+
+    @media(max-width:800px) {
+      .sidebar {
+        display: none
+      }
+
+      .mobile-nav {
+        display: flex;
+      }
+      
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .topbar-logo {
+        width: auto;
+      }
+      
+      .topbar-search {
+        display: none;
+      }
+
+      #sync-pill {
+        display: none !important;
+      }
+
+      #hero-plx {
+        padding: 40px 24px !important;
+      }
+      
+      .main {
+        padding: 0 0 100px;
+        margin-left: 0;
+      }
+      
+      .page {
+        padding: 20px 16px;
+      }
+
+      #mobile-profile-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        color: var(--accent);
+        font-weight: 800;
+        cursor: pointer;
+        border: 1px solid rgba(108, 99, 255, 0.3);
+      }
+
+      #topbar-loggedin {
+        display: none !important;
+      }
+      
+      #topbar-user-area {
+        display: none !important;
+      }
+
+      .page-title {
+        font-size: 1.5rem !important;
+      }
+
+      .form-grid,
+      .form-row,
+      .grid2,
+      .grid3,
+      .grid4 {
+        grid-template-columns: 1fr
+      }
+
+      .steps-row {
+        grid-template-columns: 1fr 1fr
+      }
+      
+      .modal {
+        width: 100% !important;
+        margin: 0;
+        border-radius: 24px 24px 0 0 !important;
+        position: absolute;
+        bottom: 0;
+        transform: translateY(0);
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+      
+      .modal-overlay {
+        align-items: flex-end;
+      }
+    }
+
+    body.light-theme {
+      --bg: #f0f2f8;
+      --sidebar: #ffffff;
+      --panel: #f8f9fc;
+      --card: #ffffff;
+      --card2: #f0f2f8;
+      --border: rgba(0, 0, 0, .12);
+      --border2: rgba(0, 0, 0, .2);
+      --accent: #5b52e6;
+      --accent2: #7b72ff;
+      --accent-dim: rgba(91, 82, 230, .1);
+      --green: #15803d;
+      --green-dim: rgba(21, 128, 61, .1);
+      --red: #dc2626;
+      --yellow: #b45309;
+      --cyan: #0e7e9e;
+      --pink: #c2410c;
+      --text: #111827;
+      --text2: #374151;
+      --text3: #6b7280;
+    }
+
+    body.light-theme .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    body.light-theme .sidebar {
+      background: #ffffff;
+      border-right: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    body.light-theme .right-panel {
+      background: #ffffff;
+      border-left: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    body.light-theme .wallet-card {
+      background: linear-gradient(135deg, #4a3fa0, #2d5ca8);
+    }
+
+    body.light-theme .metric-card.mc-1 {
+      background: linear-gradient(135deg, #ede9ff, #d4d0ff);
+    }
+
+    body.light-theme .metric-card.mc-2 {
+      background: linear-gradient(135deg, #e0fff4, #b3f5dc);
+    }
+
+    body.light-theme .metric-card.mc-3 {
+      background: linear-gradient(135deg, #ffe0ee, #ffb3d4);
+    }
+
+    body.light-theme .metric-card.mc-4 {
+      background: linear-gradient(135deg, #fff8e0, #ffe9a0);
+    }
+
+    body.light-theme .metric-card .mc-val {
+      color: #111827;
+    }
+
+    body.light-theme .metric-card .mc-label {
+      color: rgba(0, 0, 0, .6);
+    }
+
+    body.light-theme .card,
+    body.light-theme .camp-card,
+    body.light-theme .rp-stat,
     body.light-theme .step-card,
     body.light-theme .feat-card {
       background: #ffffff;
@@ -2195,7 +2390,17 @@
 
     body.light-theme .camp-title,
     body.light-theme .step-card h4,
-    body.light-theme .feat-card h3 {
+    body.light-theme .feat-card h3,
+    body.light-theme .page-title,
+    body.light-theme .modal-title,
+    body.light-theme .topbar-logo,
+    body.light-theme .rp-stat-val,
+    body.light-theme .rp-tx-title,
+    body.light-theme .tx-amount .amt,
+    body.light-theme .step-num,
+    body.light-theme .form-label,
+    body.light-theme .bc-count strong,
+    body.light-theme .user-name {
       color: #111827;
     }
 
@@ -3320,7 +3525,7 @@
   </div>
 
   <script>
-    // â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Config ──────────────────────────────────────────────────────────────────
     const API = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
       ? 'http://localhost:5000/api'
       : '/api';
@@ -3351,7 +3556,7 @@
 
 
 
-    // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── State ──────────────────────────────────────────────────────────────────
     let provider, signer, walletAddress, token, currentUser;
     let FACTORY_ADDRESS = null;
     let socket;
@@ -3359,7 +3564,7 @@
     let _modalRefreshTimer = null;
     let currentBrowseActive = true;
 
-    // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Init ──────────────────────────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', async () => {
       // Try to load config with retries
       let attempts = 0;
@@ -3369,7 +3574,7 @@
           if (cr.ok) {
             const config = await cr.json();
             FACTORY_ADDRESS = config.factory;
-            console.log('⛓️ï¸ Blockchain Config Loaded:', config);
+            console.log('⛓️  Blockchain Config Loaded:', config);
             if (config.factory) break;
           }
         } catch (e) { console.warn('Config fetch attempt failed:', e.message); }
@@ -3413,7 +3618,7 @@
         });
       } catch (_) { }
       document.getElementById('c-goal').addEventListener('input', (e) => {
-        document.getElementById('c-goal-inr').textContent = `â‰ˆ ₹${(parseFloat(e.target.value || 0) * ETH_INR).toLocaleString('en-IN')}`;
+        document.getElementById('c-goal-inr').textContent = `≈ ₹${(parseFloat(e.target.value || 0) * ETH_INR).toLocaleString('en-IN')}`;
       });
       applyStoredTheme();
       setInterval(loadStats, 30000);
@@ -3423,7 +3628,7 @@
       if (window.ethereum?.selectedAddress) { walletAddress = window.ethereum.selectedAddress; updateWalletUI(); }
     });
 
-    // â”€â”€ Page Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Page Navigation ────────────────────────────────────────────────────────
     function showPage(name) {
       const currentActive = document.querySelector('.page.active');
       const nextPg = document.getElementById(`page-${name}`);
@@ -3521,7 +3726,7 @@
         } else {
           document.getElementById('my-donations-list').innerHTML = data.donations.map(d => `
  <div class="tx-row" style="margin-bottom:8px" onclick="openCampaignDetail('${d.campaignAddress}')">
- <div class="tx-icon-w" style="background:var(--accent-dim)">🎁</div>
+ <div class="tx-icon-w" style="background:var(--accent-dim)">🎁 </div>
  <div class="tx-info">
  <div class="tx-desc" style="font-weight:600;color:var(--text)">${d.campaignTitle}</div>
  <div class="tx-hash">${shortAddr(d.txHash)}</div>
@@ -3556,13 +3761,13 @@
       _lastToast = msg; _lastToastTime = now;
 
       const el = document.createElement('div'); el.className = `toast ${type}`;
-      const icons = { success: '✅', error: 'âŒ', info: '⛓️ï¸' };
+      const icons = { success: '✅', error: '❌', info: '⛓️' };
       el.innerHTML = `<span>${icons[type] || '•'}</span><span>${msg}</span>`;
       document.getElementById('toasts').appendChild(el);
       setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
     }
 
-    // â”€â”€ Wallet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Wallet ──────────────────────────────────────────────────────────────────
     async function connectWallet() {
       if (!window.ethereum) { toast('MetaMask not found. Please install it from metamask.io', 'error'); window.open('https://metamask.io', '_blank'); return; }
       try {
@@ -3586,7 +3791,7 @@
     function updateWalletUI() { const warn = document.getElementById('create-wallet-warning'); if (warn) warn.style.display = 'none'; updateRightPanelWallet(); }
     function shortAddr(a) { return a ? `${a.slice(0, 6)}...${a.slice(-4)}` : ''; }
 
-    // â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Auth ──────────────────────────────────────────────────────────────────
     function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
     function switchAuthTab(tab) {
       document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
@@ -3646,7 +3851,7 @@
       showPage('home');
     }
 
-    // â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Stats ──────────────────────────────────────────────────────────────────
     let _statsFetchDebounce = 0;
     async function loadSyncStatus() {
       try {
@@ -3722,7 +3927,7 @@
 
     }
 
-    // â”€â”€ Campaigns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Campaigns ──────────────────────────────────────────────────────────────
     function setBrowseFilter(active, el) {
       currentBrowseActive = active;
       document.querySelectorAll('.tab-sc .tab-item').forEach(i => i.classList.remove('active'));
@@ -3744,7 +3949,7 @@
         }
         if (!campaigns.length) { grid.innerHTML = ''; document.getElementById('no-campaigns').style.display = 'block'; return; }
         document.getElementById('no-campaigns').style.display = 'none';
-        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
+        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
         console.log(`📋 Rendering ${campaigns.length} campaigns:`, campaigns.map(c => ({ title: c.title, addr: c.contractAddress })));
         grid.innerHTML = campaigns.map((c, cardIdx) => {
           const pctFill = Math.min(100, (c.totalRaised || 0) / (c.goalAmount || 1) * 100).toFixed(3);
@@ -3808,7 +4013,7 @@
       console.log(`📋 Rendering ${demos.length} demo campaigns:`, demos.map(c => ({ title: c.title, addr: c.contractAddress })));
 
       return demos.map((c, idx) => {
-        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
+        const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
         const pctFill = Math.min(100, (c.totalRaised || 0) / (c.goalAmount || 1) * 100).toFixed(3);
         const toINR = (eth) => `₹${Math.round((eth || 0) * 220000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
@@ -3839,7 +4044,7 @@
       }).join('');
     }
 
-    // â”€â”€ Demo Campaign Data Management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Demo Campaign Data Management ──────────────────────────────────────────
     function initializeDemoCampaignStorage() {
       const demoCampaignsData = [
         {
@@ -3922,7 +4127,7 @@
       localStorage.setItem(key, JSON.stringify(data));
     }
 
-    // â”€â”€ Campaign Detail with Refresh Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Campaign Detail with Refresh Button ────────────────────────────────────
     async function openCampaignDetail(identifier, forceRefresh = false) {
       const modal = document.getElementById('campaign-modal');
       modal.style.display = 'flex';
@@ -3966,7 +4171,7 @@
         const pct = goal > 0 ? Math.min(100, (totalRaised / goal) * 100).toFixed(3) : 0;
         const visualPct = totalRaised === 0 ? 0 : Math.max(3, pct);
 
-        const catEmoji = { Healthcare: '💧', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
+        const catEmoji = { Healthcare: '💧', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
 
         document.getElementById('campaign-modal-content').innerHTML = `
  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -4089,7 +4294,7 @@
       } catch (err) { if (!silent) toast('Refresh failed: ' + err.message, 'error'); openCampaignDetail(window._currentModalAddress, true); }
     }
     function openDemoCampaignDetail(index = 0) {
-      console.log(`ðŸ” openDemoCampaignDetail called with index: ${index}`);
+      console.log(`🔎 openDemoCampaignDetail called with index: ${index}`);
       let demo = getDemoCampaign(index);
 
       // Fallback: if demo not found, initialize storage and try again
@@ -4112,7 +4317,7 @@
       document.getElementById('campaign-modal').style.display = 'flex';
       const toINR = (eth) => eth > 0 ? `₹${Math.round(eth * 220000).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : `₹0`;
       const pctFill = Math.min(100, (demo.totalRaised || 0) / (demo.goalAmount || 1) * 100).toFixed(3);
-      const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: 'ðŸ—ï¸', Relief: 'ðŸ±', Environment: '🌱', Other: '📌' };
+      const catEmoji = { Healthcare: '💊', Education: '📚', Infrastructure: '🏗️', Relief: '🍱', Environment: '🌱', Other: '📌' };
 
       document.getElementById('campaign-modal-content').innerHTML = `
  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -4162,7 +4367,7 @@
  `;
     }
 
-    // â”€â”€ Simulate Demo Donation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Simulate Demo Donation ────────────────────────────────────────────────
     function simulateDemoDonation(index) {
       const amountInput = document.getElementById('donate-amount');
       const amount = amountInput?.value;
@@ -4200,7 +4405,7 @@
       }, 500);
     }
 
-    // â”€â”€ Donate with Retry Logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Donate with Retry Logic ───────────────────────────────────────────────
     async function donateToCampaign(contractAddress) {
       if (!walletAddress) { await connectWallet(); if (!walletAddress) return; }
       if (!signer) return toast('Wallet not ready. Refresh and reconnect.', 'error');
@@ -4291,7 +4496,7 @@
       }
     }
 
-    // â”€â”€ Deploy Campaign â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Deploy Campaign ──────────────────────────────────────────────────────────
     async function deployCampaign() {
       if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
       const title = document.getElementById('c-title').value.trim(), desc = document.getElementById('c-desc').value.trim(), cat = document.getElementById('c-cat').value, goal = document.getElementById('c-goal').value, days = document.getElementById('c-days').value, approvals = document.getElementById('c-approvals').value, trusteesRaw = document.getElementById('c-trustees').value.trim();
@@ -4336,11 +4541,11 @@
       }
     }
 
-    // â”€â”€ Milestone Fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Milestone Fields ────────────────────────────────────────────────────────
     let milestoneCount = 0;
-    function addMilestoneField() { milestoneCount++; const c = document.getElementById('milestones-container'); if (milestoneCount === 1) c.innerHTML = ''; const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:10px;align-items:center'; div.innerHTML = `<input class="form-input" placeholder="Milestone ${milestoneCount} description" style="flex:2"/><input class="form-input" type="number" step="0.001" placeholder="ETH" style="flex:1"/><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">âœ•</button>`; c.appendChild(div); }
+    function addMilestoneField() { milestoneCount++; const c = document.getElementById('milestones-container'); if (milestoneCount === 1) c.innerHTML = ''; const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:10px;align-items:center'; div.innerHTML = `<input class="form-input" placeholder="Milestone ${milestoneCount} description" style="flex:2"/><input class="form-input" type="number" step="0.001" placeholder="ETH" style="flex:1"/><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">❌</button>`; c.appendChild(div); }
 
-    // â”€â”€ Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Dashboard ──────────────────────────────────────────────────────────────
     function switchDashTab(name) { document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', ['overview', 'tracker', 'my'][i] === name)); document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', ['dt-overview', 'dt-tracker', 'dt-my'][i] === `dt-${name}`)); }
     async function loadDashboard() {
       if (!currentUser) { showPage('home'); openAuthModal(); return; }
@@ -4375,7 +4580,7 @@
       } catch (_) { el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Connect to blockchain to see live allocation data</div>`; }
     }
 
-    // ————————————————————————————————————————————————————————————————————————————————
+    // ────────────────────────────────────────────────────────────────────────────────
     async function loadExplorer() { loadBlocks(); loadExplorerTxns(); }
     async function loadBlocks() { const el = document.getElementById('blocks-row'); try { const r = await apiFetch('/blockchain/blocks/recent'); if (!r.ok) throw new Error(); const { blocks } = await r.json(); if (!blocks.length) throw new Error(); el.innerHTML = blocks.map((b, i) => `<div class="block-card ${i === 0 ? 'block-latest' : ''}" style="cursor:pointer" onclick="document.getElementById('explorer-input').value='${b.hash}';showPage('explorer');explorerSearch('block')">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${b.number?.toLocaleString()}</div><div class="block-hash">${b.hash}</div><div class="block-txcount"><strong>${b.txCount}</strong> txns · ${timeAgo(b.timestamp * 1000)}</div></div>${i < blocks.length - 1 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`).join(''); } catch (_) { el.innerHTML = [18402119, 18402118, 18402117, 18402116, 18402115].map((n, i) => { const h = '0x'+Math.random().toString(16).slice(2, 18)+'...'+Math.random().toString(16).slice(2, 6); return `<div class="block-card ${i === 0 ? 'block-latest' : ''}" style="cursor:pointer" onclick="document.getElementById('explorer-input').value='${h}';showPage('explorer');explorerSearch('block')">${i === 0 ? '<div class="new-tag">LATEST</div>' : ''}<div class="block-num">Block #${n.toLocaleString()}</div><div class="block-hash">${h}</div><div class="block-txcount"><strong>${Math.floor(Math.random() * 12 + 1)}</strong> txns · ${i * 14 + 2}s ago</div></div>${i < 4 ? '<div style="display:flex;align-items:center;color:var(--text3);font-size:18px;flex-shrink:0">→</div>' : ''}`; }).join(''); } }
     async function loadExplorerTxns() {
@@ -4395,8 +4600,8 @@
     }
     async function explorerSearch(hint) { const q = document.getElementById('explorer-input').value.trim(); if (!q) return; const section = document.getElementById('tx-detail-section'), content = document.getElementById('tx-detail-content'), title = document.getElementById('tx-detail-title'); section.style.display = 'block'; title.innerHTML = '🔍 Searching...'; content.innerHTML = `<div style="text-align:center;padding:30px"><div class="spinner"></div><div style="margin-top:10px;font-size:13px;color:var(--text3)">Searching blockchain...</div></div>`; try { const r = await apiFetch(`/transactions/${q}`); if (r.ok) { const tx = await r.json(); title.innerHTML = '🔍 Transaction Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${tx.txHash}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#${tx.blockNumber?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">${tx.from}</div></div><div class="tx-detail-row"><div class="k">To</div><div class="v">${tx.to}</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">${tx.valueETH?.toFixed(6)} ETH <span style="color:var(--text3)">(₹${(tx.valueINR || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })})</span></div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">${tx.type}</div></div><div class="tx-detail-row"><div class="k">Purpose</div><div class="v">${tx.description || tx.campaignAddress || '—'}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${tx.timestamp ? new Date(tx.timestamp).toLocaleString() : '—'}</div></div></div>`; section.scrollIntoView({ behavior: 'smooth' }); return; } const bReq = await apiFetch(`/blockchain/block/${q}`); if (bReq.ok) { const b = await bReq.json(); title.innerHTML = '🔍 Block Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">Block Hash</div><div class="v" style="color:var(--cyan)">${b.hash}</div></div><div class="tx-detail-row"><div class="k">Block Number</div><div class="v" style="color:#fff">#${b.number?.toLocaleString()}</div></div><div class="tx-detail-row"><div class="k">Transactions</div><div class="v">${b.txCount}</div></div><div class="tx-detail-row"><div class="k">Miner</div><div class="v">${b.miner}</div></div><div class="tx-detail-row"><div class="k">Gas Used</div><div class="v">${b.gasUsed}</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">${new Date(b.timestamp * 1000).toLocaleString()}</div></div></div>`; section.scrollIntoView({ behavior: 'smooth' }); return; } throw new Error('Not found in index'); } catch (_) { if (hint === 'block') { title.innerHTML = '🔍 Block Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">Block Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x...'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Mined</span></div></div><div class="tx-detail-row"><div class="k">Block Number</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">Transactions</div><div class="v">${Math.floor(Math.random() * 50) + 1}</div></div><div class="tx-detail-row"><div class="k">Miner</div><div class="v">0xMiner${Math.random().toString(16).slice(2, 10)}...</div></div><div class="tx-detail-row"><div class="k">Gas Used</div><div class="v">1,240,000</div></div><div class="tx-detail-row"><div class="k">Timestamp</div><div class="v">Just now</div></div></div>`; } else { title.innerHTML = '🔍 Transaction Details'; content.innerHTML = `<div class="tx-detail-grid"><div class="tx-detail-row"><div class="k">TX Hash</div><div class="v" style="color:var(--cyan)">${q.length > 20 ? q : '0x3fa8b12cd9e401874a22c918f7d490b881acd3f7c9208b1ee40187a4be9b91c'}</div></div><div class="tx-detail-row"><div class="k">Status</div><div class="v"><span class="badge-tag badge-active">✓ Confirmed (14 confirmations)</span></div></div><div class="tx-detail-row"><div class="k">Block</div><div class="v" style="color:#fff">#18,402,119</div></div><div class="tx-detail-row"><div class="k">From</div><div class="v">0x3fa8b12cd9e40187...b91c <span style="color:var(--text3)">(Donor)</span></div></div><div class="tx-detail-row"><div class="k">To</div><div class="v"><span style="color:var(--purple)">Smart Contract</span> 0xSC0482...a3f2</div></div><div class="tx-detail-row"><div class="k">Value</div><div class="v">0.045 ETH <span style="color:var(--text3)">(₹9,900)</span></div></div><div class="tx-detail-row"><div class="k">Gas Fee</div><div class="v">0.00018 ETH — paid by platform</div></div><div class="tx-detail-row"><div class="k">Type</div><div class="v" style="color:var(--cyan)">Donation</div></div><div class="tx-detail-row"><div class="k">Campaign</div><div class="v">Clean Water Initiative — Rajasthan</div></div></div>`; } } section.scrollIntoView({ behavior: 'smooth' }); }
 
-    // ————————————————————————————————————————————————————————————————————————————————
-    // ————————————————————————————————————————————————————————————————————————————————
+    // ────────────────────────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────────────────────
 
     async function loadTrusteeValidations() {
       const el = document.getElementById('trustee-validation-list');
@@ -4419,8 +4624,8 @@
   </div>
   <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">${(p.description || '').slice(0, 200)}${(p.description || '').length > 200 ? '...' : ''}</div>
   <div style="display:flex;gap:8px">
-  <button class="btn btn-primary btn-sm" onclick="voteProposal('${p._id}', 'approved')">\u2705 Approve</button>
-  <button class="btn btn-danger btn-sm" onclick="voteProposal('${p._id}', 'rejected')">\u274C Reject</button>
+  <button class="btn btn-primary btn-sm" onclick="voteProposal('${p._id}', 'approved')">✅ Approve</button>
+  <button class="btn btn-danger btn-sm" onclick="voteProposal('${p._id}', 'rejected')">❌ Reject</button>
   </div>
   </div>`).join('');
       } catch (e) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Failed to load pending proposals</div>'; }
@@ -4576,7 +4781,7 @@
     async function adminReject(userId) { const reason = prompt('Enter rejection reason (shown to applicant):'); if (!reason) return; try { const r = await apiFetch(`/kyc/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast(d.message, 'success'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
     async function adminRevoke(userId) { if (!confirm('Revoke this user\'s ability to create campaigns?')) return; try { const r = await apiFetch(`/kyc/revoke/${userId}`, { method: 'POST' }); const d = await r.json(); if (!r.ok) return toast(d.error, 'error'); toast('Access revoked', 'info'); loadAdminApplications(); } catch (err) { toast(err.message, 'error'); } }
 
-    // ————————————————————————————————————————————————————————————————————————————————
+    // ────────────────────────────────────────────────────────────────────────────────
     async function updateRightPanelWallet() {
       if (!walletAddress) { document.getElementById('rp-connect-prompt').style.display = 'block'; document.getElementById('rp-wallet-card').style.display = 'none'; document.getElementById('sidebar-wallet-mini').style.display = 'none'; document.getElementById('sidebar-connect-btn').style.display = 'block'; return; }
       document.getElementById('rp-connect-prompt').style.display = 'none'; document.getElementById('rp-wallet-card').style.display = 'block'; document.getElementById('sidebar-wallet-mini').style.display = 'block'; document.getElementById('sidebar-connect-btn').style.display = 'none';
@@ -4588,7 +4793,7 @@
     }
     function copyWalletAddr() { if (walletAddress) { navigator.clipboard.writeText(walletAddress); toast('Address copied to clipboard', 'success'); } }
     function showRightWallet() { document.querySelector('.right-panel').scrollTop = 0; }
-    async function updateRightPanelFeed() { const el = document.getElementById('rp-live-feed'); try { const r = await apiFetch('/transactions?limit=5'); if (!r.ok) throw new Error(); const { transactions } = await r.json(); if (!transactions.length) throw new Error(); el.innerHTML = transactions.map(tx => { const icons = { donation: '💰', disbursement: '📤', refund: 'â†©ï¸', approval: '✅', contract_create: '📄' }; return '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + (icons[tx.type] || '•') + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + (tx.description || tx.type) + '</div><div class="rp-tx-hash">' + (tx.txHash || '').slice(0, 18) + '...</div></div><div class="rp-tx-amt">' + (tx.valueETH ? tx.valueETH.toFixed(4) + ' ETH' : '—') + '</div></div>'; }).join(''); } catch (_) { el.innerHTML = [{ icon: '💰', desc: 'Donation — Water Initiative', amt: '+0.045 ETH' }, { icon: '📤', desc: 'Disbursement — Medical Camp', amt: '1.200 ETH' }, { icon: '💰', desc: 'Donation — Education Fund', amt: '+0.025 ETH' }].map(t => '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + t.icon + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + t.desc + '</div></div><div class="rp-tx-amt">' + t.amt + '</div></div>').join(''); } }
+    async function updateRightPanelFeed() { const el = document.getElementById('rp-live-feed'); try { const r = await apiFetch('/transactions?limit=5'); if (!r.ok) throw new Error(); const { transactions } = await r.json(); if (!transactions.length) throw new Error(); el.innerHTML = transactions.map(tx => { const icons = { donation: '💰', disbursement: '📤', refund: '↩️', approval: '✅', contract_create: '📄' }; return '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + (icons[tx.type] || '•') + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + (tx.description || tx.type) + '</div><div class="rp-tx-hash">' + (tx.txHash || '').slice(0, 18) + '...</div></div><div class="rp-tx-amt">' + (tx.valueETH ? tx.valueETH.toFixed(4) + ' ETH' : '—') + '</div></div>'; }).join(''); } catch (_) { el.innerHTML = [{ icon: '💰', desc: 'Donation — Water Initiative', amt: '+0.045 ETH' }, { icon: '📤', desc: 'Disbursement — Medical Camp', amt: '1.200 ETH' }, { icon: '💰', desc: 'Donation — Education Fund', amt: '+0.025 ETH' }].map(t => '<div class="rp-tx"><div class="rp-tx-icon" style="background:rgba(108,99,255,.12)">' + t.icon + '</div><div class="rp-tx-info"><div class="rp-tx-desc">' + t.desc + '</div></div><div class="rp-tx-amt">' + t.amt + '</div></div>').join(''); } }
 
     function updateTopbarUser() {
       if (currentUser) {
@@ -4600,7 +4805,7 @@
         document.getElementById('user-name-display').textContent = currentUser.name.split(' ')[0];
         document.getElementById('user-name-display').style.display = 'block';
 
-        // â”€â”€ ROLE-BASED SIDEBAR FILTERING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── ROLE-BASED SIDEBAR FILTERING ───────────────────────────────────────────
         const role = currentUser.role;
         document.getElementById('section-organiser').style.display = (role === 'organiser' || role === 'admin') ? 'block' : 'none';
         document.getElementById('section-trustee').style.display = (role === 'trustee' || role === 'admin') ? 'block' : 'none';
@@ -4615,91 +4820,6 @@
       } else {
         document.getElementById('topbar-user-area').style.display = 'flex';
         document.getElementById('topbar-loggedin').style.display = 'none';
-        document.getElementById('mobile-profile-btn').textContent = '👤';
-        document.getElementById('rp-my-donations-section').style.display = 'none';
-
-        // Hide all restricted sections
-        document.getElementById('section-organiser').style.display = 'none';
-        document.getElementById('section-trustee').style.display = 'none';
-        document.getElementById('section-admin').style.display = 'none';
-        document.getElementById('divider-admin').style.display = 'none';
-      }
-    }
-
-    // â”€â”€ Proposal & Validation Workflow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    async function submitProposal() {
-      const title = document.getElementById('c-title').value.trim(),
-        desc = document.getElementById('c-desc').value.trim(),
-        cat = document.getElementById('c-cat').value,
-        goal = document.getElementById('c-goal').value,
-        days = document.getElementById('c-days').value,
-        approvals = document.getElementById('c-approvals').value,
-        trustees = document.getElementById('c-trustees').value.split('\n').filter(a => a.trim());
-
-      if (!title || !goal || !desc) return toast('Please fill in title, goal and description', 'error');
-
-      const btn = document.getElementById('proposal-btn');
-      btn.disabled = true;
-      btn.innerHTML = '<div class="spinner"></div> Submitting...';
-
-      try {
-        const r = await apiFetch('/campaigns', {
-          method: 'POST',
-          body: JSON.stringify({
-            title, description: desc, category: cat, goalAmount: parseFloat(goal),
-            deadline: new Date(Date.now() + parseInt(days) * 86400000).toISOString(),
-            trustees, requiredApprovals: parseInt(approvals),
-            isProposal: true
-          })
-        });
-        if (!r.ok) throw new Error(await r.text());
-        toast('✅ Project proposal submitted for trustee validation!', 'success');
-        showPage('proposals');
-      } catch (err) {
-        toast('Submission failed: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '📋 Submit Project for Trustee Validation';
-      }
-    }
-
-    async function loadProposals() {
-      const el = document.getElementById('proposals-list');
-      try {
-        const r = await apiFetch('/campaigns'); // Future: add /mine filter if needed, currently lists all but let's assume we filter organiser
-        const { campaigns } = await r.json();
-        const myProposals = campaigns.filter(c => c.organiser?._id === currentUser.id || c.organiser === currentUser.id);
-
-        if (!myProposals.length) {
-          el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">No proposals found. Start by submitting one!</div>';
-          return;
-        }
-
-        el.innerHTML = myProposals.map(p => {
-          const approvals = p.approvingTrustees?.length || 0;
-          const required = p.requiredApprovals || 1;
-          const isDeployable = p.status === 'approved';
-
-          return `
- <div class="card" style="padding:20px;margin-bottom:12px">
- <div style="display:flex;justify-content:space-between;align-items:center">
- <div>
- <div style="font-size:16px;font-weight:700;color:#fff">${p.title}</div>
- <div style="font-size:12px;color:var(--text3);margin-top:4px">
- Goal: ${p.goalAmount} ETH Â· 
- Approvals: <span style="color:${approvals >= required ? 'var(--green)' : 'var(--gold)'}">${approvals}/${required}</span> Â· 
- Status: <span style="color:${getStatusColor(p.status)};font-weight:700">${p.status.toUpperCase()}</span>
- </div>
- </div>
- <div>
- ${isDeployable ? `<button class="btn btn-primary btn-sm" onclick="deployApprovedCampaign('${p._id}')">🚀 Launch to Blockchain</button>` : ''}
- ${p.status === 'active' ? `<button class="btn btn-ghost btn-sm" onclick="openCampaignDetail('${p.contractAddress}')">View Live</button>` : ''}
- </div>
- </div>
- </div>
- `;
-        }).join('');
       } catch (err) {
         el.innerHTML = `<div style="color:var(--red);text-align:center">Error loading proposals</div>`;
       }

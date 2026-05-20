@@ -2336,14 +2336,14 @@
       <div class="notif-btn" id="notif-btn" onclick="showPage('dashboard')">🔔<span class="notif-dot" id="notif-dot"
           style="display:none"></span></div>
       <div class="notif-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme" style="font-size:16px">🌙</div>
-      <div id="mobile-profile-btn" onclick="openAuthModal()" title="Account">👤</div>
+      <div id="mobile-profile-btn" onclick="currentUser ? showPage('settings') : openAuthModal()" title="Account">👤</div>
       <div id="topbar-user-area" style="display:flex;align-items:center;gap:8px">
         <button class="topbar-btn btn-signin" id="auth-btn" onclick="openAuthModal()">Sign In</button>
         <button class="topbar-btn btn-signup" id="signup-btn" onclick="switchAuthTab('register');openAuthModal()">Sign
           Up →</button>
       </div>
       <div id="topbar-loggedin" style="display:none;align-items:center;gap:8px">
-        <div class="topbar-user" onclick="showPage('dashboard')">
+        <div class="topbar-user" onclick="showPage('settings')">
           <div class="user-avatar" id="user-initials">?</div>
           <span class="user-name" id="user-name-display"></span>
         </div>
@@ -2954,6 +2954,8 @@
                 style="opacity:0.6;cursor:not-allowed" /></div>
             <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input"
                 id="set-phone" placeholder="+91 98765 43210" /></div>
+            <div class="form-group"><label class="form-label">UPI ID</label><input type="text" class="form-input"
+                id="set-upi" placeholder="yourname@upi" /></div>
             <button class="btn btn-primary" onclick="updateProfile()">Save Profile</button>
           </div>
 
@@ -3314,6 +3316,8 @@
       </div>
       <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="mm-reg-phone"
           placeholder="+91 98765 43210" type="tel" /></div>
+      <div class="form-group"><label class="form-label">UPI ID (Optional)</label><input class="form-input" id="mm-reg-upi"
+          placeholder="e.g. name@upi" /></div>
       <div class="form-group"><label class="form-label">Password *</label><input class="form-input" id="mm-reg-pass"
           type="password" placeholder="Min 8 characters"
           onkeydown="if(event.key==='Enter')submitMetaMaskRegistration()" /></div>
@@ -4747,24 +4751,72 @@
     function updateActiveBadge(count) { const el = document.getElementById('active-count'); if (el) el.textContent = count || '—'; }
     function toggleTheme() { const body = document.body; if (body.classList.contains('light-theme')) { body.classList.remove('light-theme'); localStorage.setItem('theme', 'dark'); document.getElementById('theme-btn').textContent = String.fromCodePoint(0x1F319); } else { body.classList.add('light-theme'); localStorage.setItem('theme', 'light'); document.getElementById('theme-btn').textContent = String.fromCodePoint(0x2600); } }
     function applyStoredTheme() { const saved = localStorage.getItem('theme'); if (saved === 'light') { document.body.classList.add('light-theme'); document.getElementById('theme-btn').textContent = String.fromCodePoint(0x2600); } else { document.body.classList.remove('light-theme'); document.getElementById('theme-btn').textContent = String.fromCodePoint(0x1F319); } }
-    async function submitMetaMaskRegistration() { const name = document.getElementById('mm-reg-name').value.trim(), email = document.getElementById('mm-reg-email').value.trim(), phone = document.getElementById('mm-reg-phone').value.trim(), password = document.getElementById('mm-reg-pass').value, role = document.getElementById('mm-reg-role').value; if (!name) return toast('Please enter your full name', 'error'); if (!email) return toast('Please enter your email', 'error'); if (!password || password.length < 8) return toast('Password must be at least 8 characters', 'error'); const btn = document.getElementById('mm-reg-btn'); btn.disabled = true; btn.textContent = 'Creating account...'; try { const r = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password, role, walletAddress, phone }) }); const d = await r.json(); if (!r.ok) { if (d.error && d.error.includes('already registered')) { toast('Email already registered. Please Sign In instead.', 'error'); document.getElementById('metamask-reg-modal').style.display = 'none'; openAuthModal(); } else toast(d.error || 'Registration failed', 'error'); btn.disabled = false; btn.textContent = 'Create Account & Connect →'; return; } token = d.token; currentUser = d.user; localStorage.setItem('cf_token', token); document.getElementById('metamask-reg-modal').style.display = 'none'; updateAuthUI(); updateTopbarUser(); toast('Welcome to ChainFund, ' + d.user.name + '! 🎉', 'success'); if (d.user.role === 'organiser') setTimeout(() => toast('Apply for KYC verification to create campaigns', 'info'), 2500); } catch (err) { toast('Registration failed: ' + err.message, 'error'); btn.disabled = false; btn.textContent = 'Create Account & Connect →'; } }
+    async function submitMetaMaskRegistration() { 
+      const name = document.getElementById('mm-reg-name').value.trim(), 
+            email = document.getElementById('mm-reg-email').value.trim(), 
+            phone = document.getElementById('mm-reg-phone').value.trim(), 
+            upiId = document.getElementById('mm-reg-upi')?.value.trim() || '',
+            password = document.getElementById('mm-reg-pass').value, 
+            role = document.getElementById('mm-reg-role').value; 
+      if (!name) return toast('Please enter your full name', 'error'); 
+      if (!email) return toast('Please enter your email', 'error'); 
+      if (!password || password.length < 8) return toast('Password must be at least 8 characters', 'error'); 
+      const btn = document.getElementById('mm-reg-btn'); 
+      btn.disabled = true; 
+      btn.textContent = 'Creating account...'; 
+      try { 
+        const r = await apiFetch('/auth/register', { 
+          method: 'POST', 
+          body: JSON.stringify({ name, email, password, role, walletAddress, phone, upiId }) 
+        }); 
+        const d = await r.json(); 
+        if (!r.ok) { 
+          if (d.error && d.error.includes('already registered')) { 
+            toast('Email already registered. Please Sign In instead.', 'error'); 
+            document.getElementById('metamask-reg-modal').style.display = 'none'; 
+            openAuthModal(); 
+          } else toast(d.error || 'Registration failed', 'error'); 
+          btn.disabled = false; 
+          btn.textContent = 'Create Account & Connect →'; 
+          return; 
+        } 
+        token = d.token; 
+        currentUser = d.user; 
+        localStorage.setItem('cf_token', token); 
+        document.getElementById('metamask-reg-modal').style.display = 'none'; 
+        updateAuthUI(); 
+        updateTopbarUser(); 
+        toast('Welcome to ChainFund, ' + d.user.name + '! 🎉', 'success'); 
+        if (d.user.role === 'organiser') setTimeout(() => toast('Apply for KYC verification to create campaigns', 'info'), 2500); 
+      } catch (err) { 
+        toast('Registration failed: ' + err.message, 'error'); 
+        btn.disabled = false; 
+        btn.textContent = 'Create Account & Connect →'; 
+      } 
+    }
     function loadSettings() {
       if (!currentUser) { toast('Please sign in to view settings', 'error'); showPage('home'); return; }
       document.getElementById('settings-name').textContent = currentUser.name;
       document.getElementById('settings-email').textContent = currentUser.email;
       document.getElementById('settings-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
-      document.getElementById('set-name').value = currentUser.name;
-      document.getElementById('set-email').value = currentUser.email;
+      document.getElementById('set-name').value = currentUser.name || '';
+      document.getElementById('set-email').value = currentUser.email || '';
+      document.getElementById('set-phone').value = currentUser.phone || '';
+      document.getElementById('set-upi').value = currentUser.upiId || '';
       document.getElementById('set-role').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
       document.getElementById('set-wallet').textContent = walletAddress || 'Not connected';
     }
     async function updateProfile() {
       const name = document.getElementById('set-name').value;
+      const phone = document.getElementById('set-phone').value;
+      const upiId = document.getElementById('set-upi').value;
       if (!name) return toast('Name cannot be empty', 'error');
       try {
-        const r = await apiFetch('/auth/profile', { method: 'PUT', body: JSON.stringify({ name }) });
+        const r = await apiFetch('/auth/profile', { method: 'PUT', body: JSON.stringify({ name, phone, upiId }) });
         if (!r.ok) throw new Error();
         currentUser.name = name;
+        currentUser.phone = phone;
+        currentUser.upiId = upiId;
         updateTopbarUser();
         loadSettings();
         toast('Profile updated successfully', 'success');

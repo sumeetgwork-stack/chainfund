@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "chainfund_dev_secret_change_in_pro
 // ── Register ──────────────────────────────────────────────────────────────
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, walletAddress, role } = req.body;
+    const { name, email, password, walletAddress, role, phone, upiId } = req.body;
     if (!name || !email || !password)
       return res.status(400).json({ error: "Name, email, and password required" });
 
@@ -19,12 +19,12 @@ router.post("/register", async (req, res) => {
     if (exists) return res.status(409).json({ error: "Email already registered" });
 
     const hashed = await bcrypt.hash(password, 12);
-    const user   = await User.create({ name, email, password: hashed, walletAddress: walletAddress?.toLowerCase(), role: safeRole });
+    const user   = await User.create({ name, email, password: hashed, walletAddress: walletAddress?.toLowerCase(), role: safeRole, phone, upiId });
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
     res.status(201).json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, walletAddress: user.walletAddress }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, walletAddress: user.walletAddress, phone: user.phone, upiId: user.upiId }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
     res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, walletAddress: user.walletAddress }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, walletAddress: user.walletAddress, phone: user.phone, upiId: user.upiId }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -94,6 +94,49 @@ router.put("/wallet", require("../middleware/auth"), async (req, res) => {
   }
 });
 
+// ── Update Profile ────────────────────────────────────────────────────────
+router.put("/profile", require("../middleware/auth"), async (req, res) => {
+  try {
+    const { name, phone, upiId } = req.body;
+    if (!name) return res.status(400).json({ error: "Name is required" });
+    
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { name, phone, upiId },
+      { new: true }
+    ).select("-password");
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Change Password ───────────────────────────────────────────────────────
+router.put("/change-password", require("../middleware/auth"), async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) 
+      return res.status(400).json({ error: "Current and new password required" });
+      
+    if (newPassword.length < 8)
+      return res.status(400).json({ error: "New password must be at least 8 characters" });
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) return res.status(401).json({ error: "Incorrect current password" });
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── Wallet-based login/registration ──────────────────────────────────────
 router.post("/login-wallet", async (req, res) => {
   try {
@@ -115,7 +158,9 @@ router.post("/login-wallet", async (req, res) => {
         name: user.name, 
         email: user.email, 
         role: user.role, 
-        walletAddress: user.walletAddress 
+        walletAddress: user.walletAddress,
+        phone: user.phone,
+        upiId: user.upiId
       }
     });
   } catch (err) {

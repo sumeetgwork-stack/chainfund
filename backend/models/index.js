@@ -22,6 +22,8 @@ const userSchema = new Schema({
   name:               { type: String, required: true, trim: true },
   email:              { type: String, required: true, unique: true, lowercase: true },
   password:           { type: String, required: true },
+  phone:              { type: String },
+  upiId:              { type: String },
   walletAddress:      { type: String, lowercase: true },
   role:               { type: String, enum: ["donor","organiser","trustee","admin"], default: "donor" },
   kycVerified:        { type: Boolean, default: false },

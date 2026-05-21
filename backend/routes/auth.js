@@ -137,6 +137,56 @@ router.put("/change-password", require("../middleware/auth"), async (req, res) =
   }
 });
 
+// ── Forgot Password ─────────────────────────────────────────────────────────
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordOTP = otp;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
+    await user.save();
+
+    res.json({ message: "Password reset OTP generated", simulatedOTP: otp });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Reset Password ────────────────────────────────────────────────────────
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) 
+      return res.status(400).json({ error: "Email, OTP, and new password are required" });
+
+    if (newPassword.length < 8)
+      return res.status(400).json({ error: "New password must be at least 8 characters" });
+
+    const user = await User.findOne({ 
+      email: email.toLowerCase(),
+      resetPasswordOTP: otp,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) return res.status(400).json({ error: "Invalid or expired OTP" });
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Password has been successfully reset" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── Wallet-based login/registration ──────────────────────────────────────
 router.post("/login-wallet", async (req, res) => {
   try {

@@ -3249,7 +3249,9 @@
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email"
             type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')login()" /></div>
         <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="login-pass"
-            type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')login()" /></div>
+            type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')login()" />
+          <div style="text-align:right;margin-top:8px"><a href="#" onclick="switchAuthTab('forgot-request')" style="font-size:12px;color:var(--accent);text-decoration:none">Forgot Password?</a></div>
+        </div>
         <button class="btn btn-primary btn-full" onclick="login()">Sign In</button>
         <div style="text-align:center;margin-top:16px">
           <button class="btn btn-ghost btn-full"
@@ -3275,6 +3277,28 @@
             onclick="document.getElementById('auth-modal').style.display='none';connectWallet()"
             style="display:flex;align-items:center;justify-content:center;gap:8px">🦊 Connect with MetaMask</button>
         </div>
+      </div>
+
+      <!-- Forgot Password Request -->
+      <div id="auth-forgot-request" style="display:none">
+        <div style="margin-bottom:20px;font-size:14px;color:var(--text2)">Enter your email to receive a password reset code.</div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="forgot-email"
+            type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')requestPasswordReset()" /></div>
+        <button class="btn btn-primary btn-full" onclick="requestPasswordReset()">Send Reset Code</button>
+        <div style="text-align:center;margin-top:16px"><a href="#" onclick="switchAuthTab('login')"
+            style="font-size:12px;color:var(--accent);text-decoration:none">← Back to Sign In</a></div>
+      </div>
+
+      <!-- Forgot Password Reset -->
+      <div id="auth-forgot-reset" style="display:none">
+        <div style="margin-bottom:20px;font-size:14px;color:var(--text2)">Enter the 6-digit code sent to your email and your new password.</div>
+        <div class="form-group"><label class="form-label">Reset Code (OTP)</label><input class="form-input" id="reset-otp"
+            type="text" placeholder="123456" /></div>
+        <div class="form-group"><label class="form-label">New Password</label><input class="form-input" id="reset-pass"
+            type="password" placeholder="Min 8 characters" onkeydown="if(event.key==='Enter')resetPassword()" /></div>
+        <button class="btn btn-primary btn-full" onclick="resetPassword()">Reset Password</button>
+        <div style="text-align:center;margin-top:16px"><a href="#" onclick="switchAuthTab('login')"
+            style="font-size:12px;color:var(--accent);text-decoration:none">Cancel</a></div>
       </div>
     </div>
   </div>
@@ -3603,9 +3627,22 @@
     // ── Auth ──────────────────────────────────────────────────────────────────
     function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
     function switchAuthTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
-      document.getElementById('auth-login').style.display = tab === 'login' ? 'block' : 'none';
-      document.getElementById('auth-register').style.display = tab === 'register' ? 'block' : 'none';
+      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('auth-login').style.display = 'none';
+      document.getElementById('auth-register').style.display = 'none';
+      const reqEl = document.getElementById('auth-forgot-request');
+      if(reqEl) reqEl.style.display = 'none';
+      const resetEl = document.getElementById('auth-forgot-reset');
+      if(resetEl) resetEl.style.display = 'none';
+
+      if (tab === 'login' || tab === 'register') {
+        const btnIdx = tab === 'login' ? 0 : 1;
+        const tabs = document.querySelectorAll('.auth-tab');
+        if (tabs.length > btnIdx) tabs[btnIdx].classList.add('active');
+        document.getElementById(`auth-${tab}`).style.display = 'block';
+      } else {
+        document.getElementById(`auth-${tab}`).style.display = 'block';
+      }
     }
     async function login() {
       const email = document.getElementById('login-email').value, password = document.getElementById('login-pass').value;
@@ -3631,6 +3668,36 @@
         updateAuthUI(); updateTopbarUser(); document.getElementById('auth-modal').style.display = 'none';
         toast(`Account created! Welcome, ${d.user.name}`, 'success');
         if (document.getElementById('page-create')?.classList.contains('active')) checkCreateAccess();
+      } catch (err) { toast(err.message, 'error'); }
+    }
+
+    async function requestPasswordReset() {
+      const email = document.getElementById('forgot-email').value;
+      if (!email) return toast('Please enter your email', 'error');
+      try {
+        const r = await apiFetch('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
+        const d = await r.json();
+        if (!r.ok) return toast(d.error || 'Failed to request reset', 'error');
+        // Simulated email delivery for dev:
+        alert(`[DEV SIMULATION] Password Reset OTP for ${email}:\n\n${d.simulatedOTP}\n\n(This would normally be sent via email)`);
+        switchAuthTab('forgot-reset');
+      } catch (err) { toast(err.message, 'error'); }
+    }
+
+    async function resetPassword() {
+      const email = document.getElementById('forgot-email').value;
+      const otp = document.getElementById('reset-otp').value;
+      const newPassword = document.getElementById('reset-pass').value;
+      if (!email || !otp || !newPassword) return toast('All fields are required', 'error');
+      if (newPassword.length < 8) return toast('Password must be at least 8 characters', 'error');
+      try {
+        const r = await apiFetch('/auth/reset-password', { method: 'POST', body: JSON.stringify({ email, otp, newPassword }) });
+        const d = await r.json();
+        if (!r.ok) return toast(d.error || 'Failed to reset password', 'error');
+        toast('Password reset successfully! Please sign in.', 'success');
+        document.getElementById('reset-otp').value = '';
+        document.getElementById('reset-pass').value = '';
+        switchAuthTab('login');
       } catch (err) { toast(err.message, 'error'); }
     }
     function updateAuthUI() {

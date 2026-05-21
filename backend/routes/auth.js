@@ -1,9 +1,21 @@
 const router  = require("express").Router();
 const bcrypt  = require("bcryptjs");
 const jwt     = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 const { User } = require("../models");
 
 const JWT_SECRET = process.env.JWT_SECRET || "chainfund_dev_secret_change_in_prod";
+
+// ── Email Transporter ─────────────────────────────────────────────────────
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === "true", // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 // ── Register ──────────────────────────────────────────────────────────────
 router.post("/register", async (req, res) => {
@@ -152,7 +164,34 @@ router.post("/forgot-password", async (req, res) => {
     user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
     await user.save();
 
-    res.json({ message: "Password reset OTP generated", simulatedOTP: otp });
+    // Send Email
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      const mailOptions = {
+        from: `ChainFund Support <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+        to: user.email,
+        subject: "ChainFund - Password Reset Code",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px;">
+            <h2 style="color: #333;">Password Reset Request</h2>
+            <p style="color: #555; font-size: 16px;">Hello ${user.name},</p>
+            <p style="color: #555; font-size: 16px;">We received a request to reset your password. Here is your 6-digit reset code:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <span style="display: inline-block; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #000; background-color: #e0e0e0; padding: 10px 20px; border-radius: 5px;">${otp}</span>
+            </div>
+            <p style="color: #555; font-size: 16px;">This code will expire in 15 minutes.</p>
+            <p style="color: #555; font-size: 16px;">If you did not request a password reset, you can safely ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            <p style="color: #999; font-size: 12px; text-align: center;">© ${new Date().getFullYear()} ChainFund. All rights reserved.</p>
+          </div>
+        `
+      };
+      await transporter.sendMail(mailOptions);
+      res.json({ message: "Password reset OTP sent to your email" });
+    } else {
+      // Fallback for local dev if SMTP is not configured
+      res.json({ message: "Password reset OTP generated (Check Server Logs)", simulatedOTP: otp });
+      console.log(`[DEV ONLY] Password Reset OTP for ${user.email}: ${otp}`);
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

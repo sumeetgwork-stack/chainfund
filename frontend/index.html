@@ -3678,8 +3678,11 @@
         const r = await apiFetch('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
         const d = await r.json();
         if (!r.ok) return toast(d.error || 'Failed to request reset', 'error');
-        // Simulated email delivery for dev:
-        alert(`[DEV SIMULATION] Password Reset OTP for ${email}:\n\n${d.simulatedOTP}\n\n(This would normally be sent via email)`);
+        if (d.simulatedOTP) {
+          alert(`[DEV SIMULATION] Password Reset OTP for ${email}:\n\n${d.simulatedOTP}\n\n(This would normally be sent via email)`);
+        } else {
+          toast(d.message || 'Reset code sent to your email!', 'success');
+        }
         switchAuthTab('forgot-reset');
       } catch (err) { toast(err.message, 'error'); }
     }

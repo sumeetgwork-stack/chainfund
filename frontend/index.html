@@ -3160,6 +3160,22 @@
             <div style="margin-top:10px">Loading pending validations...</div>
           </div>
         </div>
+
+        <!-- Milestone Approvals Section -->
+        <div style="margin-top:32px">
+          <div class="page-header" style="margin-bottom:16px">
+            <div>
+              <div class="page-title" style="font-size:1.3rem">Milestone Approvals</div>
+              <div class="page-sub">Approve milestones to release funds to campaign organisers</div>
+            </div>
+          </div>
+          <div id="trustee-milestone-list" class="grid-col1">
+            <div style="text-align:center;padding:40px;color:var(--text3)">
+              <div class="spinner"></div>
+              <div style="margin-top:10px">Loading active campaigns...</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3378,6 +3394,9 @@
       "function totalRaised() view returns (uint256)",
       "function goalAmount() view returns (uint256)",
       "function balance() view returns (uint256)",
+      "function organiser() view returns (address)",
+      "function requiredApprovals() view returns (uint256)",
+      "function isTrustee(address) view returns (bool)",
       "function getCampaignInfo() view returns (address _organiser, string memory _title, string memory _category, uint256 _goalAmount, uint256 _totalRaised, uint256 _totalDisbursed, uint256 _deadline, bool _active, bool _goalReached, uint256 _balance)",
       "function getMilestoneCount() view returns (uint256)",
       "function getMilestone(uint256) view returns (string,uint256,uint256,bool,uint256)",
@@ -3487,7 +3506,7 @@
         if (name === 'explorer') loadExplorer();
         if (name === 'campaigns') loadCampaigns();
         if (name === 'proposals') loadMyProposals();
-        if (name === 'trustee') loadTrusteeValidations();
+        if (name === 'trustee') { loadTrusteeValidations(); loadTrusteeMilestones(); }
         if (name === 'create') checkCreateAccess();
         if (name === 'kyc') loadKYCStatus();
         if (name === 'admin') loadAdminApplications();
@@ -4119,7 +4138,25 @@
  <div style="text-align:center;padding:10px;color:var(--text3);font-size:12px">Donations will be enabled once the campaign is active.</div>
  `}
  </div>
- ${c.milestones && c.milestones.length ? `<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Milestones</div>${c.milestones.map((m, i) => `<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;color:#fff">${m.description}</div><span class="badge-tag ${m.completed ? 'badge-active' : 'badge-review'}">${m.completed ? '✓ Done' : `${m.approvalCount}/${c.requiredApprovals || 1} approvals`}</span></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Target: ${toINR(parseFloat(m.targetAmount))}</div></div>`).join('')}` : ''}
+ ${c.milestones && c.milestones.length ? `<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">📋 Milestones</div>${c.milestones.map((m, i) => `<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:8px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+    <div style="font-size:13px;color:#fff;font-weight:600">${m.description}</div>
+    <span class="badge-tag ${m.completed ? 'badge-active' : 'badge-review'}">${m.completed ? '✅ Funds Disbursed' : `${m.approvalCount}/${c.requiredApprovals || 1} approvals`}</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:11px;color:var(--text3)">Target: ${parseFloat(m.targetAmount)} ETH (${toINR(parseFloat(m.targetAmount))}) ${m.completed ? '· Released: ' + parseFloat(m.releasedAmount || m.targetAmount) + ' ETH' : ''}</div>
+    ${!m.completed && walletAddress ? `<button class="btn btn-primary btn-sm" onclick="approveMilestoneOnChain('${c.contractAddress}', ${i})" style="font-size:11px;padding:4px 12px">👍 Approve</button>` : ''}
+  </div>
+</div>`).join('')}` : '<div style="font-size:12px;color:var(--text3);padding:8px 0">No milestones defined yet</div>'}
+ ${c.active && walletAddress && c.organiserWallet && walletAddress.toLowerCase() === c.organiserWallet.toLowerCase() ? `
+ <div style="margin-top:12px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px">
+   <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">➕ Add New Milestone</div>
+   <div style="display:flex;gap:8px;align-items:center">
+     <input class="form-input" id="new-ms-desc" placeholder="Milestone description" style="flex:2;font-size:12px"/>
+     <input class="form-input" id="new-ms-eth" type="number" step="0.001" min="0.001" placeholder="ETH" style="flex:1;font-size:12px"/>
+     <button class="btn btn-primary btn-sm" onclick="addMilestoneOnChain('${c.contractAddress}')" style="font-size:11px;white-space:nowrap">Add</button>
+   </div>
+ </div>` : ''}
  </div>
 
  <div id="modal-tab-history" style="display:none">
@@ -4569,6 +4606,195 @@
       } catch (e) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Failed to load pending proposals</div>'; }
     }
 
+    // ── Trustee Milestone Approvals ─────────────────────────────────────────
+    async function loadTrusteeMilestones() {
+      const el = document.getElementById('trustee-milestone-list');
+      if (!el || !walletAddress || !provider) {
+        if (el) el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Connect your wallet to see milestone approvals</div>';
+        return;
+      }
+
+      try {
+        // Fetch all active campaigns from the API
+        const r = await apiFetch('/campaigns?status=active');
+        if (!r.ok) throw new Error('Failed to fetch campaigns');
+        const data = await r.json();
+        const campaigns = data.campaigns || [];
+
+        if (!campaigns.length) {
+          el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">No active campaigns found</div>';
+          return;
+        }
+
+        let html = '';
+        let campaignsWithMilestones = 0;
+
+        for (const camp of campaigns) {
+          if (!camp.contractAddress) continue;
+
+          try {
+            const contract = new ethers.Contract(camp.contractAddress, CAMPAIGN_ABI, provider);
+
+            // Check if this wallet is a trustee on-chain
+            let isTrustee = false;
+            try {
+              isTrustee = await contract.isTrustee(walletAddress);
+            } catch (_) {
+              // Fallback: check via the campaign's approvingTrustees from DB
+              const trusteesInDB = camp.approvingTrustees || [];
+              isTrustee = trusteesInDB.some(t => t.toLowerCase() === walletAddress.toLowerCase());
+            }
+
+            if (!isTrustee) continue;
+
+            // Try reading milestone data
+            const milestoneCount = await contract.getMilestoneCount();
+            const count = Number(milestoneCount);
+            if (count === 0) continue;
+
+            // Get requiredApprovals from on-chain
+            let required = camp.requiredApprovals || 1;
+            try { required = Number(await contract.requiredApprovals()); } catch (_) {}
+
+            // Build milestones HTML
+            let milestonesHtml = '';
+            let hasPending = false;
+
+            for (let i = 0; i < count; i++) {
+              const m = await contract.getMilestone(i);
+              const desc = m[0];
+              const target = parseFloat(ethers.formatEther(m[1]));
+              const released = parseFloat(ethers.formatEther(m[2]));
+              const completed = m[3];
+              const approvalCount = Number(m[4]);
+
+              if (!completed) hasPending = true;
+
+              milestonesHtml += `
+                <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:8px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <div style="font-size:13px;color:#fff;font-weight:600">${desc}</div>
+                    <span class="badge-tag ${completed ? 'badge-active' : 'badge-review'}">
+                      ${completed ? '✅ Disbursed' : `${approvalCount}/${required} approvals`}
+                    </span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div style="font-size:11px;color:var(--text3)">Target: ${target} ETH (${toINR(target)}) ${completed ? `· Released: ${released} ETH` : ''}</div>
+                    ${!completed ? `<button class="btn btn-primary btn-sm" onclick="approveMilestoneOnChain('${camp.contractAddress}', ${i})" style="font-size:11px;padding:4px 12px">👍 Approve</button>` : ''}
+                  </div>
+                </div>`;
+            }
+
+            if (!hasPending && count > 0) {
+              // All milestones completed, skip showing
+              continue;
+            }
+
+            campaignsWithMilestones++;
+            html += `
+              <div class="card" style="padding:20px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                  <div>
+                    <div style="font-size:15px;font-weight:700;color:#fff">${camp.title}</div>
+                    <div style="font-size:12px;color:var(--text2);margin-top:2px">${camp.category} · Raised: ${toINR(camp.totalRaised || 0)}</div>
+                  </div>
+                  <span class="badge-tag badge-active">🟢 Active</span>
+                </div>
+                ${milestonesHtml}
+              </div>`;
+          } catch (e) {
+            console.warn(`Skipping campaign ${camp.title}:`, e.message);
+          }
+        }
+
+        if (campaignsWithMilestones === 0) {
+          el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">No campaigns with pending milestones assigned to you</div>';
+        } else {
+          el.innerHTML = html;
+        }
+      } catch (e) {
+        console.error('loadTrusteeMilestones error:', e);
+        el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Failed to load milestone data</div>';
+      }
+    }
+
+    async function approveMilestoneOnChain(contractAddress, milestoneId) {
+      if (!signer) { toast('Connect your MetaMask wallet first', 'error'); return; }
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="display:inline-block;width:14px;height:14px"></div>';
+
+      try {
+        const contract = new ethers.Contract(contractAddress, CAMPAIGN_ABI, signer);
+        toast('Approving milestone... (confirm in MetaMask)', 'info');
+        const tx = await contract.approveMilestone(milestoneId);
+        btn.innerHTML = 'Mining...';
+        const receipt = await tx.wait();
+
+        // Check if FundsDisbursed event was emitted (meaning milestone fully approved + ETH sent)
+        const iface = new ethers.Interface(CAMPAIGN_ABI);
+        let disbursed = false;
+        for (const log of receipt.logs) {
+          try {
+            const parsed = iface.parseLog(log);
+            if (parsed.name === 'FundsDisbursed') {
+              const amount = parseFloat(ethers.formatEther(parsed.args[2]));
+              toast(`🎉 Milestone approved! ${amount.toFixed(4)} ETH disbursed to organiser!`, 'success');
+              disbursed = true;
+              break;
+            }
+          } catch (_) {}
+        }
+
+        if (!disbursed) {
+          toast('✅ Milestone vote recorded! Waiting for more trustee approvals.', 'success');
+        }
+
+        // Reload the milestones view
+        loadTrusteeMilestones();
+      } catch (err) {
+        if (err.message?.includes('Already approved')) {
+          toast('You have already approved this milestone', 'error');
+        } else if (err.message?.includes('Already completed')) {
+          toast('This milestone has already been completed and funds disbursed', 'info');
+        } else {
+          toast('Approval failed: ' + (err.reason || err.message), 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '👍 Approve';
+      }
+    }
+
+    async function addMilestoneOnChain(contractAddress) {
+      const desc = document.getElementById('new-ms-desc')?.value?.trim();
+      const ethAmt = document.getElementById('new-ms-eth')?.value;
+
+      if (!desc) return toast('Enter a milestone description', 'error');
+      if (!ethAmt || parseFloat(ethAmt) <= 0) return toast('Enter a valid ETH amount', 'error');
+      if (!signer) return toast('Connect your MetaMask wallet first', 'error');
+
+      try {
+        const contract = new ethers.Contract(contractAddress, CAMPAIGN_ABI, signer);
+        const targetWei = ethers.parseEther(ethAmt.toString());
+
+        toast('Adding milestone on-chain... (confirm in MetaMask)', 'info');
+        const tx = await contract.addMilestone(desc, targetWei);
+        await tx.wait();
+
+        toast(`✅ Milestone "${desc}" added on-chain!`, 'success');
+
+        // Clear inputs
+        document.getElementById('new-ms-desc').value = '';
+        document.getElementById('new-ms-eth').value = '';
+
+        // Refresh the campaign modal to show new milestone
+        refreshCampaignModal();
+      } catch (err) {
+        toast('Failed to add milestone: ' + (err.reason || err.message), 'error');
+      }
+    }
+
     async function checkCreateAccess() {
       const navCreate = document.getElementById('nav-create');
       if (!navCreate) return;
@@ -4826,6 +5052,26 @@
             method: 'PUT',
             body: JSON.stringify({ contractAddress: campaignAddress, txHash: receipt.hash, blockNumber: receipt.blockNumber })
           });
+
+          // Push milestones from proposal to the smart contract
+          if (p.milestones && p.milestones.length > 0) {
+            btn.innerHTML = '<div class="spinner"></div> Adding milestones on-chain...';
+            const campaignContract = new ethers.Contract(campaignAddress, CAMPAIGN_ABI, signer);
+            for (let i = 0; i < p.milestones.length; i++) {
+              const m = p.milestones[i];
+              const desc = m.description || `Milestone ${i + 1}`;
+              const targetWei = ethers.parseEther((m.targetAmount || 0).toString());
+              try {
+                toast(`Adding milestone ${i + 1}/${p.milestones.length}: ${desc}`, 'info');
+                const mTx = await campaignContract.addMilestone(desc, targetWei);
+                await mTx.wait();
+              } catch (mErr) {
+                console.warn(`Failed to add milestone ${i + 1}:`, mErr.message);
+                toast(`Warning: Milestone "${desc}" could not be added on-chain`, 'error');
+              }
+            }
+            toast(`All ${p.milestones.length} milestones added on-chain!`, 'success');
+          }
         }
         toast(`Campaign deployed! Contract: ${shortAddr(campaignAddress || '0x...')}`, 'success');
         btn.innerHTML = '✅ Campaign Launched!';

@@ -80,8 +80,10 @@ async function syncHistoricalEvents(io) {
         );
       }
 
-      // 3. Sync Campaign Events (Parallelized across all campaigns within the chunk)
-      await Promise.all(campaigns.map(async (campaign) => {
+      // 3. Sync Campaign Events (Sequential across all campaigns to respect RPC rate limits)
+      for (const campaign of campaigns) {
+        if (!campaign.contractAddress) continue; // Skip proposals
+
         try {
           const contract = getCampaignContract(campaign.contractAddress);
           const donationFilter = contract.filters.DonationReceived();
@@ -112,10 +114,13 @@ async function syncHistoricalEvents(io) {
               console.log(`✅ Synced missed donation: ${amountETH} ETH for ${campaign.title}`);
             }
           }
+          
+          // Throttling to prevent 429 Too Many Requests on free tier RPCs
+          await new Promise(resolve => setTimeout(resolve, 80));
         } catch (e) {
           console.warn(`⚠️  Failed to sync events for ${campaign.title}:`, e.message);
         }
-      }));
+      }
     }
 
     // 4. Update the last synced block

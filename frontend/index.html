@@ -4562,20 +4562,11 @@
   </div>
   <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">${(p.description || '').slice(0, 200)}${(p.description || '').length > 200 ? '...' : ''}</div>
   <div style="display:flex;gap:8px">
-  <button class="btn btn-primary btn-sm" onclick="voteProposal('${p._id}', 'approved')">✅ Approve</button>
-  <button class="btn btn-danger btn-sm" onclick="voteProposal('${p._id}', 'rejected')">❌ Reject</button>
+  <button class="btn btn-primary btn-sm" onclick="validateProposal('${p._id}', 'approved')">✅ Approve</button>
+  <button class="btn btn-danger btn-sm" onclick="validateProposal('${p._id}', 'rejected')">❌ Reject</button>
   </div>
   </div>`).join('');
       } catch (e) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">Failed to load pending proposals</div>'; }
-    }
-
-    async function voteProposal(id, status) {
-      try {
-        const r = await apiFetch(`/campaigns/proposals/${id}/vote`, { method: 'PUT', body: JSON.stringify({ status }) });
-        if (!r.ok) throw new Error();
-        toast(`Proposal ${status === 'approved' ? 'approved' : 'rejected'} successfully`, status === 'approved' ? 'success' : 'info');
-        loadTrusteeValidations();
-      } catch (e) { toast('Failed to submit vote', 'error'); }
     }
 
     async function checkCreateAccess() {

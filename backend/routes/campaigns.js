@@ -17,7 +17,11 @@ router.get("/", async (req, res) => {
     }
     
     if (req.query.status) {
-      filter.status = req.query.status;
+      if (req.query.status === "all") {
+        delete filter.status;
+      } else {
+        filter.status = req.query.status;
+      }
     } else if (!filter.status) {
       // Default: exclude proposals and rejected, but also exclude 'approved' from the main browse list
       // unless specifically requested. Usually 'approved' campaigns are only shown on the organiser's dashboard.

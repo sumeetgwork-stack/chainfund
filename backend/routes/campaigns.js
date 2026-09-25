@@ -23,6 +23,7 @@ router.get("/", async (req, res) => {
       // unless specifically requested. Usually 'approved' campaigns are only shown on the organiser's dashboard.
       filter.status = "active"; 
     }
+    if (req.query.organiser) filter.organiser = req.query.organiser;
 
     console.log("🔍 [Campaigns API] Query:", req.query, "Filter applied:", filter);
 

@@ -115,11 +115,39 @@ function requireTrustee(req, res, next) {
   next();
 }
 
-// List pending proposals
+// List pending proposals (that the current trustee hasn't approved yet)
 router.get("/proposals/pending", auth, requireTrustee, async (req, res) => {
   try {
-    const proposals = await Campaign.find({ status: "proposal" }).populate("organiser", "name email");
+    const { User } = require("../models");
+    const trusteeUser = await User.findById(req.user.id);
+    const wallet = trusteeUser?.walletAddress?.toLowerCase();
+
+    // Find proposals where status is proposal AND the trustee's wallet is NOT in approvingTrustees
+    let query = { status: "proposal" };
+    if (wallet) {
+      query.approvingTrustees = { $ne: wallet };
+    }
+
+    const proposals = await Campaign.find(query).populate("organiser", "name email");
     res.json(proposals);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get count of proposals validated by the current trustee
+router.get("/proposals/validated", auth, requireTrustee, async (req, res) => {
+  try {
+    const { User } = require("../models");
+    const trusteeUser = await User.findById(req.user.id);
+    const wallet = trusteeUser?.walletAddress?.toLowerCase();
+
+    if (!wallet) return res.json({ count: 0 });
+
+    const count = await Campaign.countDocuments({
+      approvingTrustees: wallet
+    });
+    res.json({ count });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

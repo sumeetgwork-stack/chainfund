@@ -4582,9 +4582,15 @@
       const el = document.getElementById('trustee-validation-list');
       if (!el) return;
       try {
-        const r = await apiFetch('/campaigns/proposals/pending');
-        const proposals = await r.json();
+        const [rPending, rValidated] = await Promise.all([
+          apiFetch('/campaigns/proposals/pending'),
+          apiFetch('/campaigns/proposals/validated')
+        ]);
+        const proposals = await rPending.json();
+        const validatedData = rValidated.ok ? await rValidated.json() : { count: 0 };
+
         document.getElementById('trust-pending').textContent = proposals.length;
+        document.getElementById('trust-approved').textContent = validatedData.count || 0;
         if (!proposals.length) {
           el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">No pending proposals to validate. Good job!</div>';
           return;

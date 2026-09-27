@@ -3177,6 +3177,48 @@
           </div>
         </div>
       </div>
+
+      <div class="page" id="page-admin">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Admin Dashboard</div>
+            <div class="page-sub">Manage users, approve organisers, and verify trustees</div>
+          </div>
+        </div>
+        <div class="grid4" style="margin-bottom:24px">
+          <div class="metric-card mc-1">
+            <div class="mc-label">Pending KYC</div>
+            <div class="mc-val" id="admin-stat-pending">0</div>
+          </div>
+          <div class="metric-card mc-2">
+            <div class="mc-label">Approved</div>
+            <div class="mc-val" id="admin-stat-approved">0</div>
+          </div>
+          <div class="metric-card mc-3">
+            <div class="mc-label">Rejected</div>
+            <div class="mc-val" id="admin-stat-rejected">0</div>
+          </div>
+          <div class="metric-card mc-4">
+            <div class="mc-label">Total Users</div>
+            <div class="mc-val" id="admin-stat-total">0</div>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+          <h2 style="font-size:16px;font-weight:600;margin:0">User Management</h2>
+          <select class="form-input" id="admin-filter" style="width:auto" onchange="loadAdminApplications()">
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="all">All Users</option>
+          </select>
+        </div>
+        <div id="admin-applications-list" class="grid-col1">
+          <div style="text-align:center;padding:40px;color:var(--text3)">
+            <div class="spinner"></div>
+            <div style="margin-top:10px">Loading applications...</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="right-panel">
@@ -4942,6 +4984,7 @@
             </div>
             <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
               ${!u.approvedToCreate ? `<button class="btn btn-sm btn-success" onclick="adminApprove('${u._id}')">✅ Approve</button>` : `<button class="btn btn-sm btn-danger" onclick="adminRevoke('${u._id}')">Revoke Access</button>`}
+              ${u.role !== 'trustee' && u.kycApplication?.status === 'approved' ? `<button class="btn btn-sm btn-primary" onclick="adminMakeTrustee('${u._id}')">🛡️ Make Trustee</button>` : ''}
               ${u.kycApplication?.status !== 'rejected' ? `<button class="btn btn-sm btn-danger" onclick="adminReject('${u._id}')">❌ Reject</button>` : ''}
             </div>
           </div>

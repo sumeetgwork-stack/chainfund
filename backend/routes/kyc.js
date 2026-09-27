@@ -63,7 +63,7 @@ router.get("/applications", auth, requireAdmin, async (req, res) => {
     const filter = {};
     if (status !== "all") filter["kycApplication.status"] = status;
     const users = await User.find(filter)
-      .select("name email walletAddress kycApplication approvedToCreate createdAt")
+      .select("name email role walletAddress kycApplication approvedToCreate createdAt")
       .sort({ "kycApplication.submittedAt": -1 });
     const total = await User.countDocuments(filter);
     res.json({ applications: users, total });
